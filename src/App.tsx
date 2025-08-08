@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon } from 'lucide-react';
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt } from 'lucide-react';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -23,7 +23,7 @@ function App() {
       hasSubmenu: true,
       submenu: [
         { id: 'budget', label: 'Budget Overview', icon: DollarSign },
-        { id: 'expenses', label: 'Enter Expenses', icon: MessageCircle },
+        { id: 'expenses', label: 'Enter Expenses', icon: Receipt },
         { id: 'spreadsheet', label: 'Budget Tracker', icon: Plane },
       ]
     },

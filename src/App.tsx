@@ -157,14 +157,17 @@ function App() {
           </div>
           
           {/* Hero Content - Centered */}
-          <div className="flex flex-col items-center justify-center pb-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              Plan adventures. Spend smarter.
-            </h2>
-            <p className="text-base text-gray-600 text-center max-w-2xl">
-              AI-generated itineraries with real-time expense tracking and budget insights. <br></br>All in one travel wallet.
-            </p>
-          </div>
+          {/* HeadlineBlock - Hidden when authenticated */}
+          {!isAuthenticated && (
+            <div className="flex flex-col items-center justify-center pb-8 space-y-2">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Plan adventures. Spend smarter.
+              </h2>
+              <p className="text-base text-gray-600 text-center max-w-2xl">
+                AI-generated itineraries with real-time expense tracking and budget insights. <br></br>All in one travel wallet.
+              </p>
+            </div>
+          )}
         </div>
       </header>
 

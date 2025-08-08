@@ -68,16 +68,19 @@ function App() {
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
+          <div className="flex flex-col items-center justify-center py-6">
+            <div className="flex items-center space-x-3 mb-3">
               <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl">
                 <Plane className="h-6 w-6 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
             </div>
-            <div className="hidden md:block text-sm text-gray-600">
-              Your AI-powered travel companion
-            </div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Plan adventures and spend smarter
+            </h2>
+            <p className="text-sm text-gray-600 text-center max-w-2xl">
+              AI-generated itineraries with real-time expense tracking and budget insights...all in one travel wallet.
+            </p>
           </div>
         </div>
       </header>

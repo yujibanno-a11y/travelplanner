@@ -24,7 +24,7 @@ function App() {
       submenu: [
         { id: 'budget', label: 'Budget Overview', icon: DollarSign },
         { id: 'expenses', label: 'Enter Expenses', icon: MessageCircle },
-        { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
+        { id: 'spreadsheet', label: 'Budget Tracker', icon: Plane },
       ]
     },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },

@@ -23,7 +23,7 @@ function App() {
       hasSubmenu: true,
       submenu: [
         { id: 'budget', label: 'Budget Overview', icon: DollarSign },
-        { id: 'expenses', label: 'Add Expenses', icon: MessageCircle },
+        { id: 'expenses', label: 'Enter Expenses', icon: MessageCircle },
         { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
       ]
     },

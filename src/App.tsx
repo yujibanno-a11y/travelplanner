@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell } from 'lucide-react';
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight } from 'lucide-react';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -11,15 +11,38 @@ type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
+  const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
 
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },
-    { id: 'budget', label: 'Budget', icon: DollarSign },
-    { id: 'expenses', label: 'Add Expenses', icon: MessageCircle },
+    { 
+      id: 'budget', 
+      label: 'Budget', 
+      icon: DollarSign,
+      hasSubmenu: true,
+      submenu: [
+        { id: 'budget', label: 'Budget Tracker', icon: DollarSign },
+        { id: 'expenses', label: 'Add Expenses', icon: MessageCircle },
+        { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
+      ]
+    },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
-    { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
     { id: 'notifications', label: 'Alerts', icon: Bell },
   ];
+
+  const handleTabClick = (tabId: string, hasSubmenu?: boolean) => {
+    if (hasSubmenu) {
+      setBudgetSubmenuOpen(!budgetSubmenuOpen);
+      if (!budgetSubmenuOpen) {
+        setActiveTab('budget'); // Default to budget tracker when opening submenu
+      }
+    } else {
+      setActiveTab(tabId as TabType);
+      if (tabId !== 'budget' && tabId !== 'expenses' && tabId !== 'spreadsheet') {
+        setBudgetSubmenuOpen(false);
+      }
+    }
+  };
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -62,24 +85,63 @@ function App() {
       {/* Navigation Tabs */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
+          <div className="flex flex-col">
+            <div className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isActive = tab.hasSubmenu 
+                ? (activeTab === 'budget' || activeTab === 'expenses' || activeTab === 'spreadsheet')
+                : activeTab === tab.id;
+              
               return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{tab.label}</span>
-                </button>
+                <div key={tab.id} className="relative">
+                  <button
+                    onClick={() => handleTabClick(tab.id, tab.hasSubmenu)}
+                    className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
+                      isActive
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{tab.label}</span>
+                    {tab.hasSubmenu && (
+                      budgetSubmenuOpen ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )
+                    )}
+                  </button>
+                </div>
               );
             })}
+            </div>
+            
+            {/* Budget Submenu */}
+            {budgetSubmenuOpen && (
+              <div className="bg-gray-50 border-t border-gray-200">
+                <div className="flex space-x-6 px-8 py-2">
+                  {tabs.find(tab => tab.hasSubmenu)?.submenu?.map((submenuItem) => {
+                    const SubmenuIcon = submenuItem.icon;
+                    return (
+                      <button
+                        key={submenuItem.id}
+                        onClick={() => setActiveTab(submenuItem.id as TabType)}
+                        className={`flex items-center space-x-2 py-2 px-3 rounded-lg font-medium text-sm whitespace-nowrap transition-colors duration-200 ${
+                          activeTab === submenuItem.id
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                        }`}
+                      >
+                        <SubmenuIcon className="h-4 w-4" />
+                        <span>{submenuItem.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>

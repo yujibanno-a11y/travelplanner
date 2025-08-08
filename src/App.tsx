@@ -7,12 +7,17 @@ import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
 import Settings from './components/Settings';
+import LoginPage from './components/LoginPage';
+import SignupPage from './components/SignupPage';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
+type PageType = 'home' | 'login' | 'signup';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
   const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState<PageType>('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },
@@ -45,6 +50,42 @@ function App() {
       }
     }
   };
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setCurrentPage('home');
+  };
+
+  const handleSignup = () => {
+    setIsAuthenticated(true);
+    setCurrentPage('home');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentPage('home');
+  };
+
+  // Render different pages based on currentPage state
+  if (currentPage === 'login') {
+    return (
+      <LoginPage
+        onBack={() => setCurrentPage('home')}
+        onLogin={handleLogin}
+        onNavigateToSignup={() => setCurrentPage('signup')}
+      />
+    );
+  }
+
+  if (currentPage === 'signup') {
+    return (
+      <SignupPage
+        onBack={() => setCurrentPage('home')}
+        onSignup={handleSignup}
+        onNavigateToLogin={() => setCurrentPage('login')}
+      />
+    );
+  }
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -83,12 +124,32 @@ function App() {
             
             {/* Auth Container - Right Side */}
             <div className="flex items-center space-x-4">
-              <button className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200">
-                Log In
-              </button>
-              <button className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md">
-                Create Account
-              </button>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm text-gray-600">Welcome back!</span>
+                  <button 
+                    onClick={handleLogout}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+                  >
+                    Log Out
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setCurrentPage('login')}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+                  >
+                    Log In
+                  </button>
+                  <button 
+                    onClick={() => setCurrentPage('signup')}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md"
+                  >
+                    Create Account
+                  </button>
+                </>
+              )}
             </div>
           </div>
           

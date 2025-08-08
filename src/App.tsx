@@ -146,8 +146,17 @@ function App() {
           </div>
         </header>
 
+        {/* Features Section Headline */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              All-in-one features
+            </h2>
+          </div>
+        </section>
+
         {/* Benefits Grid */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
             {/* Trip Planning */}
             <div className="flex flex-col items-center text-center space-y-3">

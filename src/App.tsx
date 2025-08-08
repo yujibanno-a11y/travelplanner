@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet, Coins } from 'lucide-react';
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -116,11 +116,8 @@ function App() {
           <div className="flex items-center justify-between py-6">
             {/* Logo and Brand - Left Side */}
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl relative">
+              <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl">
                 <Plane className="h-6 w-6 text-white" />
-                <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
-                  <Coins className="h-3 w-3 text-white" />
-                </div>
               </div>
               <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
             </div>

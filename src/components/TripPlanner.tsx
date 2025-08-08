@@ -58,17 +58,17 @@ const TripPlanner = () => {
   return (
     <div className="space-y-8">
       {/* Trip Planning Form */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl">
             <Sparkles className="h-6 w-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Plan Your Perfect Trip</h2>
+          <h2 className="text-2xl font-bold text-white">Plan Your Perfect Trip</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               <MapPin className="inline h-4 w-4 mr-1" />
               Destination
             </label>
@@ -77,12 +77,12 @@ const TripPlanner = () => {
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
               placeholder="Where are you traveling to?"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               <Calendar className="inline h-4 w-4 mr-1" />
               Number of Days
             </label>
@@ -93,7 +93,7 @@ const TripPlanner = () => {
               placeholder="How many days?"
               min="1"
               max="30"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
           </div>
         </div>
@@ -121,13 +121,13 @@ const TripPlanner = () => {
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
               <Clock className="h-6 w-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">
+            <h3 className="text-2xl font-bold text-white">
               Your {destination} Itinerary ({days} Days)
             </h3>
           </div>
           
           {itinerary.map((day) => (
-            <div key={day.day} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            <div key={day.day} className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-2 px-4 rounded-full">
                   Day {day.day}
@@ -136,7 +136,7 @@ const TripPlanner = () => {
               
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                  <h4 className="flex items-center text-lg font-semibold text-white mb-3">
                     <Clock className="h-5 w-5 mr-2 text-blue-500" />
                     Activities
                   </h4>
@@ -144,14 +144,14 @@ const TripPlanner = () => {
                     {day.activities.map((activity, index) => (
                       <li key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{activity}</span>
+                        <span className="text-gray-300">{activity}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 
                 <div>
-                  <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                  <h4 className="flex items-center text-lg font-semibold text-white mb-3">
                     <Camera className="h-5 w-5 mr-2 text-green-500" />
                     Must-Visit Attractions
                   </h4>
@@ -159,15 +159,15 @@ const TripPlanner = () => {
                     {day.attractions.map((attraction, index) => (
                       <li key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{attraction}</span>
+                        <span className="text-gray-300">{attraction}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
               
-              <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-                <p className="text-sm text-gray-700">
+              <div className="mt-4 p-4 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-xl border border-yellow-700/50">
+                <p className="text-sm text-gray-300">
                   <strong>💡 Tip:</strong> {day.tips}
                 </p>
               </div>

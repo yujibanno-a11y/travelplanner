@@ -156,15 +156,15 @@ const NotificationCenter = () => {
       </div>
 
       {/* Notification Settings */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Settings className="h-6 w-6 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">Notification Settings</h3>
+          <Settings className="h-6 w-6 text-gray-300" />
+          <h3 className="text-xl font-bold text-white">Notification Settings</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-800">Delivery Methods</h4>
+            <h4 className="font-semibold text-white">Delivery Methods</h4>
             <div className="space-y-3">
               <label className="flex items-center space-x-3">
                 <input
@@ -173,7 +173,7 @@ const NotificationCenter = () => {
                   onChange={(e) => setEmailNotifications(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700">Email Notifications</span>
+                <span className="text-gray-300">Email Notifications</span>
               </label>
               
               <label className="flex items-center space-x-3">
@@ -183,13 +183,13 @@ const NotificationCenter = () => {
                   onChange={(e) => setTextNotifications(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700">SMS/Text Messages</span>
+                <span className="text-gray-300">SMS/Text Messages</span>
               </label>
             </div>
           </div>
           
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-800">Alert Types</h4>
+            <h4 className="font-semibold text-white">Alert Types</h4>
             <div className="space-y-3">
               <label className="flex items-center space-x-3">
                 <input
@@ -198,7 +198,7 @@ const NotificationCenter = () => {
                   onChange={(e) => setBudgetAlerts(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700">Budget Exceeded Alerts</span>
+                <span className="text-gray-300">Budget Exceeded Alerts</span>
               </label>
               
               <label className="flex items-center space-x-3">
@@ -208,7 +208,7 @@ const NotificationCenter = () => {
                   onChange={(e) => setDailySummary(e.target.checked)}
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700">Daily Expense Summary</span>
+                <span className="text-gray-300">Daily Expense Summary</span>
               </label>
             </div>
           </div>
@@ -223,17 +223,17 @@ const NotificationCenter = () => {
       </div>
 
       {/* Notifications List */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900">Recent Notifications</h3>
+      <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+        <div className="p-6 border-b border-gray-700">
+          <h3 className="text-xl font-bold text-white">Recent Notifications</h3>
         </div>
         
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-700">
           {notifications.map((notification) => (
             <div
               key={notification.id}
               className={`p-6 hover:bg-gray-50 transition-colors duration-200 ${
-                !notification.read ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                !notification.read ? 'bg-blue-900/20 border-l-4 border-l-blue-500' : ''
               }`}
             >
               <div className="flex items-start justify-between">
@@ -243,6 +243,7 @@ const NotificationCenter = () => {
                     <div className="flex items-center space-x-2 mb-1">
                       <h4 className={`text-sm font-semibold ${
                         !notification.read ? 'text-gray-900' : 'text-gray-700'
+                        !notification.read ? 'text-white' : 'text-gray-300'
                       }`}>
                         {notification.title}
                       </h4>
@@ -250,8 +251,8 @@ const NotificationCenter = () => {
                         <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-300 mb-2">{notification.message}</p>
+                    <p className="text-xs text-gray-400">
                       {notification.timestamp.toLocaleDateString()} at{' '}
                       {notification.timestamp.toLocaleTimeString([], { 
                         hour: '2-digit', 
@@ -265,14 +266,14 @@ const NotificationCenter = () => {
                   {!notification.read && (
                     <button
                       onClick={() => markAsRead(notification.id)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium"
                     >
                       Mark as read
                     </button>
                   )}
                   <button
                     onClick={() => deleteNotification(notification.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
+                    className="text-gray-500 hover:text-red-400 transition-colors"
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -285,8 +286,8 @@ const NotificationCenter = () => {
         {notifications.length === 0 && (
           <div className="text-center py-12">
             <Bell className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-            <p className="text-gray-600">You're all caught up! New notifications will appear here.</p>
+            <h3 className="text-lg font-medium text-white mb-2">No notifications</h3>
+            <p className="text-gray-300">You're all caught up! New notifications will appear here.</p>
           </div>
         )}
       </div>

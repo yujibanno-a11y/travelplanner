@@ -98,43 +98,43 @@ const BudgetTracker = () => {
       </div>
 
       {/* Budget Settings */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl">
             <Target className="h-6 w-6 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">Set Your Budget</h3>
+          <h3 className="text-2xl font-bold text-white">Set Your Budget</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               Daily Spending Limit
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
               <input
                 type="number"
                 value={budgetSettings.dailyLimit}
                 onChange={(e) => handleBudgetChange('dailyLimit', parseFloat(e.target.value) || 0)}
                 placeholder="Enter daily limit"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               Total Trip Budget
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
               <input
                 type="number"
                 value={budgetSettings.totalBudget}
                 onChange={(e) => handleBudgetChange('totalBudget', parseFloat(e.target.value) || 0)}
                 placeholder="Enter total budget"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -142,21 +142,21 @@ const BudgetTracker = () => {
 
         {/* Category Budget Breakdown */}
         <div className="mb-8">
-          <h4 className="text-xl font-bold text-gray-900 mb-4">Daily Category Limits</h4>
+          <h4 className="text-xl font-bold text-white mb-4">Daily Category Limits</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {Object.entries(budgetSettings.categories).map(([category, amount]) => (
-              <div key={category} className="bg-gray-50 rounded-xl p-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2 capitalize">
+              <div key={category} className="bg-gray-700 rounded-xl p-4">
+                <label className="block text-sm font-semibold text-gray-300 mb-2 capitalize">
                   {category}
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
                   <input
                     type="number"
                     value={amount}
                     onChange={(e) => handleBudgetChange(category, parseFloat(e.target.value) || 0)}
                     placeholder="0"
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-9 pr-3 py-2 bg-gray-600 border border-gray-500 text-white placeholder-gray-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -164,10 +164,10 @@ const BudgetTracker = () => {
           </div>
           
           {totalCategoryBudget > budgetSettings.dailyLimit && budgetSettings.dailyLimit > 0 && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="mt-4 p-4 bg-red-900/30 border border-red-700/50 rounded-xl">
               <div className="flex items-center space-x-2">
                 <AlertCircle className="h-5 w-5 text-red-500" />
-                <p className="text-red-700 font-medium">
+                <p className="text-red-400 font-medium">
                   Category totals (${totalCategoryBudget}) exceed daily limit (${budgetSettings.dailyLimit})
                 </p>
               </div>
@@ -184,27 +184,27 @@ const BudgetTracker = () => {
       </div>
 
       {/* Budget Recommendations */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-xl">
             <TrendingUp className="h-6 w-6 text-white" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">Smart Recommendations</h3>
+          <h3 className="text-2xl font-bold text-white">Smart Recommendations</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-            <h4 className="font-semibold text-gray-800 mb-2">💡 Budget-Friendly Activities</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
+          <div className="p-6 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-xl border border-blue-700/50">
+            <h4 className="font-semibold text-white mb-2">💡 Budget-Friendly Activities</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
               <li>• Free walking tours and city parks</li>
               <li>• Local markets and street food</li>
               <li>• Museums with free admission days</li>
             </ul>
           </div>
           
-          <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
-            <h4 className="font-semibold text-gray-800 mb-2">💰 Money-Saving Tips</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
+          <div className="p-6 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl border border-green-700/50">
+            <h4 className="font-semibold text-white mb-2">💰 Money-Saving Tips</h4>
+            <ul className="text-sm text-gray-300 space-y-1">
               <li>• Book activities in advance for discounts</li>
               <li>• Use public transportation passes</li>
               <li>• Look for lunch specials at restaurants</li>

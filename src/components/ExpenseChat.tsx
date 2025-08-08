@@ -162,7 +162,7 @@ const ExpenseChat = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Chat Interface */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+      <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
           <h2 className="text-2xl font-bold text-white flex items-center space-x-3">
             <Bot className="h-8 w-8" />
@@ -172,7 +172,7 @@ const ExpenseChat = () => {
         </div>
 
         {/* Messages */}
-        <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50">
+        <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-900">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -197,11 +197,11 @@ const ExpenseChat = () => {
                 <div className={`inline-block p-3 rounded-2xl ${
                   message.sender === 'user'
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                    : 'bg-white border border-gray-200 text-gray-800 shadow-sm'
+                    : 'bg-gray-700 border border-gray-600 text-gray-100 shadow-sm'
                 }`}>
                   <p className="text-sm">{message.text}</p>
                   <p className={`text-xs mt-1 ${
-                    message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                    message.sender === 'user' ? 'text-blue-100' : 'text-gray-400'
                   }`}>
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
@@ -213,14 +213,14 @@ const ExpenseChat = () => {
         </div>
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="p-6 border-t border-gray-200 bg-white">
+        <form onSubmit={handleSubmit} className="p-6 border-t border-gray-700 bg-gray-800">
           <div className="flex space-x-4">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Tell me about an expense... (e.g., 'I spent $25 on lunch')"
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <button
               type="submit"
@@ -235,8 +235,8 @@ const ExpenseChat = () => {
       </div>
 
       {/* Today's Expenses Summary */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Today's Expenses</h3>
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
+        <h3 className="text-xl font-bold text-white mb-4">Today's Expenses</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Object.entries(categoryIcons).map(([category, Icon]) => {
             const todaysExpenses = expenses.filter(
@@ -246,15 +246,15 @@ const ExpenseChat = () => {
             const total = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0);
             
             return (
-              <div key={category} className="bg-gray-50 rounded-xl p-4">
+              <div key={category} className="bg-gray-700 rounded-xl p-4">
                 <div className="flex items-center space-x-3 mb-2">
                   <div className={`${categoryColors[category as keyof typeof categoryColors]} p-2 rounded-lg`}>
                     <Icon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="font-medium text-gray-800 capitalize">{category}</span>
+                  <span className="font-medium text-white capitalize">{category}</span>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">${total.toFixed(2)}</p>
-                <p className="text-sm text-gray-600">{todaysExpenses.length} expenses</p>
+                <p className="text-2xl font-bold text-white">${total.toFixed(2)}</p>
+                <p className="text-sm text-gray-300">{todaysExpenses.length} expenses</p>
               </div>
             );
           })}

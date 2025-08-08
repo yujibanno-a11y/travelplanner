@@ -155,16 +155,16 @@ const RestaurantRecommendations = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Filter className="h-6 w-6 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">Filter Restaurants</h3>
+          <Filter className="h-6 w-6 text-gray-300" />
+          <h3 className="text-xl font-bold text-white">Filter Restaurants</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Budget Slider */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               Max Budget per Person: ${maxBudget}
             </label>
             <input
@@ -175,7 +175,7 @@ const RestaurantRecommendations = () => {
               onChange={(e) => setMaxBudget(parseInt(e.target.value))}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
               <span>$10</span>
               <span>$100</span>
             </div>
@@ -183,13 +183,13 @@ const RestaurantRecommendations = () => {
 
           {/* Cuisine Filter */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               Cuisine Type
             </label>
             <select
               value={selectedCuisine}
               onChange={(e) => setSelectedCuisine(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               {cuisineTypes.map(cuisine => (
                 <option key={cuisine} value={cuisine}>
@@ -201,17 +201,17 @@ const RestaurantRecommendations = () => {
 
           {/* Search */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-300 mb-2">
               Search Restaurants
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-500" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or specialty..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 text-white placeholder-gray-400 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -219,20 +219,20 @@ const RestaurantRecommendations = () => {
       </div>
 
       {/* Results */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">
+          <h3 className="text-xl font-bold text-white">
             Top {restaurants.length} Restaurants
           </h3>
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-gray-300">
             Sorted by rating (highest first)
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="group cursor-pointer bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
-              <div className="aspect-w-16 aspect-h-10 bg-gray-200">
+            <div key={restaurant.id} className="group cursor-pointer bg-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
+              <div className="aspect-w-16 aspect-h-10 bg-gray-600">
                 <img
                   src={restaurant.image}
                   alt={restaurant.name}
@@ -242,7 +242,7 @@ const RestaurantRecommendations = () => {
               
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
-                  <h4 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
+                  <h4 className="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">
                     {restaurant.name}
                   </h4>
                   <span className="text-lg font-bold text-green-600">
@@ -254,12 +254,12 @@ const RestaurantRecommendations = () => {
                   <div className="flex items-center">
                     {renderStars(restaurant.rating)}
                   </div>
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm text-gray-300">
                     {restaurant.rating} ({restaurant.reviews} reviews)
                   </span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600 mb-3">
+                <div className="flex items-center text-sm text-gray-300 mb-3">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span>{restaurant.address}</span>
                 </div>
@@ -268,7 +268,7 @@ const RestaurantRecommendations = () => {
                   <span className="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full capitalize">
                     {restaurant.cuisine}
                   </span>
-                  <span className="inline-block bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full ml-2">
+                  <span className="inline-block bg-gray-600 text-gray-200 text-xs font-medium px-2 py-1 rounded-full ml-2">
                     {restaurant.priceRange}
                   </span>
                 </div>
@@ -288,8 +288,8 @@ const RestaurantRecommendations = () => {
         {restaurants.length === 0 && (
           <div className="text-center py-12">
             <UtensilsCrossed className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No restaurants found</h3>
-            <p className="text-gray-600">Try adjusting your filters to see more options.</p>
+            <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
+            <p className="text-gray-300">Try adjusting your filters to see more options.</p>
           </div>
         )}
       </div>

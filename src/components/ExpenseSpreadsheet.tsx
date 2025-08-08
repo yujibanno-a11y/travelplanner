@@ -109,26 +109,26 @@ const ExpenseSpreadsheet = () => {
       </div>
 
       {/* Category Breakdown */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <PieChart className="h-6 w-6 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">Category Breakdown</h3>
+          <PieChart className="h-6 w-6 text-gray-300" />
+          <h3 className="text-xl font-bold text-white">Category Breakdown</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Object.entries(categoryTotals).map(([category, amount]) => (
-            <div key={category} className="bg-gray-50 rounded-xl p-4">
+            <div key={category} className="bg-gray-700 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700 capitalize">{category}</span>
-                <span className="text-lg font-bold text-gray-900">${amount.toFixed(2)}</span>
+                <span className="text-sm font-medium text-gray-300 capitalize">{category}</span>
+                <span className="text-lg font-bold text-white">${amount.toFixed(2)}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-600 rounded-full h-2">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${(amount / totalExpenses) * 100}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-400 mt-1">
                 {((amount / totalExpenses) * 100).toFixed(1)}% of total
               </p>
             </div>
@@ -137,15 +137,15 @@ const ExpenseSpreadsheet = () => {
       </div>
 
       {/* Controls */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+      <div className="bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-700">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Sort By</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'amount' | 'category')}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="date">Date (Newest First)</option>
                 <option value="amount">Amount (Highest First)</option>
@@ -154,11 +154,11 @@ const ExpenseSpreadsheet = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Filter By Category</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Filter By Category</label>
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="px-4 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="all">All Categories</option>
                 <option value="food">Food</option>
@@ -180,37 +180,37 @@ const ExpenseSpreadsheet = () => {
       </div>
 
       {/* Expense Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
+      <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-700">
+          <h3 className="text-lg font-semibold text-white">
             Expense Details ({sortedAndFilteredExpenses.length} entries)
           </h3>
         </div>
         
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                   Description
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-gray-800 divide-y divide-gray-700">
               {sortedAndFilteredExpenses.map((expense, index) => (
-                <tr key={expense.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <tr key={expense.id} className={index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-750'}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {expense.timestamp.toLocaleDateString()}
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-400">
                       {expense.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </td>
@@ -224,10 +224,10 @@ const ExpenseSpreadsheet = () => {
                       {expense.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-white text-right">
                     ${expense.amount.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                  <td className="px-6 py-4 text-sm text-gray-300 max-w-xs truncate">
                     {expense.description}
                   </td>
                 </tr>
@@ -239,8 +239,8 @@ const ExpenseSpreadsheet = () => {
         {sortedAndFilteredExpenses.length === 0 && (
           <div className="text-center py-12">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No expenses found</h3>
-            <p className="text-gray-600">Start adding expenses to see them here!</p>
+            <h3 className="text-lg font-medium text-white mb-2">No expenses found</h3>
+            <p className="text-gray-300">Start adding expenses to see them here!</p>
           </div>
         )}
       </div>

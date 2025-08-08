@@ -22,7 +22,7 @@ function App() {
       icon: DollarSign,
       hasSubmenu: true,
       submenu: [
-        { id: 'budget', label: 'Budget Overview', icon: DollarSign },
+        { id: 'budget', label: 'Set Budget', icon: DollarSign },
         { id: 'expenses', label: 'Enter Expenses', icon: Receipt },
         { id: 'spreadsheet', label: 'Budget Tracker', icon: Wallet },
       ]

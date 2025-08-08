@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
+import { Route, Target, ReceiptText, PieChart, AlertTriangle } from 'lucide-react';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -144,6 +145,77 @@ function App() {
             </div>
           </div>
         </header>
+
+        {/* Benefits Grid */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+            {/* Trip Planning */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
+                <Route className="h-7 w-7 text-blue-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Trip Planning</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Build a day-by-day itinerary with estimated costs and pre-picked activities so you start every morning ready to roll.
+              </p>
+            </div>
+
+            {/* Set Budget */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
+                <Target className="h-7 w-7 text-green-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Set Budget</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Enter your trip budget once and the app keeps a running tally to make sure you never overspend.
+              </p>
+            </div>
+
+            {/* Enter Expenses */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
+                <ReceiptText className="h-7 w-7 text-purple-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Enter Expenses</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Log purchases in seconds—online or offline—and see your total update instantly.
+              </p>
+            </div>
+
+            {/* Budget Tracker */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center">
+                <PieChart className="h-7 w-7 text-indigo-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Budget Tracker</h3>
+              <p className="text-gray-600 leading-relaxed">
+                View charts that break spending down by category, giving you a crystal-clear picture of where the money goes.
+              </p>
+            </div>
+
+            {/* Alerts */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="h-7 w-7 text-red-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Alerts</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Get a friendly nudge the moment you edge past your budget limit, before small splurges snowball.
+              </p>
+            </div>
+
+            {/* Restaurants */}
+            <div className="flex flex-col space-y-3">
+              <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center">
+                <UtensilsCrossed className="h-7 w-7 text-orange-600" aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Restaurants</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Browse restaurant picks filtered by cuisine and price so great meals fit smoothly into your budget.
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

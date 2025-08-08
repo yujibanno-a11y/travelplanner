@@ -9,9 +9,10 @@ import NotificationCenter from './components/NotificationCenter';
 import Settings from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
+import ResetPasswordPage from './components/ResetPasswordPage';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
-type PageType = 'home' | 'login' | 'signup';
+type PageType = 'home' | 'login' | 'signup' | 'reset-password';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
@@ -73,6 +74,7 @@ function App() {
         onBack={() => setCurrentPage('home')}
         onLogin={handleLogin}
         onNavigateToSignup={() => setCurrentPage('signup')}
+        onNavigateToResetPassword={() => setCurrentPage('reset-password')}
       />
     );
   }
@@ -83,6 +85,14 @@ function App() {
         onBack={() => setCurrentPage('home')}
         onSignup={handleSignup}
         onNavigateToLogin={() => setCurrentPage('login')}
+      />
+    );
+  }
+
+  if (currentPage === 'reset-password') {
+    return (
+      <ResetPasswordPage
+        onBack={() => setCurrentPage('login')}
       />
     );
   }

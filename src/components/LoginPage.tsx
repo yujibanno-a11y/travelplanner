@@ -5,6 +5,7 @@ interface LoginPageProps {
   onBack: () => void;
   onLogin: () => void;
   onNavigateToSignup: () => void;
+  onNavigateToResetPassword: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSignup }) => {
@@ -136,7 +137,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
             <div className="text-left">
               <button
                 type="button"
+                onClick={onNavigateToResetPassword}
                 className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                style={{ cursor: 'pointer' }}
+                aria-label="Forgot password – reset it"
               >
                 Forgot password?
               </button>

@@ -94,7 +94,7 @@ function App() {
           
           {/* Hero Content - Centered */}
           <div className="flex flex-col items-center justify-center pb-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
               Plan adventures and spend smarter
             </h2>
             <p className="text-base text-gray-600 text-center max-w-2xl">

@@ -129,7 +129,7 @@ function App() {
                   onClick={() => setCurrentPage('signup')}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md"
                 >
-                  Create Account
+                  Sign Up
                 </button>
               </div>
             </div>

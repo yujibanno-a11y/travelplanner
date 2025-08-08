@@ -142,6 +142,16 @@ function App() {
               <p className="text-base text-gray-600 text-center max-w-2xl">
                 AI-generated itineraries with real-time expense tracking and budget insights. <br></br>All in one travel wallet.
               </p>
+              
+              {/* Start Planning Button */}
+              <div className="pt-6">
+                <button 
+                  onClick={() => setCurrentPage('signup')}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-lg"
+                >
+                  Start Planning
+                </button>
+              </div>
             </div>
           </div>
         </header>

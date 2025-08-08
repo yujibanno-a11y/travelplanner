@@ -12,12 +12,12 @@ import SignupPage from './components/SignupPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
-type PageType = 'home' | 'login' | 'signup' | 'reset-password';
+type PageType = 'landing' | 'login' | 'signup' | 'reset-password' | 'app';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
   const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState<PageType>('home');
+  const [currentPage, setCurrentPage] = useState<PageType>('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const tabs = [
@@ -54,24 +54,24 @@ function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    setCurrentPage('home');
+    setCurrentPage('app');
   };
 
   const handleSignup = () => {
     setIsAuthenticated(true);
-    setCurrentPage('home');
+    setCurrentPage('app');
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    setCurrentPage('home');
+    setCurrentPage('landing');
   };
 
   // Render different pages based on currentPage state
   if (currentPage === 'login') {
     return (
       <LoginPage
-        onBack={() => setCurrentPage('home')}
+        onBack={() => setCurrentPage('landing')}
         onLogin={handleLogin}
         onNavigateToSignup={() => setCurrentPage('signup')}
         onNavigateToResetPassword={() => setCurrentPage('reset-password')}
@@ -82,7 +82,7 @@ function App() {
   if (currentPage === 'signup') {
     return (
       <SignupPage
-        onBack={() => setCurrentPage('home')}
+        onBack={() => setCurrentPage('landing')}
         onSignup={handleSignup}
         onNavigateToLogin={() => setCurrentPage('login')}
       />
@@ -97,6 +97,63 @@ function App() {
     );
   }
 
+  // Landing Page (Marketing/Unauthenticated)
+  if (currentPage === 'landing') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+        {/* Header */}
+        <header className="relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between py-6">
+              {/* Logo and Brand - Left Side */}
+              <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl relative">
+                  <Plane className="h-6 w-6 text-white" />
+                  <div className="absolute bottom-0 left-0 bg-green-500 rounded-full p-0.5">
+                    <DollarSign className="h-2.5 w-2.5 text-white" />
+                  </div>
+                </div>
+                <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
+              </div>
+              
+              {/* Auth Container - Right Side */}
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={() => setCurrentPage('login')}
+                  className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+                >
+                  Log In
+                </button>
+                <button 
+                  onClick={() => setCurrentPage('signup')}
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md"
+                >
+                  Create Account
+                </button>
+              </div>
+            </div>
+            
+            {/* Hero Content - Centered */}
+            <div className="flex flex-col items-center justify-center pb-8 space-y-2">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Plan adventures. Spend smarter.
+              </h2>
+              <p className="text-base text-gray-600 text-center max-w-2xl">
+                AI-generated itineraries with real-time expense tracking and budget insights. <br></br>All in one travel wallet.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <TripPlanner />
+        </main>
+      </div>
+    );
+  }
+
+  // Authenticated App (currentPage === 'app')
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'plan':
@@ -119,7 +176,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
       {/* Header */}
       <header className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -137,53 +194,22 @@ function App() {
             
             {/* Auth Container - Right Side */}
             <div className="flex items-center space-x-4">
-              {isAuthenticated ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-600">Welcome back!</span>
-                  <button 
-                    onClick={handleLogout}
-                    className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
-                  >
-                    Log Out
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <button 
-                    onClick={() => setCurrentPage('login')}
-                    className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
-                  >
-                    Log In
-                  </button>
-                  <button 
-                    onClick={() => setCurrentPage('signup')}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md"
-                  >
-                    Create Account
-                  </button>
-                </>
-              )}
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">Welcome back!</span>
+                <button 
+                  onClick={handleLogout}
+                  className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+                >
+                  Log Out
+                </button>
+              </div>
             </div>
           </div>
-          
-          {/* Hero Content - Centered */}
-          {/* HeadlineBlock - Hidden when authenticated */}
-          {!isAuthenticated && (
-            <div className="flex flex-col items-center justify-center pb-8 space-y-2">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Plan adventures. Spend smarter.
-              </h2>
-              <p className="text-base text-gray-600 text-center max-w-2xl">
-                AI-generated itineraries with real-time expense tracking and budget insights. <br></br>All in one travel wallet.
-              </p>
-            </div>
-          )}
         </div>
       </header>
 
-
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
         {renderActiveTab()}
       </main>
 

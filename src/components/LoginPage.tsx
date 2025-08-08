@@ -136,7 +136,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
             <div className="text-left">
               <button
                 type="button"
-                onClick={() => alert('Password reset functionality would be implemented here')}
                 className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200"
               >
                 Forgot password?

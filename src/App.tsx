@@ -72,9 +72,17 @@ function App() {
       {/* Header */}
       <header className="relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center justify-center py-6 relative">
-            {/* Auth Container - Top Right */}
-            <div className="absolute top-4 right-0 flex items-center space-x-4">
+          <div className="flex items-center justify-between py-6">
+            {/* Logo and Brand - Left Side */}
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl">
+                <Plane className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
+            </div>
+            
+            {/* Auth Container - Right Side */}
+            <div className="flex items-center space-x-4">
               <button className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200">
                 Log In
               </button>
@@ -82,13 +90,10 @@ function App() {
                 Create Account
               </button>
             </div>
-            
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-3 rounded-xl">
-                <Plane className="h-8 w-8 text-white" />
-              </div>
-              <h1 className="text-5xl font-bold text-gray-900">TravelPlanner</h1>
-            </div>
+          </div>
+          
+          {/* Hero Content - Centered */}
+          <div className="flex flex-col items-center justify-center pb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">
               Plan adventures and spend smarter
             </h2>

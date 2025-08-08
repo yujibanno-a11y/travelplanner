@@ -275,10 +275,11 @@ function App() {
             {/* Logo and Brand - Left Side */}
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl relative">
-                <Plane className="h-6 w-6 text-white" />
-                <div className="absolute bottom-0 left-0 bg-green-500 rounded-full p-0.5">
-                  <DollarSign className="h-2.5 w-2.5 text-white" />
-                </div>
+                <img 
+                  src="/public/Untitled design.jpg" 
+                  alt="TravelPlanner Logo" 
+                  className="h-6 w-6 object-contain"
+                />
               </div>
               <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
             </div>

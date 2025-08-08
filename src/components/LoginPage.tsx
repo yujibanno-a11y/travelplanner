@@ -6,9 +6,10 @@ interface LoginPageProps {
   onLogin: () => void;
   onNavigateToSignup: () => void;
   onNavigateToResetPassword: () => void;
+  onNavigateToResetPassword: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSignup }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSignup, onNavigateToResetPassword }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

@@ -150,7 +150,7 @@ function App() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
             {/* Trip Planning */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
                 <Route className="h-7 w-7 text-blue-600" aria-hidden="true" />
               </div>
@@ -161,7 +161,7 @@ function App() {
             </div>
 
             {/* Set Budget */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
                 <Target className="h-7 w-7 text-green-600" aria-hidden="true" />
               </div>
@@ -172,7 +172,7 @@ function App() {
             </div>
 
             {/* Enter Expenses */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
                 <ReceiptText className="h-7 w-7 text-purple-600" aria-hidden="true" />
               </div>
@@ -183,7 +183,7 @@ function App() {
             </div>
 
             {/* Budget Tracker */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center">
                 <PieChart className="h-7 w-7 text-indigo-600" aria-hidden="true" />
               </div>
@@ -194,7 +194,7 @@ function App() {
             </div>
 
             {/* Alerts */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center">
                 <AlertTriangle className="h-7 w-7 text-red-600" aria-hidden="true" />
               </div>
@@ -205,7 +205,7 @@ function App() {
             </div>
 
             {/* Restaurants */}
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col items-center text-center space-y-3">
               <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center">
                 <UtensilsCrossed className="h-7 w-7 text-orange-600" aria-hidden="true" />
               </div>

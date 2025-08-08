@@ -6,8 +6,9 @@ import ExpenseChat from './components/ExpenseChat';
 import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
+import Settings from './components/Settings';
 
-type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications';
+type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
@@ -28,6 +29,7 @@ function App() {
     },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
     { id: 'notifications', label: 'Alerts', icon: Bell },
+    { id: 'settings', label: 'Settings', icon: DollarSign },
   ];
 
   const handleTabClick = (tabId: string, hasSubmenu?: boolean) => {
@@ -58,6 +60,8 @@ function App() {
         return <ExpenseSpreadsheet />;
       case 'notifications':
         return <NotificationCenter />;
+      case 'settings':
+        return <Settings />;
       default:
         return <TripPlanner />;
     }

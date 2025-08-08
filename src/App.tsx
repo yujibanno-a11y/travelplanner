@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon } from 'lucide-react';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -29,7 +29,7 @@ function App() {
     },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
     { id: 'notifications', label: 'Alerts', icon: Bell },
-    { id: 'settings', label: 'Settings', icon: DollarSign },
+    { id: 'settings', label: 'Settings', icon: SettingsIcon },
   ];
 
   const handleTabClick = (tabId: string, hasSubmenu?: boolean) => {

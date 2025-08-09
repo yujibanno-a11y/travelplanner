@@ -435,7 +435,7 @@ const TripPlanner = () => {
           </p>
           <button
             onClick={() => setShowDestinations(false)}
-            className="inline-flex items-center space-x-2 bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium"
+            className="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
           >
             <Sparkles className="h-5 w-5" />
             <span>Create Custom Itinerary</span>

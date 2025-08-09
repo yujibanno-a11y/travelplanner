@@ -35,6 +35,11 @@ function App() {
           setCurrentUser(user);
           setIsAuthenticated(true);
           setCurrentPage('app');
+          
+          // Ensure user profile is created/updated when they log in
+          if (event === 'SIGNED_IN' && session.user) {
+            await ensureUserProfileExists(session.user);
+          }
         } else {
           setCurrentUser(null);
           setIsAuthenticated(false);
@@ -87,6 +92,28 @@ function App() {
     };
   }, []);
 
+  // Helper function to ensure user profile exists
+  const ensureUserProfileExists = async (user: any) => {
+    try {
+      // Use upsert to handle both insert and update cases
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || '',
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
+
+      if (error) {
+        console.error('Error upserting user profile:', error);
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile exists:', error);
+    }
+  };
 
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },

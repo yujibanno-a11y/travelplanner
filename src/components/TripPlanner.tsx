@@ -523,7 +523,7 @@ const TripPlanner = () => {
     });
   };
 
-  const shareItinerary = () => {
+  const shareItinerary = async () => {
     if (navigator.share) {
       try {
         await navigator.share({

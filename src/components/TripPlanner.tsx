@@ -15,6 +15,7 @@ const TripPlanner = () => {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showVacationLimitError, setShowVacationLimitError] = useState(false);
 
   React.useEffect(() => {
     // Check authentication status
@@ -25,8 +26,34 @@ const TripPlanner = () => {
     checkAuth();
   }, []);
 
+  // Check for vacation limit when days input changes
+  const handleDaysChange = (value: string) => {
+    setDays(value);
+    const numDays = parseInt(value);
+    
+    if (numDays > 30) {
+      setShowVacationLimitError(true);
+      // Redirect after showing the message for 3 seconds
+      setTimeout(() => {
+        window.open('https://www.indeed.com/jobs?q=remote&l=', '_blank');
+      }, 3000);
+    } else {
+      setShowVacationLimitError(false);
+    }
+  };
+
   const generateItinerary = async () => {
     if (!destination || !days) return;
+    
+    // Prevent generation if days > 30
+    const numDays = parseInt(days);
+    if (numDays > 30) {
+      setShowVacationLimitError(true);
+      setTimeout(() => {
+        window.open('https://www.indeed.com/jobs?q=remote&l=', '_blank');
+      }, 3000);
+      return;
+    }
     
     setIsGenerating(true);
     
@@ -217,7 +244,7 @@ const TripPlanner = () => {
             <input
               type="number"
               value={days}
-              onChange={(e) => setDays(e.target.value)}
+              onChange={(e) => handleDaysChange(e.target.value)}
               placeholder="How many days?"
               min="1"
               max="30"
@@ -248,10 +275,12 @@ const TripPlanner = () => {
         )}
         
         {/* Vacation Limit Warning */}
-        {days && parseInt(days) > 30 && (
-          <p className="mt-2 text-sm text-red-600 text-center">
-            Maximum 30 days allowed
-          </p>
+        {showVacationLimitError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-700 text-center">
+              🚨 30+ day vacation detected! Time to find a remote job! Redirecting to job search...
+            </p>
+          </div>
         )}
       </div>
 

@@ -310,7 +310,7 @@ const TripPlanner = () => {
       name: 'Iceland',
       country: 'Iceland',
       description: 'Witness the raw power of nature with glaciers, geysers, waterfalls, and the mesmerizing Northern Lights.',
-      image: 'https://images.pexels.com/photos/1433052/pexels-photo-1433052.jpeg?auto=compress&cs=tinysrgb&w=1600',
+      image: 'https://images.pexels.com/photos/1433052/pexels-photo-1433052.jpeg?auto=compress&cs=tinysrgb&w=800',
       highlights: ['Northern Lights', 'Blue Lagoon', 'Ring Road'],
       bestTime: 'June - August, September - March',
       duration: '7-12 days'
@@ -517,8 +517,6 @@ const TripPlanner = () => {
       startDate: '',
       duration: '',
       groupSize: '',
-      dailyBudget: '',
-      currency: 'USD',
       interests: '',
       exclusions: '',
       otherNotes: ''
@@ -804,8 +802,17 @@ const TripPlanner = () => {
                 )}
               </div>
             </div>
-
-            <div>
+            
+            {/* Itinerary Days */}
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
+                <MapPin className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900">
+                Your {formData.destination} Travel Itinerary ({formData.duration} Days)
+              </h3>
+            </div>
+            
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
               <h4 className="text-lg font-semibold text-gray-800 mb-2">📋 Trip Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -822,7 +829,6 @@ const TripPlanner = () => {
                   <p className="text-gray-600">{formData.groupSize || 'Not specified'} people</p>
                 </div>
               </div>
-            </div>
             </div>
             
             {itinerary.map((day) => (
@@ -1009,66 +1015,7 @@ const TripPlanner = () => {
           }
         }
       `}</style>
-                    Day {day.day}
-                  </div>
-                  {formData.startDate && (
-                    <div className="text-sm text-gray-600">
-                      {new Date(new Date(formData.startDate).getTime() + (day.day - 1) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </div>
-                  )}
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-4">
-                      <Clock className="h-5 w-5 mr-2 text-blue-500" />
-                      Daily Schedule
-                    </h4>
-                    <ul className="space-y-3">
-                      {day.activities.map((activity, index) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <div className="w-3 h-3 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                          <span className="text-gray-700 leading-relaxed">{activity}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-4">
-                      <Camera className="h-5 w-5 mr-2 text-green-500" />
-                      Tourist Places & Fun Activities
-                    </h4>
-                    <ul className="space-y-3">
-                      {day.attractions.map((attraction, index) => (
-                        <li key={index} className="flex items-start space-x-3">
-                          <div className="w-3 h-3 bg-green-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                          <span className="text-gray-700 leading-relaxed">{attraction}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                
-                <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-                  <p className="text-sm text-gray-700">
-                    <strong>💡 Travel Tip:</strong> {day.tips}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative h-[70vh] bg-gradient-to-r from-blue-900 to-indigo-900 overflow-hidden">
         <div 

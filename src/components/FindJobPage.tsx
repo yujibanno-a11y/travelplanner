@@ -201,7 +201,7 @@ const FindJobPage: React.FC<FindJobPageProps> = ({ onBack }) => {
               transition={{ duration: 0.6, delay: 1.2, ease: 'easeOut' }}
             >
               Coming soon - AI-powered career coaching tailored to your goals
-            </p>
+            </motion.p>
           </GlassCard>
         </motion.div>
 

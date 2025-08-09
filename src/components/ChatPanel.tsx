@@ -226,7 +226,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
                 </motion.div>
                 <p className="text-sm text-white">Ask me anything about your trip!</p>
                 <p className="text-xs mt-2 text-white/60">I can help you plan activities, adjust your schedule, find hidden gems, and more.</p>
-              </div>
+              </motion.div>
             )}
             
             {messages.map((message) => (

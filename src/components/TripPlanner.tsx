@@ -246,6 +246,9 @@ const TripPlanner = () => {
             Sign in to save your itineraries to the cloud
           </p>
         )}
+        
+        {/* Vacation Limit Warning */}
+        {days && parseInt(days) > 30 && (
       </div>
 
       {/* Generated Itinerary */}

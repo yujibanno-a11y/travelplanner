@@ -294,7 +294,6 @@ const ExpenseChat = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={`Tell me about an expense... (e.g., 'I spent $25 on lunch')${isAuthenticated ? ' - Will be saved to cloud' : ''}`}
-              placeholder={`Tell me about an expense... (e.g., 'I spent $25 on lunch')${currentUser ? ' - Will be saved to cloud' : ''}`}
               className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <button

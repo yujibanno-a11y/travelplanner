@@ -204,7 +204,6 @@ const TripPlanner = () => {
             </div>
           ) : (
             `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`
-            `Generate AI Itinerary${currentUser ? ' & Save' : ''}`
           )}
         </button>
         

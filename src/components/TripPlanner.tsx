@@ -189,7 +189,7 @@ const TripPlanner = () => {
     setDays('');
   };
 
-  if (!showDestinations && (destination || itinerary.length > 0)) {
+  if (!showDestinations) {
     return (
       <div className="space-y-8">
         {/* Trip Planning Form */}

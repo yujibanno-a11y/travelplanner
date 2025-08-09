@@ -38,6 +38,11 @@ function App() {
           setCurrentUser(user);
           setIsAuthenticated(true);
           setCurrentPage('app');
+          
+          // Ensure user profile is created/updated when they log in
+          if (event === 'SIGNED_IN' && session.user) {
+            await ensureUserProfileExists(session.user);
+          }
         } else {
           setCurrentUser(null);
           setIsAuthenticated(false);
@@ -72,6 +77,54 @@ function App() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Helper function to ensure user profile exists
+  const ensureUserProfileExists = async (user: any) => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error && error.code === 'PGRST116') {
+        // Profile doesn't exist, create it
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || ''
+          });
+
+        if (insertError) {
+          console.error('Error creating user profile:', insertError);
+        }
+      } else if (!error && profile) {
+        // Profile exists, update if needed
+        const needsUpdate = 
+          profile.email !== user.email || 
+          profile.full_name !== (user.user_metadata?.full_name || '');
+
+        if (needsUpdate) {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+              email: user.email,
+              full_name: user.user_metadata?.full_name || '',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', user.id);
+
+          if (updateError) {
+            console.error('Error updating user profile:', updateError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile exists:', error);
+    }
+  };
 
   const checkAuthState = async () => {
     try {

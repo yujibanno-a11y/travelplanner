@@ -31,6 +31,11 @@ export const signUp = async (email: string, password: string, fullName: string) 
     throw error;
   }
 
+  // If user is created successfully, ensure profile is created
+  if (data.user) {
+    await ensureUserProfile(data.user.id, email, fullName);
+  }
+
   return data;
 };
 
@@ -45,9 +50,68 @@ export const signIn = async (email: string, password: string) => {
     throw error;
   }
 
+  // Ensure profile exists and is up to date after login
+  if (data.user) {
+    const fullName = data.user.user_metadata?.full_name || '';
+    await ensureUserProfile(data.user.id, data.user.email || '', fullName);
+  }
+
   return data;
 };
 
+// Helper function to ensure user profile exists and is up to date
+const ensureUserProfile = async (userId: string, email: string, fullName: string) => {
+  try {
+    // Check if profile exists
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('Error checking profile:', fetchError);
+      return;
+    }
+
+    if (!existingProfile) {
+      // Create new profile
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          email: email,
+          full_name: fullName
+        });
+
+      if (insertError) {
+        console.error('Error creating profile:', insertError);
+      }
+    } else {
+      // Update existing profile if data has changed
+      const needsUpdate = 
+        existingProfile.email !== email || 
+        existingProfile.full_name !== fullName;
+
+      if (needsUpdate) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            email: email,
+            full_name: fullName,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', userId);
+
+        if (updateError) {
+          console.error('Error updating profile:', updateError);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error in ensureUserProfile:', error);
+  }
+};
 // Sign out
 export const signOut = async () => {
   const { error } = await supabase.auth.signOut();

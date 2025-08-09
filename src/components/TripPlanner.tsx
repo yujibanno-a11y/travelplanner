@@ -26,34 +26,22 @@ const TripPlanner = () => {
     checkAuth();
   }, []);
 
-  // Check for vacation limit when days input changes
   const handleDaysChange = (value: string) => {
-    setDays(value);
     const numDays = parseInt(value);
-    
     if (numDays > 30) {
       setShowVacationLimitError(true);
-      // Redirect after showing the message for 3 seconds
       setTimeout(() => {
-        window.open('https://www.indeed.com/jobs?q=remote&l=', '_blank');
+        // Redirect to job search or handle as needed
+        console.log('Redirecting to job search...');
       }, 3000);
     } else {
       setShowVacationLimitError(false);
     }
+    setDays(value);
   };
 
   const generateItinerary = async () => {
     if (!destination || !days) return;
-    
-    // Prevent generation if days > 30
-    const numDays = parseInt(days);
-    if (numDays > 30) {
-      setShowVacationLimitError(true);
-      setTimeout(() => {
-        window.open('https://www.indeed.com/jobs?q=remote&l=', '_blank');
-      }, 3000);
-      return;
-    }
     
     setIsGenerating(true);
     
@@ -244,7 +232,7 @@ const TripPlanner = () => {
             <input
               type="number"
               value={days}
-              onChange={(e) => handleDaysChange(e.target.value)}
+               onChange={(e) => handleDaysChange(e.target.value)}
               placeholder="How many days?"
               min="1"
               max="30"
@@ -253,9 +241,33 @@ const TripPlanner = () => {
           </div>
         </div>
         
+        {/* Vacation Limit Error */}
+        {showVacationLimitError && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <div className="flex items-center space-x-2">
+              <div className="text-red-600">
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-red-800 font-medium">
+                  Sorry, vacations are limited to 30 days maximum.
+                </p>
+                <p className="text-red-700 text-sm mt-1">
+                  Consider exploring a new career opportunity here: <span className="font-semibold">Find a Job</span>
+                </p>
+                <p className="text-red-600 text-xs mt-2">
+                  Redirecting to job search in 3 seconds...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+        
         <button
           onClick={generateItinerary}
-          disabled={!destination || !days || isGenerating}
+          disabled={!destination || !days || isGenerating || showVacationLimitError}
           className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02]"
         >
           {isGenerating ? (
@@ -272,15 +284,6 @@ const TripPlanner = () => {
           <p className="mt-2 text-sm text-gray-600 text-center">
             Sign in to save your itineraries to the cloud
           </p>
-        )}
-        
-        {/* Vacation Limit Warning */}
-        {showVacationLimitError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <p className="text-red-700 text-center">
-              🚨 30+ day vacation detected! Time to find a remote job! Redirecting to job search...
-            </p>
-          </div>
         )}
       </div>
 

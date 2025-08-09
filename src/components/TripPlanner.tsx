@@ -525,11 +525,17 @@ const TripPlanner = () => {
 
   const shareItinerary = () => {
     if (navigator.share) {
-      navigator.share({
-        title: `My ${formData.destination} Travel Itinerary`,
-        text: `Check out my ${formData.duration}-day travel itinerary for ${formData.destination}!`,
-        url: window.location.href
-      });
+      try {
+        await navigator.share({
+          title: `My ${destination} Itinerary`,
+          text: `Check out my ${days}-day trip to ${destination}!`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        // Handle share cancellation or permission denied
+        console.log('Share was cancelled or failed:', error);
+        alert('Sharing failed or was cancelled. You can copy the URL from your browser instead.');
+      }
     } else {
       // Fallback: copy to clipboard
       const itineraryText = `My ${formData.destination} Travel Itinerary\n\n${itinerary.map(day => 

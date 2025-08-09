@@ -295,7 +295,7 @@ const TripPlanner = () => {
       costs: ['€70-100 per day', '€50-80 per day', '€90-130 per day', '€60-90 per day']
     },
     
-    london: {
+    'london': {
       attractions: [
         "Visit the iconic Big Ben and Houses of Parliament",
         "Explore the Tower of London and see the Crown Jewels",
@@ -358,7 +358,7 @@ const TripPlanner = () => {
       costs: ['£80-120 per day', '£60-90 per day', '£100-150 per day', '£70-110 per day']
     },
 
-    india: {
+    'india': {
       attractions: [
         'Visit the iconic Taj Mahal in Agra',
         'Explore the Golden Temple in Amritsar',
@@ -1956,3 +1956,107 @@ const TripPlanner = () => {
           </div>
         </div>
       </div>
+
+      {/* Destinations Grid */}
+      <div className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-serif font-light text-gray-900 mb-4">
+            Curated Destinations
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            From ancient wonders to modern marvels, discover places that will inspire your wanderlust
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {destinations.map((destination, index) => (
+            <div
+              key={destination.id}
+              className={`group cursor-pointer transform transition-all duration-700 ${
+                visibleCards.includes(index) 
+                  ? 'translate-y-0 opacity-100' 
+                  : 'translate-y-8 opacity-0'
+              }`}
+              onClick={() => selectDestination(destination)}
+            >
+              <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="aspect-w-16 aspect-h-12">
+                  <img
+                    src={destination.image}
+                    alt={`${destination.name}, ${destination.country}`}
+                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <MapPin className="h-4 w-4" />
+                    <span className="text-sm font-medium">{destination.country}</span>
+                  </div>
+                  
+                  <h3 className="text-2xl font-serif font-medium mb-2">
+                    {destination.name}
+                  </h3>
+                  
+                  <p className="text-sm text-gray-200 mb-4 line-clamp-2">
+                    {destination.description}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {destination.highlights.slice(0, 3).map((highlight, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs font-medium backdrop-blur-sm"
+                      >
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-4 w-4" />
+                      <span>{destination.bestTime}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{destination.duration}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <ArrowRight className="h-5 w-5 text-gray-800" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Custom Destination Option */}
+        <div className="mt-12 text-center">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200">
+            <Sparkles className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+            <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4">
+              Don't see your dream destination?
+            </h3>
+            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              No worries! Our AI can create a personalized itinerary for any destination in the world. 
+              Just tell us where you want to go and we'll craft the perfect adventure for you.
+            </p>
+            <button
+              onClick={() => setShowDestinations(false)}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
+            >
+              Plan Custom Trip
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TripPlanner;

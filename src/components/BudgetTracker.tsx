@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Target, TrendingUp, AlertCircle, PiggyBank } from 'lucide-react';
-import { supabase, getCurrentUserId } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import { getCurrentUser } from '../lib/auth';
 
 interface BudgetSettings {
   dailyLimit: number;
@@ -26,12 +27,12 @@ const BudgetTracker = () => {
   });
   
   const [currentTrip, setCurrentTrip] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
+      const user = await getCurrentUser();
+      setCurrentUser(user);
       
       if (user) {
         await loadBudgetFromSupabase();
@@ -56,13 +57,12 @@ const BudgetTracker = () => {
 
   const loadBudgetFromSupabase = async () => {
     try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
+      if (!currentUser) return;
 
       const { data: budget, error } = await supabase
         .from('budget_settings')
         .select('*')
-        .eq('owner_id', userId)
+        .eq('owner_id', currentUser.id)
         .single();
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
@@ -89,13 +89,12 @@ const BudgetTracker = () => {
 
   const saveBudgetToSupabase = async () => {
     try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
+      if (!currentUser) return;
 
       const { error } = await supabase
         .from('budget_settings')
         .upsert({
-          owner_id: userId,
+          owner_id: currentUser.id,
           daily_limit: budgetSettings.dailyLimit,
           total_budget: budgetSettings.totalBudget,
           category_limits: budgetSettings.categories
@@ -132,11 +131,11 @@ const BudgetTracker = () => {
     localStorage.setItem('budgetSettings', JSON.stringify(budgetSettings));
     
     // Save to Supabase if authenticated
-    if (isAuthenticated) {
+    if (currentUser) {
       await saveBudgetToSupabase();
     }
     
-    alert(`Budget settings saved successfully!${isAuthenticated ? ' (Synced to cloud)' : ''}`);
+    alert(`Budget settings saved successfully!${currentUser ? ' (Synced to cloud)' : ''}`);
   };
 
   const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);
@@ -256,10 +255,10 @@ const BudgetTracker = () => {
           onClick={saveBudgetSettings}
           className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
         >
-          {isAuthenticated ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
+          {currentUser ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
         </button>
         
-        {!isAuthenticated && (
+        {!currentUser && (
           <p className="mt-2 text-sm text-gray-600 text-center">
             Sign in to sync your budget settings across devices
           </p>

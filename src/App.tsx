@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
 import { Route, Target, ReceiptText, PieChart, AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
+import { getCurrentUser, signOut, onAuthStateChange, type AuthUser } from './lib/auth';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -20,10 +21,38 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
   const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Check initial auth state
+    const checkAuth = async () => {
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
+        if (user) {
+          setCurrentPage('app');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = onAuthStateChange((user) => {
+      setCurrentUser(user);
+      if (user) {
+        setCurrentPage('app');
+      } else {
+        setCurrentPage('landing');
+      }
+    });
+
     // Load theme preference
     const savedSettings = localStorage.getItem('userSettings');
     if (savedSettings) {
@@ -45,7 +74,10 @@ function App() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const tabs = [
@@ -81,19 +113,40 @@ function App() {
   };
 
   const handleLogin = () => {
-    setIsAuthenticated(true);
+    // Auth state change will be handled by the listener
     setCurrentPage('app');
   };
 
   const handleSignup = () => {
-    setIsAuthenticated(true);
+    // Auth state change will be handled by the listener
     setCurrentPage('app');
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentPage('landing');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setCurrentUser(null);
+      setCurrentPage('landing');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
+
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+          : 'bg-gradient-to-br from-blue-50 via-white to-orange-50'
+      }`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Render different pages based on currentPage state
   if (currentPage === 'login') {
@@ -374,7 +427,7 @@ function App() {
               <div className="flex items-center space-x-4">
                 <span className={`text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>Welcome back!</span>
+                }`}>Welcome back, {currentUser?.profile?.full_name || currentUser?.email}!</span>
                 <button 
                   onClick={handleLogout}
                   className={`font-medium text-sm transition-colors duration-200 ${

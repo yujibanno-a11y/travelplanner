@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building } from 'lucide-react';
-import { supabase, getCurrentUserId } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
+import { getCurrentUser } from '../lib/auth';
 
 interface ItineraryDay {
   day: number;
@@ -14,13 +15,13 @@ const TripPlanner = () => {
   const [days, setDays] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   React.useEffect(() => {
     // Check authentication status
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
+      const user = await getCurrentUser();
+      setCurrentUser(user);
     };
     checkAuth();
   }, []);
@@ -67,21 +68,20 @@ const TripPlanner = () => {
     localStorage.setItem('currentTrip', JSON.stringify(tripData));
     
     // Save to Supabase if authenticated
-    if (isAuthenticated) {
+    if (currentUser) {
       await saveItineraryToSupabase(destination, numDays, mockItinerary);
     }
   };
 
   const saveItineraryToSupabase = async (destination: string, days: number, itinerary: ItineraryDay[]) => {
     try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
+      if (!currentUser) return;
 
       // Create the main itinerary record
       const { data: itineraryRecord, error: itineraryError } = await supabase
         .from('itineraries')
         .insert({
-          owner_id: userId,
+          owner_id: currentUser.id,
           destination: destination,
           days: days,
           itinerary_data: itinerary
@@ -204,10 +204,11 @@ const TripPlanner = () => {
             </div>
           ) : (
             `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`
+            `Generate AI Itinerary${currentUser ? ' & Save' : ''}`
           )}
         </button>
         
-        {!isAuthenticated && (
+        {!currentUser && (
           <p className="mt-2 text-sm text-gray-600 text-center">
             Sign in to save your itineraries to the cloud
           </p>

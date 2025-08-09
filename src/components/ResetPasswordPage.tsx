@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
+import { resetPassword } from '../lib/auth';
 
 interface ResetPasswordPageProps {
   onBack: () => void;
@@ -31,11 +32,14 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
     setError('');
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await resetPassword(email);
       setIsLoading(false);
       setIsSuccess(true);
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      setError(error.message);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

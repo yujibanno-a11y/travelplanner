@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User } from 'lucide-react';
+import { signUp } from '../lib/auth';
 
 interface SignupPageProps {
   onBack: () => void;
@@ -54,12 +55,19 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
     if (!validateForm()) return;
     
     setIsLoading(true);
+    setErrors({});
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await signUp(formData.email, formData.password, formData.name);
       onSignup();
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      setErrors({ 
+        email: error.message.includes('already registered') 
+          ? 'An account with this email already exists' 
+          : error.message 
+      });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {

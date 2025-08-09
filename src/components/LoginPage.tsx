@@ -7,7 +7,6 @@ interface LoginPageProps {
   onLogin: () => void;
   onNavigateToSignup: () => void;
   onNavigateToResetPassword: () => void;
-  onNavigateToResetPassword: () => void;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSignup, onNavigateToResetPassword }) => {

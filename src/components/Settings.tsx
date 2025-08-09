@@ -69,6 +69,10 @@ const Settings = () => {
 
   const saveSettings = () => {
     localStorage.setItem('userSettings', JSON.stringify(settings));
+    
+    // Trigger a custom event to notify other components of settings change
+    window.dispatchEvent(new Event('storage'));
+    
     alert('Settings saved successfully!');
   };
 

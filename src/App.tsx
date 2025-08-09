@@ -81,45 +81,20 @@ function App() {
   // Helper function to ensure user profile exists
   const ensureUserProfileExists = async (user: any) => {
     try {
-      const { data: profile, error } = await supabase
+      // Use upsert to handle both insert and update cases
+      const { error } = await supabase
         .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+        .upsert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || '',
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'id'
+        });
 
-      if (error && error.code === 'PGRST116') {
-        // Profile doesn't exist, create it
-        const { error: insertError } = await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || ''
-          });
-
-        if (insertError) {
-          console.error('Error creating user profile:', insertError);
-        }
-      } else if (!error && profile) {
-        // Profile exists, update if needed
-        const needsUpdate = 
-          profile.email !== user.email || 
-          profile.full_name !== (user.user_metadata?.full_name || '');
-
-        if (needsUpdate) {
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              email: user.email,
-              full_name: user.user_metadata?.full_name || '',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', user.id);
-
-          if (updateError) {
-            console.error('Error updating user profile:', updateError);
-          }
-        }
+      if (error) {
+        console.error('Error upserting user profile:', error);
       }
     } catch (error) {
       console.error('Error ensuring user profile exists:', error);

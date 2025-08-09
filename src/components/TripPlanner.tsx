@@ -61,7 +61,6 @@ const TripPlanner = () => {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDestinations, setShowDestinations] = useState(true);
-  const [showPrintView, setShowPrintView] = useState(false);
 
   // Enhanced destination-specific data
   const destinationDatabase: Record<string, DestinationData> = {
@@ -544,11 +543,7 @@ const TripPlanner = () => {
   };
 
   const printItinerary = () => {
-    setShowPrintView(true);
-    setTimeout(() => {
-      window.print();
-      setShowPrintView(false);
-    }, 100);
+    window.print();
   };
   if (!showDestinations) {
     return (
@@ -699,7 +694,116 @@ const TripPlanner = () => {
         {/* Generated Itinerary */}
         {itinerary.length > 0 && (
           <div className="space-y-6">
-            <div className="flex items-center space-x-3">
+            {/* Itinerary Header with Actions */}
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-8 text-white">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-8 w-8" />
+                  <div>
+                    <h3 className="text-3xl font-bold">
+                      Your {formData.destination} Adventure
+                    </h3>
+                    <p className="text-green-100 mt-1">
+                      {formData.duration} days of unforgettable experiences
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex space-x-3">
+                  <button
+                    onClick={shareItinerary}
+                    className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm"
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                    </svg>
+                    <span>Share</span>
+                  </button>
+                  
+                  <button
+                    onClick={printItinerary}
+                    className="flex items-center space-x-2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all duration-200 backdrop-blur-sm"
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Print</span>
+                  </button>
+                  
+                  <button
+                    onClick={resetToDestinations}
+                    className="flex items-center space-x-2 bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium"
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Plan Another Trip</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Trip Overview Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 text-center">
+                <div className="text-2xl font-bold text-blue-600 mb-1">{formData.duration}</div>
+                <div className="text-sm text-gray-600">Days</div>
+              </div>
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 text-center">
+                <div className="text-2xl font-bold text-green-600 mb-1">{itinerary.reduce((sum, day) => sum + day.attractions.length, 0)}</div>
+                <div className="text-sm text-gray-600">Attractions</div>
+              </div>
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 text-center">
+                <div className="text-2xl font-bold text-purple-600 mb-1">{itinerary.reduce((sum, day) => sum + day.activities.length, 0)}</div>
+                <div className="text-sm text-gray-600">Activities</div>
+              </div>
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 text-center">
+                <div className="text-2xl font-bold text-orange-600 mb-1">{formData.groupSize || '1'}</div>
+                <div className="text-sm text-gray-600">Travelers</div>
+              </div>
+            </div>
+
+            {/* Trip Summary */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+              <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <svg className="h-5 w-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                📋 Your Trip at a Glance
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-gray-700">🌍 Destination:</span>
+                  <p className="text-gray-600 mt-1">{formData.destination}</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">📅 Duration:</span>
+                  <p className="text-gray-600 mt-1">{formData.duration} amazing days</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">👥 Group Size:</span>
+                  <p className="text-gray-600 mt-1">{formData.groupSize || 'Solo adventure'} travelers</p>
+                </div>
+                {formData.startDate && (
+                  <div>
+                    <span className="font-medium text-gray-700">🗓️ Start Date:</span>
+                    <p className="text-gray-600 mt-1">{new Date(formData.startDate).toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</p>
+                  </div>
+                )}
+                {formData.interests && (
+                  <div className="md:col-span-2">
+                    <span className="font-medium text-gray-700">🎯 Your Interests:</span>
+                    <p className="text-gray-600 mt-1">{formData.interests}</p>
+                  </div>
+                )}
+              </div>
+            </div>
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
                 <MapPin className="h-6 w-6 text-white" />
               </div>
@@ -728,8 +832,188 @@ const TripPlanner = () => {
             
             {itinerary.map((day) => (
               <div key={day.day} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-2 px-4 rounded-full">
+                {/* Day Header */}
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                  <div className="flex items-center space-x-3 mb-4 md:mb-0">
+                    <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-3 px-6 rounded-full text-lg">
+                      Day {day.day}
+                    </div>
+                    {formData.startDate && (
+                      <div className="text-gray-600">
+                        <div className="font-medium">
+                          {new Date(new Date(formData.startDate).getTime() + (day.day - 1) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Daily Budget */}
+                  <div className="bg-gradient-to-r from-green-100 to-emerald-100 px-4 py-2 rounded-lg border border-green-200">
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Daily Budget: {day.estimatedCost}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Morning Section */}
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-800">🌅 Morning (9:00 AM - 12:00 PM)</h4>
+                  </div>
+                  <div className="ml-5 space-y-2">
+                    {day.restaurants.breakfast && (
+                      <div className="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                        <p className="text-sm"><strong>🍳 Breakfast:</strong> {day.restaurants.breakfast}</p>
+                      </div>
+                    )}
+                    {day.attractions.slice(0, 1).map((attraction, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700 leading-relaxed"><strong>📍 Visit:</strong> {attraction}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Afternoon Section */}
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-3 h-3 bg-orange-400 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-800">☀️ Afternoon (12:00 PM - 6:00 PM)</h4>
+                  </div>
+                  <div className="ml-5 space-y-2">
+                    <div className="bg-orange-50 p-3 rounded-lg border-l-4 border-orange-400">
+                      <p className="text-sm"><strong>🍽️ Lunch:</strong> {day.restaurants.lunch}</p>
+                    </div>
+                    {day.attractions.slice(1).map((attraction, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700 leading-relaxed"><strong>📍 Explore:</strong> {attraction}</span>
+                      </div>
+                    ))}
+                    {day.activities.slice(0, 1).map((activity, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700 leading-relaxed"><strong>🎯 Activity:</strong> {activity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Evening Section */}
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
+                    <h4 className="text-lg font-semibold text-gray-800">🌆 Evening (6:00 PM - 10:00 PM)</h4>
+                  </div>
+                  <div className="ml-5 space-y-2">
+                    {day.activities.slice(1).map((activity, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700 leading-relaxed"><strong>🎭 Experience:</strong> {activity}</span>
+                      </div>
+                    ))}
+                    <div className="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-400">
+                      <p className="text-sm"><strong>🍷 Dinner:</strong> {day.restaurants.dinner}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Transportation & Tips */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <Car className="h-5 w-5 text-blue-600" />
+                      <h5 className="font-semibold text-blue-800">🚗 Getting Around</h5>
+                    </div>
+                    <p className="text-sm text-blue-700">{day.transportation}</p>
+                  </div>
+                  
+                  <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <svg className="h-5 w-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      <h5 className="font-semibold text-green-800">💡 Pro Tip</h5>
+                    </div>
+                    <p className="text-sm text-green-700">{day.tips}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Trip Summary Footer */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200 text-center">
+              <h4 className="text-2xl font-bold text-gray-800 mb-4">🎉 Your Adventure Awaits!</h4>
+              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                You're all set for an incredible {formData.duration}-day journey through {formData.destination}. 
+                Don't forget to stay flexible, embrace spontaneous moments, and create memories that will last a lifetime!
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={shareItinerary}
+                  className="flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                  <span>Share Your Itinerary</span>
+                </button>
+                
+                <button
+                  onClick={printItinerary}
+                  className="flex items-center justify-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-all duration-200 font-medium"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                  </svg>
+                  <span>Print Itinerary</span>
+                </button>
+                
+                <button
+                  onClick={resetToDestinations}
+                  className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span>Plan Another Adventure</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Print Styles */}
+      <style jsx>{`
+        @media print {
+          .no-print {
+            display: none !important;
+          }
+          .print-break {
+            page-break-after: always;
+          }
+          body {
+            font-size: 12px;
+          }
+          .bg-gradient-to-r {
+            background: #f3f4f6 !important;
+            color: #1f2937 !important;
+          }
+        }
+      `}</style>
                     Day {day.day}
                   </div>
                   {formData.startDate && (

@@ -400,65 +400,89 @@ const TripPlanner = () => {
     const numDays = parseInt(formData.duration);
     const mockItinerary: ItineraryDay[] = [];
     
-    // Get destination-specific data or use fallback
-    const destinationKey = formData.destination.toLowerCase().split(',')[0].trim();
-    const destinationData = destinationDatabase[destinationKey] || {
-      attractions: [
-        'Historic City Center and Main Square',
-        'Local Art Museum and Cultural Center',
-        'Traditional Market and Shopping District',
-        'Scenic Viewpoint and Observation Deck',
-        'Religious Sites and Architecture',
-        'Waterfront Promenade and Harbor',
-        'Botanical Gardens and City Parks',
-        'Local Neighborhoods and Hidden Gems'
-      ],
-      restaurants: {
-        breakfast: [
-          'Local Café - Traditional breakfast and coffee',
-          'Market Bakery - Fresh pastries and local specialties',
-          'Hotel Restaurant - Continental breakfast buffet',
-          'Street Food Vendor - Authentic local morning treats'
+    // Find destination-specific content with better matching
+    let destinationData = null;
+    const searchTerm = formData.destination.toLowerCase().trim();
+    
+    // First try exact match
+    const exactMatch = Object.keys(destinationDatabase).find(key => 
+      key.toLowerCase() === searchTerm
+    );
+    
+    if (exactMatch) {
+      destinationData = destinationDatabase[exactMatch];
+    } else {
+      // Try partial matching
+      const partialMatch = Object.keys(destinationDatabase).find(key => 
+        key.toLowerCase().includes(searchTerm) || 
+        searchTerm.includes(key.toLowerCase())
+      );
+      
+      if (partialMatch) {
+        destinationData = destinationDatabase[partialMatch];
+      }
+    }
+
+    // Use fallback data if no match found
+    if (!destinationData) {
+      destinationData = {
+        attractions: [
+          'Historic City Center and Main Square',
+          'Local Art Museum and Cultural Center',
+          'Traditional Market and Shopping District',
+          'Scenic Viewpoint and Observation Deck',
+          'Religious Sites and Architecture',
+          'Waterfront Promenade and Harbor',
+          'Botanical Gardens and City Parks',
+          'Local Neighborhoods and Hidden Gems'
         ],
-        lunch: [
-          'Traditional Restaurant - Local cuisine and specialties',
-          'Bistro in Historic District - Casual dining with local flavors',
-          'Market Food Hall - Variety of local vendors',
-          'Rooftop Restaurant - Great views and regional dishes'
+        restaurants: {
+          breakfast: [
+            'Local Café - Traditional breakfast and coffee',
+            'Market Bakery - Fresh pastries and local specialties',
+            'Hotel Restaurant - Continental breakfast buffet',
+            'Street Food Vendor - Authentic local morning treats'
+          ],
+          lunch: [
+            'Traditional Restaurant - Local cuisine and specialties',
+            'Bistro in Historic District - Casual dining with local flavors',
+            'Market Food Hall - Variety of local vendors',
+            'Rooftop Restaurant - Great views and regional dishes'
+          ],
+          dinner: [
+            'Fine Dining Restaurant - Upscale local cuisine',
+            'Family-Run Tavern - Authentic traditional dishes',
+            'Modern Fusion Restaurant - Contemporary local flavors',
+            'Waterfront Restaurant - Fresh seafood and sunset views'
+          ]
+        },
+        activities: [
+          'Walking tour of historic neighborhoods',
+          'Local cooking class and market visit',
+          'Cultural performance or show',
+          'Artisan workshop experience',
+          'Photography tour of scenic spots',
+          'Wine or local beverage tasting',
+          'Bike tour of the city',
+          'Sunset viewing from best vantage point'
         ],
-        dinner: [
-          'Fine Dining Restaurant - Upscale local cuisine',
-          'Family-Run Tavern - Authentic traditional dishes',
-          'Modern Fusion Restaurant - Contemporary local flavors',
-          'Waterfront Restaurant - Fresh seafood and sunset views'
-        ]
-      },
-      activities: [
-        'Walking tour of historic neighborhoods',
-        'Local cooking class and market visit',
-        'Cultural performance or show',
-        'Artisan workshop experience',
-        'Photography tour of scenic spots',
-        'Wine or local beverage tasting',
-        'Bike tour of the city',
-        'Sunset viewing from best vantage point'
-      ],
-      transportation: [
-        'Public transport day pass - convenient for city travel',
-        'Walking - most attractions within walking distance',
-        'Taxi or rideshare for longer distances',
-        'Bike rental for exploring neighborhoods'
-      ],
-      tips: [
-        'Book popular attractions in advance to avoid queues',
-        'Try local specialties and traditional dishes',
-        'Learn basic phrases in the local language',
-        'Carry a map and have offline navigation ready',
-        'Respect local customs and dress codes',
-        'Stay hydrated and wear comfortable walking shoes'
-      ],
-      costs: ['$60-90 per day', '$40-70 per day', '$80-120 per day', '$50-80 per day']
-    };
+        transportation: [
+          'Public transport day pass - convenient for city travel',
+          'Walking - most attractions within walking distance',
+          'Taxi or rideshare for longer distances',
+          'Bike rental for exploring neighborhoods'
+        ],
+        tips: [
+          'Book popular attractions in advance to avoid queues',
+          'Try local specialties and traditional dishes',
+          'Learn basic phrases in the local language',
+          'Carry a map and have offline navigation ready',
+          'Respect local customs and dress codes',
+          'Stay hydrated and wear comfortable walking shoes'
+        ],
+        costs: ['$60-90 per day', '$40-70 per day', '$80-120 per day', '$50-80 per day']
+      };
+    }
 
     for (let i = 1; i <= numDays; i++) {
       // Select attractions for the day

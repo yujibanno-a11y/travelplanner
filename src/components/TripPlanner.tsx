@@ -46,27 +46,61 @@ const TripPlanner = () => {
     setIsGenerating(true);
     
     try {
-      // Call the Supabase edge function to generate AI itinerary
-      const { data, error } = await supabase.functions.invoke('generate-itinerary', {
-        body: {
-          destination: destination,
-          days: parseInt(days)
+      let generatedItinerary: ItineraryDay[] = [];
+      
+      // Only try AI generation if user is authenticated
+      if (isAuthenticated) {
+        try {
+          // Call the Supabase edge function to generate AI itinerary
+          const { data, error } = await supabase.functions.invoke('generate-itinerary', {
+            body: {
+              destination: destination,
+              days: parseInt(days)
+            }
+          });
+
+          if (error) {
+            console.error('Error calling edge function:', error);
+            throw error;
+          }
+
+          if (data && data.itinerary) {
+            generatedItinerary = data.itinerary;
+          } else {
+            throw new Error('No itinerary data received');
+          }
+        } catch (aiError) {
+          console.error('AI generation failed, falling back to basic itinerary:', aiError);
+          generatedItinerary = []; // Will trigger fallback below
         }
-      });
-
-      if (error) {
-        console.error('Error calling edge function:', error);
-        throw error;
       }
-
-      if (!data || !data.itinerary) {
-        throw new Error('No itinerary data received');
+      
+      // Use fallback itinerary if AI generation failed or user is not authenticated
+      if (generatedItinerary.length === 0) {
+        const numDays = parseInt(days);
+        
+        for (let i = 1; i <= numDays; i++) {
+          generatedItinerary.push({
+            day: i,
+            activities: [
+              `Morning: Explore ${destination} city center and historic areas`,
+              `Afternoon: Visit local museums, galleries, and cultural sites`,
+              `Evening: Enjoy dinner at a traditional local restaurant`
+            ],
+            attractions: [
+              `${destination} Historic District`,
+              'Local Art Museum',
+              'Central Park/Square',
+              'Popular Viewpoint'
+            ],
+            tips: `Day ${i}: Wear comfortable walking shoes and try the local cuisine! Don't forget to bring a camera for the amazing sights.`
+          });
+        }
       }
-
-      const generatedItinerary = data.itinerary;
+      
       setItinerary(generatedItinerary);
       
-      // Save to both localStorage and Supabase
+      // Save to localStorage
       const tripData = {
         destination,
         days: parseInt(days),
@@ -80,42 +114,8 @@ const TripPlanner = () => {
       }
     } catch (error) {
       console.error('Error generating itinerary:', error);
-      
-      // Fallback to basic itinerary if AI generation fails
-      const numDays = parseInt(days);
-      const fallbackItinerary: ItineraryDay[] = [];
-      
-      for (let i = 1; i <= numDays; i++) {
-        fallbackItinerary.push({
-          day: i,
-          activities: [
-            `Morning: Explore ${destination} city center`,
-            `Afternoon: Visit local museums and galleries`,
-            `Evening: Sunset dinner at rooftop restaurant`
-          ],
-          attractions: [
-            `${destination} Historic District`,
-            'Local Art Museum',
-            'Central Park/Square',
-            'Popular Viewpoint'
-          ],
-          tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
-        });
-      }
-      
-      setItinerary(fallbackItinerary);
-      
-      // Save fallback data
-      const tripData = {
-        destination,
-        days: numDays,
-        itinerary: fallbackItinerary
-      };
-      localStorage.setItem('currentTrip', JSON.stringify(tripData));
-      
-      if (isAuthenticated) {
-        await saveItineraryToSupabase(destination, numDays, fallbackItinerary);
-      }
+      // This should rarely happen now, but just in case
+      alert('There was an error generating your itinerary. Please try again.');
     }
     
     setIsGenerating(false);
@@ -273,16 +273,16 @@ const TripPlanner = () => {
           {isGenerating ? (
             <div className="flex items-center justify-center space-x-2">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>AI is Creating Your Itinerary...</span>
+              <span>{isAuthenticated ? 'AI is Creating Your Itinerary...' : 'Creating Your Itinerary...'}</span>
             </div>
           ) : (
-            `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`
+            `${isAuthenticated ? 'Generate AI Itinerary & Save' : 'Generate Itinerary'}`
           )}
         </button>
         
         {!isAuthenticated && (
           <p className="mt-2 text-sm text-gray-600 text-center">
-            Sign in to save your itineraries
+            Sign in to save your itineraries and get AI-powered recommendations
           </p>
         )}
       </div>

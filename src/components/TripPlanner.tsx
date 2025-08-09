@@ -262,7 +262,71 @@ const TripPlanner = () => {
       ],
       costs: ['€70-100 per day', '€50-80 per day', '€90-130 per day', '€60-90 per day']
     },
-    'india': {
+    
+    london: {
+      attractions: [
+        "Visit the iconic Big Ben and Houses of Parliament",
+        "Explore the Tower of London and see the Crown Jewels",
+        "Take a ride on the London Eye for panoramic city views",
+        "Walk across the famous Tower Bridge",
+        "Discover treasures at the British Museum",
+        "Stroll through Hyde Park and visit Speaker's Corner",
+        "Experience the changing of the guard at Buckingham Palace",
+        "Explore the vibrant markets of Camden or Borough Market"
+      ],
+      restaurants: {
+        breakfast: [
+          "The Breakfast Club - Famous for hearty English breakfasts",
+          "Dishoom - Bombay-style café with excellent chai",
+          "Duck & Waffle - Sky-high dining with city views",
+          "Sketch - Quirky pink tearoom in Mayfair",
+          "Local pub - Traditional full English breakfast"
+        ],
+        lunch: [
+          "Borough Market - Gourmet food market with diverse options",
+          "Rules Restaurant - London's oldest restaurant serving game",
+          "Hawksmoor - Premium steakhouse in Covent Garden",
+          "Padella - Fresh handmade pasta near London Bridge",
+          "Fortnum & Mason - Luxury department store restaurant"
+        ],
+        dinner: [
+          "Gordon Ramsay - Michelin-starred fine dining",
+          "Chiltern Firehouse - Celebrity hotspot with modern European cuisine",
+          "Simpson's in the Strand - Traditional roast beef since 1828",
+          "Sketch - Avant-garde dining experience",
+          "Local gastropub - Modern British cuisine with craft beer"
+        ]
+      },
+      activities: [
+        "Visit the iconic Big Ben and Houses of Parliament",
+        "Explore the Tower of London and see the Crown Jewels",
+        "Take a ride on the London Eye for panoramic city views",
+        "Walk across the famous Tower Bridge",
+        "Discover treasures at the British Museum",
+        "Stroll through Hyde Park and visit Speaker's Corner",
+        "Experience the changing of the guard at Buckingham Palace",
+        "Explore the vibrant markets of Camden or Borough Market"
+      ],
+      transportation: [
+        "Oyster Card or contactless payment - convenient for all public transport",
+        "London Underground (Tube) - extensive metro system",
+        "Red double-decker buses - iconic London transport",
+        "Walking - central London is very walkable",
+        "Black cabs - traditional London taxis"
+      ],
+      tips: [
+        "Stand on the right side of escalators in the Tube",
+        "Book afternoon tea reservations well in advance",
+        "Many museums offer free admission but donations are appreciated",
+        "Carry an umbrella - London weather can be unpredictable",
+        "Pub etiquette: order at the bar, no table service",
+        "Mind the gap when boarding the Tube",
+        "Tipping is typically 10-15% in restaurants if service charge isn't included"
+      ],
+      costs: ['£80-120 per day', '£60-90 per day', '£100-150 per day', '£70-110 per day']
+    },
+
+    india: {
       attractions: [
         'Visit the iconic Taj Mahal in Agra',
         'Explore the Golden Temple in Amritsar',

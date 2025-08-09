@@ -10,7 +10,10 @@ import GlassInput from './GlassInput';
 import SkeletonLoader from './SkeletonLoader';
 import ChatPanel from './ChatPanel';
 import PreferencesModal from './PreferencesModal';
+import ErrorModal from './ErrorModal';
 import { UserPreferences, ItineraryAction } from '../types/chat';
+
+const MAX_DAYS = 30;
 
 interface ItineraryDay {
   day: number;
@@ -25,10 +28,11 @@ const TripPlanner = () => {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showVacationLimitError, setShowVacationLimitError] = useState(false);
+  const [showDaysLimitModal, setShowDaysLimitModal] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [onFindJobPage, setOnFindJobPage] = useState(false);
   const { reducedMotion } = useTheme();
   
   // User preferences with defaults
@@ -150,20 +154,21 @@ const TripPlanner = () => {
 
   const handleDaysChange = (value: string) => {
     const numDays = parseInt(value);
-    if (numDays > 30) {
-      setShowVacationLimitError(true);
-      setTimeout(() => {
-        // Redirect to job search or handle as needed
-        console.log('Redirecting to job search...');
-      }, 3000);
-    } else {
-      setShowVacationLimitError(false);
+    if (numDays > MAX_DAYS) {
+      setShowDaysLimitModal(true);
+      return; // Don't update the days value
     }
     setDays(value);
   };
 
   const generateItinerary = async () => {
     if (!destination || !days) return;
+    
+    const numDays = parseInt(days);
+    if (numDays > MAX_DAYS) {
+      setShowDaysLimitModal(true);
+      return;
+    }
     
     setIsGenerating(true);
     
@@ -422,35 +427,6 @@ const TripPlanner = () => {
             </div>
           </div>
         
-          {/* Vacation Limit Error */}
-          {showVacationLimitError && (
-            <motion.div 
-              className="mt-6 p-4 glass backdrop-blur-md border border-red-500/30 rounded-xl bg-red-500/10"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-            >
-              <div className="flex items-center space-x-3">
-                <div className="text-red-400">
-                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-red-300 font-semibold">
-                    Sorry, vacations are limited to 30 days maximum.
-                  </p>
-                  <p className="text-red-400 text-sm mt-1">
-                    Consider exploring a new career opportunity here: <span className="font-semibold text-primary-400">Find a Job</span>
-                  </p>
-                  <p className="text-red-500 text-xs mt-2">
-                    Redirecting to job search in 3 seconds...
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        
           <motion.div
             className="mt-8"
             initial={{ opacity: 0, y: 20 }}
@@ -461,7 +437,7 @@ const TripPlanner = () => {
               variant="primary"
               size="lg"
               onClick={generateItinerary}
-              disabled={!destination || !days || isGenerating || showVacationLimitError}
+              disabled={!destination || !days || isGenerating}
               className="w-full py-4 text-lg shadow-glow-primary"
             >
               {isGenerating ? (
@@ -643,6 +619,28 @@ const TripPlanner = () => {
         preferences={userPreferences}
         onSave={handleUpdatePreferences}
       />
+
+      {/* Days Limit Error Modal */}
+      <ErrorModal
+        isOpen={showDaysLimitModal}
+        onClose={() => setShowDaysLimitModal(false)}
+        title="Trip Length Limit"
+        message={`Trips are limited to ${MAX_DAYS} days maximum. Consider exploring a new career opportunity.`}
+        actionButton={{
+          label: "Find a Job",
+          onClick: () => {
+            setShowDaysLimitModal(false);
+            setOnFindJobPage(true);
+          },
+          variant: "primary"
+        }}
+      >
+        <div className="p-4 glass backdrop-blur-md rounded-xl border border-primary-400/30 bg-primary-500/10">
+          <p className="text-white/90 text-sm leading-relaxed">
+            <span className="text-primary-400 font-semibold">💡 Tip:</span> Many remote jobs offer flexible schedules and unlimited PTO. You might find a career that supports your travel dreams!
+          </p>
+        </div>
+      </ErrorModal>
     </div>
   );
 };

@@ -20,10 +20,11 @@ import Settings from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import FindJobPage from './components/FindJobPage';
 import DebugPanel from './components/DebugPanel';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
-type PageType = 'landing' | 'login' | 'signup' | 'reset-password' | 'app';
+type PageType = 'landing' | 'login' | 'signup' | 'reset-password' | 'find-job' | 'app';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
@@ -175,6 +176,14 @@ function App() {
     return (
       <ResetPasswordPage
         onBack={() => setCurrentPage('login')}
+      />
+    );
+  }
+
+  if (currentPage === 'find-job') {
+    return (
+      <FindJobPage
+        onBack={() => setCurrentPage('app')}
       />
     );
   }

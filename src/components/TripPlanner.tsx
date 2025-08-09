@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, ArrowRight, DollarSign, UtensilsCrossed, Car } from 'lucide-react';
+import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, ArrowRight, DollarSign, Car } from 'lucide-react';
 
 interface ItineraryDay {
   day: number;

@@ -48,36 +48,34 @@ const TripPlanner = () => {
     try {
       let generatedItinerary: ItineraryDay[] = [];
       
-      // Only try AI generation if user is authenticated
-      if (isAuthenticated) {
-        try {
-          // Call the Supabase edge function to generate AI itinerary
-          const { data, error } = await supabase.functions.invoke('generate-itinerary', {
-            body: {
-              destination: destination,
-              days: parseInt(days)
-            }
-          });
-
-          if (error) {
-            console.error('Error calling edge function:', error);
-            throw error;
+      try {
+        // Call the Supabase edge function to generate AI itinerary
+        console.log('Calling OpenAI edge function for itinerary generation...');
+        const { data, error } = await supabase.functions.invoke('generate-itinerary', {
+          body: {
+            destination: destination,
+            days: parseInt(days)
           }
+        });
 
-          if (data && data.itinerary) {
-            generatedItinerary = data.itinerary;
-          } else {
-            throw new Error('No itinerary data received');
-          }
-        } catch (aiError) {
-          console.error('AI generation failed, falling back to basic itinerary:', aiError);
-          generatedItinerary = []; // Will trigger fallback below
+        if (error) {
+          console.error('Error calling edge function:', error);
+          throw error;
         }
-      }
-      
-      // Use fallback itinerary if AI generation failed or user is not authenticated
-      if (generatedItinerary.length === 0) {
+
+        if (data && data.itinerary && Array.isArray(data.itinerary)) {
+          generatedItinerary = data.itinerary;
+          console.log('Successfully generated AI itinerary:', generatedItinerary);
+        } else {
+          console.warn('Invalid itinerary data received:', data);
+          throw new Error('Invalid itinerary data received');
+        }
+      } catch (aiError) {
+        console.error('AI generation failed, falling back to basic itinerary:', aiError);
+        
+        // Fallback to basic itinerary generation
         const numDays = parseInt(days);
+        generatedItinerary = [];
         
         for (let i = 1; i <= numDays; i++) {
           generatedItinerary.push({
@@ -114,8 +112,7 @@ const TripPlanner = () => {
       }
     } catch (error) {
       console.error('Error generating itinerary:', error);
-      // This should rarely happen now, but just in case
-      alert('There was an error generating your itinerary. Please try again.');
+      alert('There was an error generating your itinerary. Please check your connection and try again.');
     }
     
     setIsGenerating(false);
@@ -273,16 +270,16 @@ const TripPlanner = () => {
           {isGenerating ? (
             <div className="flex items-center justify-center space-x-2">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>{isAuthenticated ? 'AI is Creating Your Itinerary...' : 'Creating Your Itinerary...'}</span>
+              <span>AI is Creating Your Itinerary...</span>
             </div>
           ) : (
-            `${isAuthenticated ? 'Generate AI Itinerary & Save' : 'Generate Itinerary'}`
+            'Generate AI Itinerary'
           )}
         </button>
         
         {!isAuthenticated && (
           <p className="mt-2 text-sm text-gray-600 text-center">
-            Sign in to save your itineraries and get AI-powered recommendations
+            Sign in to save your itineraries to the cloud
           </p>
         )}
       </div>

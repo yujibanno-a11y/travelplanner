@@ -434,7 +434,12 @@ const TripPlanner = () => {
             Can't find your dream destination? Let our AI help you plan the perfect trip.
           </p>
           <button
-            onClick={() => setShowDestinations(false)}
+            onClick={() => {
+              setShowDestinations(false);
+              setDestination('');
+              setDays('');
+              setItinerary([]);
+            }}
             className="inline-flex items-center space-x-2 bg-gray-900 text-white px-8 py-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium"
           >
             <Sparkles className="h-5 w-5" />

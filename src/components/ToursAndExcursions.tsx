@@ -32,7 +32,6 @@ const ToursAndExcursions = () => {
   const [selectedTourType, setSelectedTourType] = useState<string>('all');
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<number>(500);
   const [tours, setTours] = useState<Tour[]>([]);
   const [availableLocations, setAvailableLocations] = useState<TourLocation[]>([]);
 
@@ -649,13 +648,12 @@ const ToursAndExcursions = () => {
   const filteredTours = tours.filter(tour => {
     const matchesType = selectedTourType === 'all' || tour.type === selectedTourType;
     const matchesLocation = selectedLocations.length === 0 || selectedLocations.includes(tour.location) || tour.location === 'multiple';
-    const matchesPrice = tour.price <= maxPrice;
     const matchesSearch = !searchTerm || 
       tour.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tour.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tour.attractions.some(attr => attr.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    return matchesType && matchesLocation && matchesPrice && matchesSearch;
+    return matchesType && matchesLocation && matchesSearch;
   });
 
   // Group tours by location if multiple locations selected
@@ -792,25 +790,7 @@ const ToursAndExcursions = () => {
               </div>
 
               {/* Price and Search */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Max Price: ${maxPrice}
-                  </label>
-                  <input
-                    type="range"
-                    min="20"
-                    max="1000"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>$20</span>
-                    <span>$1000</span>
-                  </div>
-                </div>
-
+              <div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Search Tours</label>
                   <div className="relative">

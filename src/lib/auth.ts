@@ -32,11 +32,6 @@ export const signUp = async (email: string, password: string, fullName: string) 
     throw error;
   }
 
-  // If user is created successfully, ensure profile is created
-  if (data.user) {
-    await ensureUserProfile(data.user.id, email, fullName);
-  }
-
   return data;
 };
 
@@ -49,12 +44,6 @@ export const signIn = async (email: string, password: string) => {
 
   if (error) {
     throw error;
-  }
-
-  // Ensure profile exists and is up to date after login
-  if (data.user) {
-    const fullName = data.user.user_metadata?.full_name || '';
-    await ensureUserProfile(data.user.id, data.user.email || '', fullName);
   }
 
   return data;

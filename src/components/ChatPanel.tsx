@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MessageCircle, 
   Send, 
@@ -14,6 +15,11 @@ import {
   Zap
 } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
+import { useTheme } from './ThemeProvider';
+import GlassCard from './GlassCard';
+import GlassButton from './GlassButton';
+import GlassInput from './GlassInput';
+import SkeletonLoader from './SkeletonLoader';
 import { UserPreferences, ItineraryAction } from '../types/chat';
 
 interface ChatPanelProps {
@@ -43,6 +49,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   canRedo,
   isMobile = false,
 }) => {
+  const { reducedMotion } = useTheme();
   const [input, setInput] = useState('');
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -106,181 +113,263 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   if (!isOpen) return null;
 
   const panelClasses = isMobile 
-    ? 'fixed inset-0 z-50 bg-white'
-    : `fixed right-0 top-0 h-full w-96 bg-white shadow-2xl border-l border-gray-200 z-40 transform transition-transform duration-300 ${
+    ? 'fixed inset-0 z-50 glass backdrop-blur-md'
+    : `fixed right-0 top-0 h-full w-96 glass backdrop-blur-md shadow-2xl border-l border-white/20 z-40 transform transition-transform duration-300 ${
         isMinimized ? 'translate-x-80' : 'translate-x-0'
       }`;
 
   return (
-    <div className={panelClasses}>
+    <motion.div 
+      className={panelClasses}
+      initial={{ x: isMobile ? '100%' : 384 }}
+      animate={{ x: 0 }}
+      exit={{ x: isMobile ? '100%' : 384 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+      <div className="flex items-center justify-between p-4 border-b border-white/20 bg-gradient-to-r from-primary-500 to-secondary-500 text-dark-900">
         <div className="flex items-center space-x-2">
           <MessageCircle className="h-5 w-5" />
-          <h3 className="font-semibold">AI Trip Planner</h3>
+          <h3 className="font-display font-semibold">AI Trip Planner</h3>
         </div>
         <div className="flex items-center space-x-2">
           {/* Undo/Redo buttons */}
-          <button
+          <motion.button
             onClick={onUndo}
             disabled={!canUndo}
-            className="p-1 rounded hover:bg-white hover:bg-opacity-20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Undo"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <Undo className="h-4 w-4" />
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={onRedo}
             disabled={!canRedo}
-            className="p-1 rounded hover:bg-white hover:bg-opacity-20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             title="Redo"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <Redo className="h-4 w-4" />
-          </button>
+          </motion.button>
           
           {!isMobile && (
-            <button
+            <motion.button
               onClick={() => setIsMinimized(!isMinimized)}
-              className="p-1 rounded hover:bg-white hover:bg-opacity-20"
+              className="p-2 rounded-lg hover:bg-white/20 transition-colors"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
-            </button>
+            </motion.button>
           )}
-          <button
+          <motion.button
             onClick={onClose}
-            className="p-1 rounded hover:bg-white hover:bg-opacity-20"
+            className="p-2 rounded-lg hover:bg-white/20 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             <X className="h-4 w-4" />
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      {!isMinimized && (
+      <AnimatePresence>
+        {!isMinimized && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="flex flex-col h-full"
+          >
         <>
           {/* Quick Actions */}
-          <div className="p-4 border-b border-gray-200 bg-gray-50">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Quick Actions</h4>
+            <div className="p-4 border-b border-white/20 glass backdrop-blur-md">
+              <h4 className="text-sm font-medium text-white/80 mb-3">Quick Actions</h4>
             <div className="grid grid-cols-2 gap-2">
               {quickActions.map((action, index) => {
                 const Icon = action.icon;
                 return (
-                  <button
+                  <motion.button
                     key={index}
                     onClick={action.action}
                     disabled={isStreaming}
-                    className="flex items-center space-x-1 p-2 text-xs bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center space-x-2 p-2 text-xs glass backdrop-blur-md border border-white/20 rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-white"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <Icon className="h-3 w-3" />
                     <span>{action.label}</span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ height: 'calc(100vh - 200px)' }}>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ height: 'calc(100vh - 200px)' }}>
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 mt-8">
-                <Sparkles className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <p className="text-sm">Ask me anything about your trip!</p>
-                <p className="text-xs mt-2">I can help you plan activities, adjust your schedule, find hidden gems, and more.</p>
+              <motion.div 
+                className="text-center text-white/60 mt-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Sparkles className="h-12 w-12 mx-auto mb-4 text-primary-400" />
+                </motion.div>
+                <p className="text-sm text-white">Ask me anything about your trip!</p>
+                <p className="text-xs mt-2 text-white/60">I can help you plan activities, adjust your schedule, find hidden gems, and more.</p>
               </div>
             )}
             
             {messages.map((message) => (
-              <div
+              <motion.div
                 key={message.id}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               >
-                <div
+                <motion.div
                   className={`max-w-[80%] p-3 rounded-lg ${
                     message.role === 'user'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-dark-900'
+                      : 'glass backdrop-blur-md text-white border border-white/20'
                   }`}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                   <p className={`text-xs mt-1 ${
-                    message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                    message.role === 'user' ? 'text-dark-700' : 'text-white/60'
                   }`}>
                     {message.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             ))}
 
             {/* Streaming message */}
             {isStreaming && streamingContent && (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] p-3 rounded-lg bg-gray-100 text-gray-800">
+              <motion.div 
+                className="flex justify-start"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                <div className="max-w-[80%] p-3 rounded-lg glass backdrop-blur-md text-white border border-white/20">
                   <p className="text-sm whitespace-pre-wrap">{streamingContent}</p>
                   <div className="flex items-center space-x-1 mt-2">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                      />
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0.1 }}
+                      />
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                      />
                     </div>
-                    <span className="text-xs text-gray-500">AI is thinking...</span>
+                    <span className="text-xs text-white/60">AI is thinking...</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Typing indicator */}
             {isStreaming && !streamingContent && (
-              <div className="flex justify-start">
-                <div className="max-w-[80%] p-3 rounded-lg bg-gray-100 text-gray-800">
+              <motion.div 
+                className="flex justify-start"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+              >
+                <div className="max-w-[80%] p-3 rounded-lg glass backdrop-blur-md text-white border border-white/20">
                   <div className="flex items-center space-x-2">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                      />
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0.1 }}
+                      />
+                      <motion.div 
+                        className="w-2 h-2 bg-primary-400 rounded-full"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                      />
                     </div>
-                    <span className="text-xs text-gray-500">AI is thinking...</span>
+                    <span className="text-xs text-white/60">AI is thinking...</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
             
             <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-gray-200">
+            <div className="p-4 border-t border-white/20 glass backdrop-blur-md">
             <div className="flex space-x-2">
-              <textarea
+              <motion.textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me to adjust your itinerary..."
-                className="flex-1 p-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 p-3 glass backdrop-blur-md border border-white/20 rounded-xl resize-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white placeholder-white/60 transition-all duration-300"
                 rows={2}
                 disabled={isStreaming}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               />
               <div className="flex flex-col space-y-1">
-                <button
+                <GlassButton
+                  variant="primary"
+                  size="sm"
                   onClick={handleSendMessage}
                   disabled={!input.trim() || isStreaming}
-                  className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-3 shadow-glow-primary"
                 >
                   <Send className="h-4 w-4" />
-                </button>
+                </GlassButton>
                 {isStreaming && (
-                  <button
+                  <GlassButton
+                    variant="ghost"
+                    size="sm"
                     onClick={stopStreaming}
-                    className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    className="p-3 bg-red-500/20 border-red-500/30 hover:bg-red-500/30"
                     title="Stop"
                   >
                     <X className="h-4 w-4" />
-                  </button>
+                  </GlassButton>
                 )}
               </div>
             </div>
           </div>
         </>
-      )}
-    </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

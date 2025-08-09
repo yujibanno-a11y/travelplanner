@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, MessageCircle, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { supabase, getCurrentUserId } from '../lib/supabase';
 import { useItineraryHistory } from '../hooks/useItineraryHistory';
+import { useTheme } from './ThemeProvider';
+import GlassCard from './GlassCard';
+import GlassButton from './GlassButton';
+import GlassInput from './GlassInput';
+import SkeletonLoader from './SkeletonLoader';
 import ChatPanel from './ChatPanel';
 import PreferencesModal from './PreferencesModal';
 import { UserPreferences, ItineraryAction } from '../types/chat';
@@ -23,6 +29,7 @@ const TripPlanner = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { reducedMotion } = useTheme();
   
   // User preferences with defaults
   const [userPreferences, setUserPreferences] = useState<UserPreferences>(() => {
@@ -325,170 +332,294 @@ const TripPlanner = () => {
   return (
     <div className="space-y-8">
       {/* Action Bar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setIsPreferencesOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <Settings className="h-4 w-4" />
-            <span className="text-sm font-medium">Preferences</span>
-          </button>
-        </div>
-        
-        <button
-          onClick={() => setIsChatOpen(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02]"
+      <motion.div 
+        className="flex items-center justify-between"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <motion.div 
+          className="flex items-center space-x-4"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
         >
-          <MessageCircle className="h-4 w-4" />
-          <span className="font-medium">AI Assistant</span>
-        </button>
-      </div>
+          <GlassButton
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsPreferencesOpen(true)}
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Preferences
+          </GlassButton>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+        >
+          <GlassButton
+            variant="primary"
+            size="md"
+          onClick={() => setIsChatOpen(true)}
+            className="shadow-glow-primary"
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            AI Assistant
+          </GlassButton>
+        </motion.div>
+      </motion.div>
 
       {/* Trip Planning Form */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="flex items-center space-x-3 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Plan Your Perfect Trip</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <MapPin className="inline h-4 w-4 mr-1" />
-              Destination
-            </label>
-            <input
-              type="text"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="Where are you traveling to?"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            />
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="primary">
+          <div className="flex items-center space-x-3 mb-6">
+            <h2 className="text-3xl font-display font-bold text-white text-glow">Plan Your Perfect Trip</h2>
           </div>
+        
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
+            >
+              <label className="block text-sm font-semibold text-white/80 mb-3">
+                <MapPin className="inline h-4 w-4 mr-2 text-primary-400" />
+                Destination
+              </label>
+              <GlassInput
+                type="text"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                placeholder="Where are you traveling to?"
+                icon={<MapPin className="h-4 w-4" />}
+              />
+            </motion.div>
           
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <Calendar className="inline h-4 w-4 mr-1" />
-              Number of Days
-            </label>
-            <input
-              type="number"
-              value={days}
-               onChange={(e) => handleDaysChange(e.target.value)}
-              placeholder="How many days?"
-              min="1"
-              max="30"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            />
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+            >
+              <label className="block text-sm font-semibold text-white/80 mb-3">
+                <Calendar className="inline h-4 w-4 mr-2 text-secondary-400" />
+                Number of Days
+              </label>
+              <GlassInput
+                type="number"
+                value={days}
+                onChange={(e) => handleDaysChange(e.target.value)}
+                placeholder="How many days?"
+                icon={<Calendar className="h-4 w-4" />}
+              />
+            </motion.div>
           </div>
-        </div>
         
-        {/* Vacation Limit Error */}
-        {showVacationLimitError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-            <div className="flex items-center space-x-2">
-              <div className="text-red-600">
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
+          {/* Vacation Limit Error */}
+          {showVacationLimitError && (
+            <motion.div 
+              className="mt-6 p-4 glass backdrop-blur-md border border-red-500/30 rounded-xl bg-red-500/10"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="text-red-400">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-red-300 font-semibold">
+                    Sorry, vacations are limited to 30 days maximum.
+                  </p>
+                  <p className="text-red-400 text-sm mt-1">
+                    Consider exploring a new career opportunity here: <span className="font-semibold text-primary-400">Find a Job</span>
+                  </p>
+                  <p className="text-red-500 text-xs mt-2">
+                    Redirecting to job search in 3 seconds...
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-red-800 font-medium">
-                  Sorry, vacations are limited to 30 days maximum.
-                </p>
-                <p className="text-red-700 text-sm mt-1">
-                  Consider exploring a new career opportunity here: <span className="font-semibold">Find a Job</span>
-                </p>
-                <p className="text-red-600 text-xs mt-2">
-                  Redirecting to job search in 3 seconds...
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        <button
-          onClick={generateItinerary}
-          disabled={!destination || !days || isGenerating || showVacationLimitError}
-          className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02]"
-        >
-          {isGenerating ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>AI is Creating Your Itinerary...</span>
-            </div>
-          ) : (
-            `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`
+            </motion.div>
           )}
-        </button>
         
-        {!isAuthenticated && (
-          <p className="mt-2 text-sm text-gray-600 text-center">
-            Sign in to save your itineraries to the cloud
-          </p>
-        )}
-      </div>
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: 'easeOut' }}
+          >
+            <GlassButton
+              variant="primary"
+              size="lg"
+              onClick={generateItinerary}
+              disabled={!destination || !days || isGenerating || showVacationLimitError}
+              className="w-full py-4 text-lg shadow-glow-primary"
+            >
+              {isGenerating ? (
+                <div className="flex items-center justify-center space-x-3">
+                  <motion.div 
+                    className="w-5 h-5 border-2 border-dark-900 border-t-transparent rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <span>AI is Creating Your Itinerary...</span>
+                </div>
+              ) : (
+                <>
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Generate AI Itinerary{isAuthenticated ? ' & Save' : ''}
+                </>
+              )}
+            </GlassButton>
+          </motion.div>
+        
+          {!isAuthenticated && (
+            <motion.p 
+              className="mt-3 text-sm text-white/60 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
+            >
+              Sign in to save your itineraries to the cloud
+            </motion.p>
+          )}
+        </GlassCard>
+      </motion.div>
 
       {/* Generated Itinerary */}
       {itinerary.length > 0 && (
-        <div className="space-y-6">
-          <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
-              <Clock className="h-6 w-6 text-white" />
+        <motion.div 
+          className="space-y-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+        >
+          <motion.div 
+            className="flex items-center space-x-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+          >
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-4 rounded-2xl shadow-glow-primary animate-pulse-glow">
+              <Clock className="h-7 w-7 text-dark-900" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">
+            <h3 className="text-3xl font-display font-bold text-white text-glow">
               Your {destination} Itinerary ({days} Days)
             </h3>
-          </div>
+          </motion.div>
           
           {itinerary.map((day) => (
-            <div key={day.day} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-2 px-4 rounded-full">
+            <motion.div
+              key={day.day}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 + index * 0.1, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8" glow="secondary" hover={true}>
+                <div className="flex items-center space-x-4 mb-6">
+                  <motion.div 
+                    className="bg-gradient-to-r from-secondary-500 to-primary-500 text-white font-bold py-3 px-6 rounded-2xl shadow-glow-secondary"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
                   Day {day.day}
+                  </motion.div>
                 </div>
-              </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
-                    <Clock className="h-5 w-5 mr-2 text-blue-500" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.7 + index * 0.1, ease: 'easeOut' }}
+                  >
+                    <h4 className="flex items-center text-xl font-display font-semibold text-white mb-4">
+                      <Clock className="h-6 w-6 mr-3 text-primary-400" />
                     Activities
-                  </h4>
-                  <ul className="space-y-2">
+                    </h4>
+                    <ul className="space-y-3">
                     {day.activities.map((activity, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{activity}</span>
+                      <motion.li 
+                        key={index} 
+                        className="flex items-start space-x-3"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.8 + index * 0.05, ease: 'easeOut' }}
+                      >
+                        <div className="w-3 h-3 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-primary"></div>
+                        <span className="text-white/90 leading-relaxed">{activity}</span>
+                      </motion.li>
                       </li>
                     ))}
-                  </ul>
-                </div>
+                    </ul>
+                  </motion.div>
                 
-                <div>
-                  <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
-                    <Camera className="h-5 w-5 mr-2 text-green-500" />
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 + index * 0.1, ease: 'easeOut' }}
+                  >
+                    <h4 className="flex items-center text-xl font-display font-semibold text-white mb-4">
+                      <Camera className="h-6 w-6 mr-3 text-secondary-400" />
                     Must-Visit Attractions
-                  </h4>
-                  <ul className="space-y-2">
+                    </h4>
+                    <ul className="space-y-3">
                     {day.attractions.map((attraction, index) => (
-                      <li key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{attraction}</span>
+                      <motion.li 
+                        key={index} 
+                        className="flex items-start space-x-3"
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.9 + index * 0.05, ease: 'easeOut' }}
+                      >
+                        <div className="w-3 h-3 bg-gradient-to-r from-secondary-400 to-primary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-secondary"></div>
+                        <span className="text-white/90 leading-relaxed">{attraction}</span>
+                      </motion.li>
                       </li>
                     ))}
-                  </ul>
+                    </ul>
+                  </motion.div>
                 </div>
-              </div>
               
-              <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-                <p className="text-sm text-gray-700">
-                  <strong>💡 Tip:</strong> {day.tips}
-                </p>
-              </div>
-            </div>
+                <motion.div 
+                  className="mt-6 p-4 glass backdrop-blur-md rounded-xl border border-primary-400/30 bg-primary-500/10"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 1 + index * 0.1, ease: 'easeOut' }}
+                >
+                  <p className="text-white/90 leading-relaxed">
+                    <span className="text-primary-400 font-semibold">💡 Tip:</span> {day.tips}
+                  </p>
+                </motion.div>
+              </GlassCard>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+      )}
+
+      {/* Loading State */}
+      {isGenerating && (
+        <motion.div 
+          className="space-y-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center space-x-4">
+            <SkeletonLoader variant="avatar" className="w-16 h-16" />
+            <SkeletonLoader variant="text" className="w-64 h-8" />
+          </div>
+          {Array.from({ length: parseInt(days) || 3 }).map((_, index) => (
+            <SkeletonLoader key={index} variant="card" className="w-full" />
+          ))}
+        </motion.div>
       )}
 
       {/* Chat Panel */}

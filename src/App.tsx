@@ -2,8 +2,14 @@ import React, { useState } from 'react';
 import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
 import { Route, Target, ReceiptText, PieChart, AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getCurrentUser, signOut, type AuthUser } from './lib/auth';
 import { supabase } from './lib/supabase';
+import { useTheme } from './components/ThemeProvider';
+import GlassCard from './components/GlassCard';
+import GlassButton from './components/GlassButton';
+import AnimatedGlobe from './components/AnimatedGlobe';
+import PageTransition from './components/PageTransition';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -24,8 +30,8 @@ function App() {
   const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const { isDark, toggleTheme, reducedMotion } = useTheme();
 
   useEffect(() => {
     // Check initial auth state
@@ -53,28 +59,7 @@ function App() {
     );
 
     // Load theme preference
-    const savedSettings = localStorage.getItem('userSettings');
-    if (savedSettings) {
-      const settings = JSON.parse(savedSettings);
-      const shouldUseDark = settings.theme === 'dark' || 
-        (settings.theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      setIsDarkMode(shouldUseDark);
-    }
-
-    // Listen for settings changes
-    const handleStorageChange = () => {
-      const savedSettings = localStorage.getItem('userSettings');
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        const shouldUseDark = settings.theme === 'dark' || 
-          (settings.theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        setIsDarkMode(shouldUseDark);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       subscription.unsubscribe();
     };
   }, []);
@@ -205,197 +190,227 @@ function App() {
   // Landing Page (Marketing/Unauthenticated)
   if (currentPage === 'landing') {
     return (
-      <div className={`min-h-screen transition-colors duration-300 ${
-        isDarkMode 
-          ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-          : 'bg-gradient-to-br from-blue-50 via-white to-orange-50'
-      }`}>
+      <PageTransition className="min-h-screen">
         {/* Header */}
-        <header className="relative">
+        <motion.header 
+          className="relative z-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between py-6">
-              {/* Logo and Brand - Left Side */}
-              <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl relative">
-                  <Plane className="h-6 w-6 text-white" />
-                  <div className="absolute bottom-0 left-0 bg-green-500 rounded-full p-0.5">
-                    <DollarSign className="h-2.5 w-2.5 text-white" />
+              {/* Logo and Brand */}
+              <motion.div 
+                className="flex items-center space-x-3"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="relative">
+                  <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary animate-pulse-glow">
+                    <Plane className="h-6 w-6 text-dark-900" />
+                    <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-secondary-500 to-primary-500 rounded-full p-1">
+                      <DollarSign className="h-3 w-3 text-white" />
+                    </div>
                   </div>
                 </div>
-                <h1 className={`text-2xl font-bold transition-colors duration-300 ${
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>
-                  TravelPlanner</h1>
-              </div>
+                <h1 className="text-2xl font-display font-bold text-white text-glow">
+                  TravelPlanner
+                </h1>
+              </motion.div>
               
-              {/* Auth Container - Right Side */}
+              {/* Auth Container */}
               <div className="flex items-center space-x-4">
-                <button 
+                <GlassButton
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setCurrentPage('login')}
-                  className={`font-medium text-sm transition-colors duration-200 ${
-                    isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
-                  }`}
                 >
                   Log In
-                </button>
-                <button 
+                </GlassButton>
+                <GlassButton
+                  variant="primary"
+                  size="sm"
                   onClick={() => setCurrentPage('signup')}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg font-medium text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-md"
                 >
                   Sign Up
-                </button>
-              </div>
-            </div>
-            
-            {/* Hero Content - Centered */}
-            <div className="flex flex-col items-center justify-center pb-8 pt-8 space-y-2">
-              <h2 className={`text-3xl font-bold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                Plan adventures. Spend smarter.
-              </h2>
-              <p className={`text-base text-center max-w-2xl transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                AI-generated itineraries with real-time expense tracking and budget insights. <br />All in one travel wallet.
-              </p>
-              
-              {/* Start Planning Button */}
-              <div className="pt-6">
-                <button 
-                  onClick={() => setCurrentPage('signup')}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.97] shadow-lg"
-                >
-                  Start Planning
-                </button>
+                </GlassButton>
               </div>
             </div>
           </div>
-        </header>
+        </motion.header>
 
-        {/* Features Section Headline */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
-          <div className="text-center">
-            <h2 className={`text-3xl font-bold mb-4 transition-colors duration-300 ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              All-in-one features
-            </h2>
+        {/* Hero Section */}
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center space-y-8">
+            {/* Animated Globe */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
+              className="flex justify-center mb-8"
+            >
+              <AnimatedGlobe className="animate-float" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+              className="space-y-6"
+            >
+              <h2 className="text-5xl md:text-6xl font-display font-bold text-white text-glow">
+                Plan adventures. Spend smarter.
+              </h2>
+              <p className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed">
+                AI-generated itineraries with real-time expense tracking and budget insights.
+                <br />
+                <span className="text-primary-400 font-semibold">All in one travel wallet.</span>
+              </p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
+                className="pt-4"
+              >
+                <GlassButton
+                  variant="primary"
+                  size="lg"
+                  onClick={() => setCurrentPage('signup')}
+                  className="px-12 py-4 text-xl shadow-glow-primary"
+                >
+                  Start Planning
+                </GlassButton>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Benefits Grid */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
+        {/* Features Section */}
+        <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1, ease: 'easeOut' }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-display font-bold text-white text-glow mb-4">
+              All-in-one features
+            </h2>
+            <p className="text-white/60 text-lg">Everything you need for the perfect trip</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Trip Planning */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
-              }`}>
-                <Route className="h-7 w-7 text-blue-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Trip Planning</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Build a day-by-day itinerary with estimated costs and pre-picked activities so you start every morning ready to roll.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.2, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="primary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-primary-500 to-primary-400 rounded-2xl flex items-center justify-center shadow-glow-primary">
+                  <Route className="h-8 w-8 text-dark-900" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Trip Planning</h3>
+                <p className="text-white/70 leading-relaxed">
+                  Build a day-by-day itinerary with estimated costs and pre-picked activities so you start every morning ready to roll.
+                </p>
+              </GlassCard>
+            </motion.div>
 
             {/* Set Budget */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
-              }`}>
-                <Target className="h-7 w-7 text-green-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Set Budget</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Enter your trip budget once and the app keeps a running tally to make sure you never overspend.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.4, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="secondary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-secondary-500 to-secondary-400 rounded-2xl flex items-center justify-center shadow-glow-secondary">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Set Budget</h3>
+                <p className="text-white/70 leading-relaxed">
+                  Enter your trip budget once and the app keeps a running tally to make sure you never overspend.
+                </p>
+              </GlassCard>
+            </motion.div>
 
             {/* Enter Expenses */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-              }`}>
-                <ReceiptText className="h-7 w-7 text-purple-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Enter Expenses</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Log purchases in seconds—online or offline—and see your total update instantly.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.6, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="primary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-primary-400 to-secondary-500 rounded-2xl flex items-center justify-center shadow-glow-primary">
+                  <ReceiptText className="h-8 w-8 text-dark-900" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Enter Expenses</h3>
+                <p className="text-white/70 leading-relaxed">
+                  Log purchases in seconds—online or offline—and see your total update instantly.
+                </p>
+              </GlassCard>
+            </motion.div>
 
             {/* Budget Tracker */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-indigo-900/50' : 'bg-indigo-100'
-              }`}>
-                <PieChart className="h-7 w-7 text-indigo-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Budget Tracker</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                View charts that break spending down by category, giving you a crystal-clear picture of where the money goes.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.8, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="secondary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-secondary-400 to-primary-500 rounded-2xl flex items-center justify-center shadow-glow-secondary">
+                  <PieChart className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Budget Tracker</h3>
+                <p className="text-white/70 leading-relaxed">
+                  View charts that break spending down by category, giving you a crystal-clear picture of where the money goes.
+                </p>
+              </GlassCard>
+            </motion.div>
 
             {/* Alerts */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-red-900/50' : 'bg-red-100'
-              }`}>
-                <AlertTriangle className="h-7 w-7 text-red-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Alerts</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Get a friendly nudge the moment you edge past your budget limit, before small splurges snowball.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 2.0, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="primary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <AlertTriangle className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Alerts</h3>
+                <p className="text-white/70 leading-relaxed">
+                  Get a friendly nudge the moment you edge past your budget limit, before small splurges snowball.
+                </p>
+              </GlassCard>
+            </motion.div>
 
             {/* Restaurants */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                isDarkMode ? 'bg-orange-900/50' : 'bg-orange-100'
-              }`}>
-                <UtensilsCrossed className="h-7 w-7 text-orange-600" aria-hidden="true" />
-              </div>
-              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>Restaurants</h3>
-              <p className={`leading-relaxed transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-              }`}>
-                Browse restaurant picks filtered by cuisine and price so great meals fit smoothly into your budget.
-              </p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 2.2, ease: 'easeOut' }}
+            >
+              <GlassCard className="p-8 text-center space-y-4 h-full" glow="secondary">
+                <div className="w-16 h-16 mx-auto bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <UtensilsCrossed className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-display font-semibold text-white">Restaurants</h3>
+                <p className="text-white/70 leading-relaxed">
+                  Browse restaurant picks filtered by cuisine and price so great meals fit smoothly into your budget.
+                </p>
+              </GlassCard>
+            </motion.div>
           </div>
         </section>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <TripPlanner />
         </main>
-      </div>
+      </PageTransition>
     );
   }
 
@@ -422,94 +437,97 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
-        : 'bg-gradient-to-br from-blue-50 via-white to-orange-50'
-    }`}>
+    <PageTransition className="min-h-screen">
       {/* Header */}
-      <header className="relative">
+      <motion.header 
+        className="relative z-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
-            {/* Logo and Brand - Left Side */}
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-500 to-orange-500 p-2 rounded-xl relative">
-                <Plane className="h-6 w-6 text-white" />
-                <div className="absolute bottom-0 left-0 bg-green-500 rounded-full p-0.5">
-                  <DollarSign className="h-2.5 w-2.5 text-white" />
+            {/* Logo and Brand */}
+            <motion.div 
+              className="flex items-center space-x-3"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="relative">
+                <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary">
+                  <Plane className="h-6 w-6 text-dark-900" />
+                  <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-secondary-500 to-primary-500 rounded-full p-1">
+                    <DollarSign className="h-3 w-3 text-white" />
+                  </div>
                 </div>
               </div>
-              <h1 className={`text-2xl font-bold ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
+              <h1 className="text-2xl font-display font-bold text-white text-glow">
                 TravelPlanner
               </h1>
-            </div>
+            </motion.div>
             
-            {/* Auth Container - Right Side */}
+            {/* Auth Container */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-4">
-                <span className={`text-sm transition-colors duration-300 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>
+                <span className="text-sm text-white/80">
                   Welcome back{currentUser?.full_name ? `, ${currentUser.full_name}` : ''}!
                 </span>
-                <button 
+                <GlassButton
+                  variant="ghost"
+                  size="sm"
                   onClick={handleLogout}
-                  className={`font-medium text-sm transition-colors duration-200 ${
-                    isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
-                  }`}
                 >
                   Log Out
-                </button>
+                </GlassButton>
               </div>
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
+      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20">
         {renderActiveTab()}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className={`fixed bottom-0 left-0 right-0 border-t z-50 shadow-lg transition-colors duration-300 ${
-        isDarkMode 
-          ? 'bg-gray-800 border-gray-700' 
-          : 'bg-white border-gray-200'
-      }`}>
+      <motion.nav 
+        className="fixed bottom-0 left-0 right-0 z-50 glass backdrop-blur-md border-t border-white/20"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+      >
         {/* Budget Submenu */}
         {budgetSubmenuOpen && (
-          <div className={`border-t px-4 py-3 transition-colors duration-300 ${
-            isDarkMode 
-              ? 'bg-gray-700 border-gray-600' 
-              : 'bg-gray-50 border-gray-200'
-          }`}>
+          <motion.div 
+            className="border-t border-white/10 px-4 py-3 glass backdrop-blur-md"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          >
             <div className="flex justify-center space-x-4 overflow-x-auto">
               {tabs.find(tab => tab.hasSubmenu)?.submenu?.map((submenuItem) => {
                 const SubmenuIcon = submenuItem.icon;
                 return (
-                  <button
+                  <motion.button
                     key={submenuItem.id}
                     onClick={() => setActiveTab(submenuItem.id as TabType)}
-                    className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs whitespace-nowrap transition-colors duration-200 min-w-0 ${
+                    className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-xl font-medium text-xs whitespace-nowrap transition-all duration-200 min-w-0 ${
                       activeTab === submenuItem.id
-                        ? isDarkMode 
-                          ? 'bg-blue-900/50 text-blue-400' 
-                          : 'bg-blue-100 text-blue-700'
-                        : isDarkMode
-                          ? 'text-gray-300 hover:text-white hover:bg-gray-600'
-                          : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                        ? 'bg-primary-500/20 text-primary-400 shadow-glow-primary' 
+                        : 'text-white/60 hover:text-white hover:bg-white/10'
                     }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     <SubmenuIcon className="h-5 w-5" />
                     <span className="truncate">{submenuItem.label}</span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         )}
         
         {/* Main Navigation */}
@@ -521,47 +539,47 @@ function App() {
               : activeTab === tab.id;
             
             return (
-              <button
+              <motion.button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id, tab.hasSubmenu)}
-                className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs transition-colors duration-200 min-w-0 ${
+                className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-xl font-medium text-xs transition-all duration-200 min-w-0 ${
                   isActive
-                    ? isDarkMode
-                      ? 'text-blue-400 bg-blue-900/50'
-                      : 'text-blue-600 bg-blue-50'
-                    : isDarkMode
-                      ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    ? 'text-primary-400 bg-primary-500/20 shadow-glow-primary'
+                    : 'text-white/60 hover:text-white hover:bg-white/10'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <div className="relative">
                   <Icon className="h-6 w-6" />
                   {tab.hasSubmenu && (
-                    <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                    <motion.div 
+                      className={`absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors duration-300 ${
                       budgetSubmenuOpen 
-                        ? 'bg-blue-500' 
-                        : isDarkMode 
-                          ? 'bg-gray-500' 
-                          : 'bg-gray-400'
-                    }`}>
+                        ? 'bg-primary-500 shadow-glow-primary' 
+                        : 'bg-white/30'
+                    }`}
+                      animate={{ rotate: budgetSubmenuOpen ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       {budgetSubmenuOpen ? (
                         <ChevronDown className="h-2 w-2 text-white" />
                       ) : (
                         <ChevronRight className="h-2 w-2 text-white" />
                       )}
-                    </div>
+                    </motion.div>
                   )}
                 </div>
                 <span className="truncate max-w-16">{tab.label}</span>
-              </button>
+              </motion.button>
             );
           })}
         </div>
-      </nav>
+      </motion.nav>
       
       {/* Debug Panel - only show in development */}
       {import.meta.env.DEV && <DebugPanel />}
-    </div>
+    </PageTransition>
   );
 }
 

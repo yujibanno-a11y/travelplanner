@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building } from 'lucide-react';
+import { supabase, getCurrentUserId } from '../lib/supabase';
 
 interface ItineraryDay {
   day: number;
@@ -13,6 +14,16 @@ const TripPlanner = () => {
   const [days, setDays] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  React.useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+  }, []);
 
   // Simulated AI-generated itineraries
   const generateItinerary = async () => {
@@ -47,12 +58,98 @@ const TripPlanner = () => {
     setItinerary(mockItinerary);
     setIsGenerating(false);
     
-    // Save to localStorage
-    localStorage.setItem('currentTrip', JSON.stringify({
+    // Save to both localStorage and Supabase
+    const tripData = {
       destination,
       days: numDays,
       itinerary: mockItinerary
-    }));
+    };
+    localStorage.setItem('currentTrip', JSON.stringify(tripData));
+    
+    // Save to Supabase if authenticated
+    if (isAuthenticated) {
+      await saveItineraryToSupabase(destination, numDays, mockItinerary);
+    }
+  };
+
+  const saveItineraryToSupabase = async (destination: string, days: number, itinerary: ItineraryDay[]) => {
+    try {
+      const userId = await getCurrentUserId();
+      if (!userId) return;
+
+      // Create the main itinerary record
+      const { data: itineraryRecord, error: itineraryError } = await supabase
+        .from('itineraries')
+        .insert({
+          owner_id: userId,
+          destination: destination,
+          days: days,
+          itinerary_data: itinerary
+        })
+        .select()
+        .single();
+
+      if (itineraryError) {
+        console.error('Error saving itinerary:', itineraryError);
+        return;
+      }
+
+      // Create itinerary items for each day
+      const itineraryItems = [];
+      
+      for (const day of itinerary) {
+        // Add activities
+        for (const activity of day.activities) {
+          const timeOfDay = activity.toLowerCase().includes('morning') ? 'morning' :
+                          activity.toLowerCase().includes('afternoon') ? 'afternoon' :
+                          activity.toLowerCase().includes('evening') ? 'evening' : 'all_day';
+          
+          itineraryItems.push({
+            itinerary_id: itineraryRecord.id,
+            day_number: day.day,
+            type: 'activity',
+            title: activity.split(':')[1]?.trim() || activity,
+            description: activity,
+            time_of_day: timeOfDay,
+            estimated_cost: Math.floor(Math.random() * 50) + 10 // Random cost for demo
+          });
+        }
+
+        // Add attractions
+        for (const attraction of day.attractions) {
+          itineraryItems.push({
+            itinerary_id: itineraryRecord.id,
+            day_number: day.day,
+            type: 'attraction',
+            title: attraction,
+            description: `Visit ${attraction}`,
+            estimated_cost: Math.floor(Math.random() * 30) + 5
+          });
+        }
+
+        // Add tip
+        itineraryItems.push({
+          itinerary_id: itineraryRecord.id,
+          day_number: day.day,
+          type: 'tip',
+          title: `Day ${day.day} Tip`,
+          description: day.tips,
+          estimated_cost: 0
+        });
+      }
+
+      const { error: itemsError } = await supabase
+        .from('itinerary_items')
+        .insert(itineraryItems);
+
+      if (itemsError) {
+        console.error('Error saving itinerary items:', itemsError);
+      } else {
+        console.log('Itinerary saved successfully to Supabase!');
+      }
+    } catch (error) {
+      console.error('Error saving to Supabase:', error);
+    }
   };
 
   return (
@@ -106,9 +203,15 @@ const TripPlanner = () => {
               <span>Generating Your Itinerary...</span>
             </div>
           ) : (
-            'Generate AI Itinerary'
+            `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`
           )}
         </button>
+        
+        {!isAuthenticated && (
+          <p className="mt-2 text-sm text-gray-600 text-center">
+            Sign in to save your itineraries to the cloud
+          </p>
+        )}
       </div>
 
       {/* Generated Itinerary */}

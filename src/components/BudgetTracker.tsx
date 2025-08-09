@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Target, TrendingUp, AlertCircle, PiggyBank } from 'lucide-react';
+import { supabase, getCurrentUserId } from '../lib/supabase';
 
 interface BudgetSettings {
   dailyLimit: number;
@@ -25,21 +26,90 @@ const BudgetTracker = () => {
   });
   
   const [currentTrip, setCurrentTrip] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+      
+      if (user) {
+        await loadBudgetFromSupabase();
+      } else {
+        // Load from localStorage for non-authenticated users
+        const budgetData = localStorage.getItem('budgetSettings');
+        if (budgetData) {
+          setBudgetSettings(JSON.parse(budgetData));
+        }
+      }
+    };
+    
+    checkAuth();
+
     // Load current trip and budget settings
     const tripData = localStorage.getItem('currentTrip');
-    const budgetData = localStorage.getItem('budgetSettings');
     
     if (tripData) {
       setCurrentTrip(JSON.parse(tripData));
     }
-    
-    if (budgetData) {
-      setBudgetSettings(JSON.parse(budgetData));
-    }
   }, []);
 
+  const loadBudgetFromSupabase = async () => {
+    try {
+      const userId = await getCurrentUserId();
+      if (!userId) return;
+
+      const { data: budget, error } = await supabase
+        .from('budget_settings')
+        .select('*')
+        .eq('owner_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error loading budget:', error);
+        return;
+      }
+
+      if (budget) {
+        setBudgetSettings({
+          dailyLimit: parseFloat(budget.daily_limit) || 0,
+          totalBudget: parseFloat(budget.total_budget) || 0,
+          categories: budget.category_limits || {
+            food: 0,
+            transportation: 0,
+            activities: 0,
+            souvenirs: 0
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error loading budget from Supabase:', error);
+    }
+  };
+
+  const saveBudgetToSupabase = async () => {
+    try {
+      const userId = await getCurrentUserId();
+      if (!userId) return;
+
+      const { error } = await supabase
+        .from('budget_settings')
+        .upsert({
+          owner_id: userId,
+          daily_limit: budgetSettings.dailyLimit,
+          total_budget: budgetSettings.totalBudget,
+          category_limits: budgetSettings.categories
+        });
+
+      if (error) {
+        console.error('Error saving budget to Supabase:', error);
+      } else {
+        console.log('Budget saved to Supabase successfully!');
+      }
+    } catch (error) {
+      console.error('Error saving budget to Supabase:', error);
+    }
+  };
   const handleBudgetChange = (field: string, value: number) => {
     if (field === 'dailyLimit' || field === 'totalBudget') {
       setBudgetSettings(prev => ({
@@ -57,9 +127,16 @@ const BudgetTracker = () => {
     }
   };
 
-  const saveBudgetSettings = () => {
+  const saveBudgetSettings = async () => {
+    // Save to localStorage for all users
     localStorage.setItem('budgetSettings', JSON.stringify(budgetSettings));
-    alert('Budget settings saved successfully!');
+    
+    // Save to Supabase if authenticated
+    if (isAuthenticated) {
+      await saveBudgetToSupabase();
+    }
+    
+    alert(`Budget settings saved successfully!${isAuthenticated ? ' (Synced to cloud)' : ''}`);
   };
 
   const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);
@@ -179,8 +256,14 @@ const BudgetTracker = () => {
           onClick={saveBudgetSettings}
           className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
         >
-          Save Budget Settings
+          {isAuthenticated ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
         </button>
+        
+        {!isAuthenticated && (
+          <p className="mt-2 text-sm text-gray-600 text-center">
+            Sign in to sync your budget settings across devices
+          </p>
+        )}
       </div>
 
       {/* Budget Recommendations */}

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building } from 'lucide-react';
+import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, MessageCircle, Settings } from 'lucide-react';
 import { supabase, getCurrentUserId } from '../lib/supabase';
+import { useItineraryHistory } from '../hooks/useItineraryHistory';
+import ChatPanel from './ChatPanel';
+import PreferencesModal from './PreferencesModal';
+import { UserPreferences, ItineraryAction } from '../types/chat';
 
 interface ItineraryDay {
   day: number;
@@ -16,6 +20,34 @@ const TripPlanner = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showVacationLimitError, setShowVacationLimitError] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // User preferences with defaults
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>(() => {
+    const saved = localStorage.getItem('userPreferences');
+    return saved ? JSON.parse(saved) : {
+      budget: 100,
+      pace: 'moderate' as const,
+      interests: ['History & Culture', 'Food & Dining'],
+      accessibility: {
+        mobility: false,
+        dietary: [],
+        other: []
+      }
+    };
+  });
+
+  // Itinerary history for undo/redo
+  const {
+    currentItinerary: historyItinerary,
+    pushState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+  } = useItineraryHistory(itinerary);
 
   React.useEffect(() => {
     // Check authentication status
@@ -24,7 +56,90 @@ const TripPlanner = () => {
       setIsAuthenticated(!!user);
     };
     checkAuth();
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Update itinerary when history changes
+  React.useEffect(() => {
+    if (historyItinerary !== itinerary) {
+      setItinerary(historyItinerary || []);
+    }
+  }, [historyItinerary]);
+
+  const handleUpdatePreferences = (newPreferences: UserPreferences) => {
+    setUserPreferences(newPreferences);
+    localStorage.setItem('userPreferences', JSON.stringify(newPreferences));
+  };
+
+  const handleItineraryAction = (action: ItineraryAction) => {
+    let newItinerary = [...itinerary];
+    
+    switch (action.type) {
+      case 'regenerateDay':
+        if (action.payload.day && action.payload.activities) {
+          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
+          if (dayIndex !== -1) {
+            newItinerary[dayIndex] = {
+              ...newItinerary[dayIndex],
+              activities: action.payload.activities,
+              attractions: action.payload.attractions || newItinerary[dayIndex].attractions,
+              tips: action.payload.tips || newItinerary[dayIndex].tips
+            };
+          }
+        }
+        break;
+        
+      case 'insertActivity':
+        if (action.payload.day && action.payload.activity) {
+          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
+          if (dayIndex !== -1) {
+            newItinerary[dayIndex].activities.push(action.payload.activity);
+          }
+        }
+        break;
+        
+      case 'lightenDay':
+        if (action.payload.day) {
+          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
+          if (dayIndex !== -1 && newItinerary[dayIndex].activities.length > 1) {
+            newItinerary[dayIndex].activities = newItinerary[dayIndex].activities.slice(0, -1);
+          }
+        }
+        break;
+        
+      case 'updateItinerary':
+        if (action.payload.itinerary) {
+          newItinerary = action.payload.itinerary;
+        }
+        break;
+    }
+    
+    if (JSON.stringify(newItinerary) !== JSON.stringify(itinerary)) {
+      pushState(newItinerary);
+      setItinerary(newItinerary);
+    }
+  };
+
+  const handleUndo = () => {
+    const previousItinerary = undo();
+    if (previousItinerary) {
+      setItinerary(previousItinerary);
+    }
+  };
+
+  const handleRedo = () => {
+    const nextItinerary = redo();
+    if (nextItinerary) {
+      setItinerary(nextItinerary);
+    }
+  };
 
   const handleDaysChange = (value: string) => {
     const numDays = parseInt(value);
@@ -66,6 +181,9 @@ const TripPlanner = () => {
       const generatedItinerary = data.itinerary;
       setItinerary(generatedItinerary);
       
+      // Push to history
+      pushState(generatedItinerary);
+      
       // Save to both localStorage and Supabase
       const tripData = {
         destination,
@@ -104,6 +222,9 @@ const TripPlanner = () => {
       }
       
       setItinerary(fallbackItinerary);
+      
+      // Push to history
+      pushState(fallbackItinerary);
       
       // Save fallback data
       const tripData = {
@@ -203,6 +324,27 @@ const TripPlanner = () => {
 
   return (
     <div className="space-y-8">
+      {/* Action Bar */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setIsPreferencesOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            <Settings className="h-4 w-4" />
+            <span className="text-sm font-medium">Preferences</span>
+          </button>
+        </div>
+        
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02]"
+        >
+          <MessageCircle className="h-4 w-4" />
+          <span className="font-medium">AI Assistant</span>
+        </button>
+      </div>
+
       {/* Trip Planning Form */}
       <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
         <div className="flex items-center space-x-3 mb-6">
@@ -348,6 +490,29 @@ const TripPlanner = () => {
           ))}
         </div>
       )}
+
+      {/* Chat Panel */}
+      <ChatPanel
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        userPreferences={userPreferences}
+        onUpdatePreferences={handleUpdatePreferences}
+        currentItinerary={itinerary}
+        onItineraryAction={handleItineraryAction}
+        onUndo={handleUndo}
+        onRedo={handleRedo}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        isMobile={isMobile}
+      />
+
+      {/* Preferences Modal */}
+      <PreferencesModal
+        isOpen={isPreferencesOpen}
+        onClose={() => setIsPreferencesOpen(false)}
+        preferences={userPreferences}
+        onSave={handleUpdatePreferences}
+      />
     </div>
   );
 };

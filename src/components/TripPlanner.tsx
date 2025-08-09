@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, ArrowRight, DollarSign } from 'lucide-react';
 
 interface ItineraryDay {
   day: number;
@@ -19,9 +19,30 @@ interface Destination {
   duration: string;
 }
 
+interface TripFormData {
+  destination: string;
+  startDate: string;
+  duration: string;
+  groupSize: string;
+  dailyBudget: string;
+  currency: string;
+  interests: string;
+  exclusions: string;
+  otherNotes: string;
+}
+
 const TripPlanner = () => {
-  const [destination, setDestination] = useState('');
-  const [days, setDays] = useState('');
+  const [formData, setFormData] = useState<TripFormData>({
+    destination: '',
+    startDate: '',
+    duration: '',
+    groupSize: '',
+    dailyBudget: '',
+    currency: 'USD',
+    interests: '',
+    exclusions: '',
+    otherNotes: ''
+  });
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDestinations, setShowDestinations] = useState(true);
@@ -136,33 +157,43 @@ const TripPlanner = () => {
   }, []);
 
   const selectDestination = (dest: Destination) => {
-    setDestination(`${dest.name}, ${dest.country}`);
-    setDays('7'); // Default to 7 days
+    setFormData(prev => ({
+      ...prev,
+      destination: `${dest.name}, ${dest.country}`,
+      duration: '7' // Default to 7 days
+    }));
     setShowDestinations(false);
+  };
+
+  const handleInputChange = (field: keyof TripFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   // Simulated AI-generated itineraries
   const generateItinerary = async () => {
-    if (!destination || !days) return;
+    if (!formData.destination || !formData.duration) return;
     
     setIsGenerating(true);
     
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const numDays = parseInt(days);
+    const numDays = parseInt(formData.duration);
     const mockItinerary: ItineraryDay[] = [];
     
     for (let i = 1; i <= numDays; i++) {
       mockItinerary.push({
         day: i,
         activities: [
-          `Morning: Explore ${destination} city center`,
+          `Morning: Explore ${formData.destination} city center`,
           `Afternoon: Visit local museums and galleries`,
           `Evening: Sunset dinner at rooftop restaurant`
         ],
         attractions: [
-          `${destination} Historic District`,
+          `${formData.destination} Historic District`,
           'Local Art Museum',
           'Central Park/Square',
           'Popular Viewpoint'
@@ -176,7 +207,7 @@ const TripPlanner = () => {
     
     // Save to localStorage
     localStorage.setItem('currentTrip', JSON.stringify({
-      destination,
+      destination: formData.destination,
       days: numDays,
       itinerary: mockItinerary
     }));
@@ -185,15 +216,24 @@ const TripPlanner = () => {
   const resetToDestinations = () => {
     setShowDestinations(true);
     setItinerary([]);
-    setDestination('');
-    setDays('');
+    setFormData({
+      destination: '',
+      startDate: '',
+      duration: '',
+      groupSize: '',
+      dailyBudget: '',
+      currency: 'USD',
+      interests: '',
+      exclusions: '',
+      otherNotes: ''
+    });
   };
 
   if (!showDestinations) {
     return (
       <div className="space-y-8">
         {/* Trip Planning Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl">
@@ -209,41 +249,147 @@ const TripPlanner = () => {
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            {/* Row 1: Destination and Start Date */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <MapPin className="inline h-4 w-4 mr-1" />
+                  Where are you going?
+                </label>
+                <input
+                  type="text"
+                  value={formData.destination}
+                  onChange={(e) => handleInputChange('destination', e.target.value)}
+                  placeholder="City, country, or multiple locations"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <Calendar className="inline h-4 w-4 mr-1" />
+                  When does your trip begin?
+                </label>
+                <input
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) => handleInputChange('startDate', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: Duration and Group Size */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <Clock className="inline h-4 w-4 mr-1" />
+                  How much time do you have?
+                </label>
+                <input
+                  type="number"
+                  value={formData.duration}
+                  onChange={(e) => handleInputChange('duration', e.target.value)}
+                  placeholder="Number of days"
+                  min="1"
+                  max="365"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  How many people are in your group?
+                </label>
+                <input
+                  type="number"
+                  value={formData.groupSize}
+                  onChange={(e) => handleInputChange('groupSize', e.target.value)}
+                  placeholder="Number of travelers"
+                  min="1"
+                  max="50"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {/* Row 3: Daily Budget */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <MapPin className="inline h-4 w-4 mr-1" />
-                Destination
+                <DollarSign className="inline h-4 w-4 mr-1" />
+                What is your daily budget per person?
               </label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                placeholder="Where are you traveling to?"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              />
+              <div className="flex space-x-3">
+                <input
+                  type="number"
+                  value={formData.dailyBudget}
+                  onChange={(e) => handleInputChange('dailyBudget', e.target.value)}
+                  placeholder="Amount"
+                  min="0"
+                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                />
+                <select
+                  value={formData.currency}
+                  onChange={(e) => handleInputChange('currency', e.target.value)}
+                  className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                >
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="JPY">JPY</option>
+                  <option value="CAD">CAD</option>
+                  <option value="AUD">AUD</option>
+                </select>
+              </div>
             </div>
             
+            {/* Row 4: Interests */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <Calendar className="inline h-4 w-4 mr-1" />
-                Number of Days
+                What do you want to see and do?
               </label>
-              <input
-                type="number"
-                value={days}
-                onChange={(e) => setDays(e.target.value)}
-                placeholder="How many days?"
-                min="1"
-                max="30"
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              <textarea
+                value={formData.interests}
+                onChange={(e) => handleInputChange('interests', e.target.value)}
+                placeholder="Describe your interests: museums, outdoor activities, nightlife, local cuisine, historical sites, etc."
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+              />
+            </div>
+
+            {/* Row 5: Exclusions */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                What would you prefer to exclude?
+              </label>
+              <textarea
+                value={formData.exclusions}
+                onChange={(e) => handleInputChange('exclusions', e.target.value)}
+                placeholder="Things you'd rather avoid: crowded places, expensive activities, certain types of food, etc."
+                rows={2}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+              />
+            </div>
+
+            {/* Row 6: Other Notes */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Other Notes
+              </label>
+              <textarea
+                value={formData.otherNotes}
+                onChange={(e) => handleInputChange('otherNotes', e.target.value)}
+                placeholder="Accessibility needs, dietary restrictions, transportation preferences, special occasions, etc."
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               />
             </div>
           </div>
           
           <button
             onClick={generateItinerary}
-            disabled={!destination || !days || isGenerating}
+            disabled={!formData.destination || !formData.duration || isGenerating}
             className="mt-6 w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02]"
           >
             {isGenerating ? (
@@ -265,7 +411,7 @@ const TripPlanner = () => {
                 <Clock className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900">
-                Your {destination} Itinerary ({days} Days)
+                Your {formData.destination} Itinerary ({formData.duration} Days)
               </h3>
             </div>
             

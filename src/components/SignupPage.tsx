@@ -53,16 +53,23 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted with data:', formData);
+    console.log('Validation starting...');
+    
     if (!validateForm()) return;
     
+    console.log('Validation passed, attempting signup...');
     setAuthError('');
     setIsLoading(true);
     
     try {
+      console.log('Calling signUp function...');
       await signUp(formData.email, formData.password, formData.name);
+      console.log('SignUp successful!');
       setIsLoading(false);
       onSignup();
     } catch (error: any) {
+      console.error('SignUp error:', error);
       setIsLoading(false);
       setAuthError(error.message || 'Signup failed. Please try again.');
     }

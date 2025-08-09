@@ -17,6 +17,8 @@ export interface AuthUser {
 
 // Sign up with email and password
 export const signUp = async (email: string, password: string, fullName: string) => {
+  console.log('signUp called with:', { email, fullName });
+  
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -29,9 +31,11 @@ export const signUp = async (email: string, password: string, fullName: string) 
   });
 
   if (error) {
+    console.error('Supabase signUp error:', error);
     throw error;
   }
 
+  console.log('Supabase signUp success:', data);
   return data;
 };
 

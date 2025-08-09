@@ -14,6 +14,7 @@ import Settings from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import DebugPanel from './components/DebugPanel';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
 type PageType = 'landing' | 'login' | 'signup' | 'reset-password' | 'app';
@@ -549,6 +550,9 @@ function App() {
           })}
         </div>
       </nav>
+      
+      {/* Debug Panel - only show in development */}
+      {import.meta.env.DEV && <DebugPanel />}
     </div>
   );
 }

@@ -59,12 +59,32 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
     setIsLoading(true);
     
     try {
+      console.log('Starting signup process...');
       await signUp(formData.email, formData.password, formData.name);
+      console.log('Signup completed successfully');
       setIsLoading(false);
       onSignup();
     } catch (error: any) {
+      console.error('Signup failed:', error);
       setIsLoading(false);
-      setAuthError(error.message || 'Signup failed. Please try again.');
+      
+      // More detailed error handling
+      let errorMessage = 'Signup failed. Please try again.';
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      // Handle specific Supabase errors
+      if (error.message?.includes('Invalid API key')) {
+        errorMessage = 'Configuration error: Invalid API key. Please check your Supabase settings.';
+      } else if (error.message?.includes('signup is disabled')) {
+        errorMessage = 'User registration is currently disabled. Please contact support.';
+      } else if (error.message?.includes('email')) {
+        errorMessage = 'Email-related error. Please check your email address or try again later.';
+      }
+      
+      setAuthError(errorMessage);
     }
   };
 

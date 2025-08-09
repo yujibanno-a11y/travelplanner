@@ -149,9 +149,6 @@ function App() {
                   isDarkMode ? 'text-white' : 'text-gray-900'
                 }`}>
                   TravelPlanner</h1>
-                  isDarkMode ? 'text-white' : 'text-gray-900'
-                }`}>
-                  TravelPlanner</h1>
               </div>
               
               {/* Auth Container - Right Side */}

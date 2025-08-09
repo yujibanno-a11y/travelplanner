@@ -362,7 +362,7 @@ const TripPlanner = () => {
           <GlassButton
             variant="primary"
             size="md"
-          onClick={() => setIsChatOpen(true)}
+            onClick={() => setIsChatOpen(true)}
             className="shadow-glow-primary"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
@@ -401,24 +401,25 @@ const TripPlanner = () => {
               />
             </motion.div>
           
-          <div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
-            >
-              <label className="block text-sm font-semibold text-white/80 mb-3">
-                <Calendar className="inline h-4 w-4 mr-2 text-secondary-400" />
-                Number of Days
-              </label>
-              <GlassInput
-                type="number"
-                value={days}
-                onChange={(e) => handleDaysChange(e.target.value)}
-                placeholder="How many days?"
-                icon={<Calendar className="h-4 w-4" />}
-              />
-            </motion.div>
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+              >
+                <label className="block text-sm font-semibold text-white/80 mb-3">
+                  <Calendar className="inline h-4 w-4 mr-2 text-secondary-400" />
+                  Number of Days
+                </label>
+                <GlassInput
+                  type="number"
+                  value={days}
+                  onChange={(e) => handleDaysChange(e.target.value)}
+                  placeholder="How many days?"
+                  icon={<Calendar className="h-4 w-4" />}
+                />
+              </motion.div>
+            </div>
           </div>
         
           {/* Vacation Limit Error */}
@@ -516,7 +517,7 @@ const TripPlanner = () => {
             </h3>
           </motion.div>
           
-          {itinerary.map((day) => (
+          {itinerary.map((day, index) => (
             <motion.div
               key={day.day}
               initial={{ opacity: 0, y: 30 }}
@@ -530,7 +531,7 @@ const TripPlanner = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ duration: 0.2 }}
                   >
-                  Day {day.day}
+                    Day {day.day}
                   </motion.div>
                 </div>
               
@@ -542,22 +543,21 @@ const TripPlanner = () => {
                   >
                     <h4 className="flex items-center text-xl font-display font-semibold text-white mb-4">
                       <Clock className="h-6 w-6 mr-3 text-primary-400" />
-                    Activities
+                      Activities
                     </h4>
                     <ul className="space-y-3">
-                    {day.activities.map((activity, index) => (
-                      <motion.li 
-                        key={index} 
-                        className="flex items-start space-x-3"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.8 + index * 0.05, ease: 'easeOut' }}
-                      >
-                        <div className="w-3 h-3 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-primary"></div>
-                        <span className="text-white/90 leading-relaxed">{activity}</span>
-                      </motion.li>
-                      </li>
-                    ))}
+                      {day.activities.map((activity, activityIndex) => (
+                        <motion.li 
+                          key={activityIndex} 
+                          className="flex items-start space-x-3"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: 0.8 + activityIndex * 0.05, ease: 'easeOut' }}
+                        >
+                          <div className="w-3 h-3 bg-gradient-to-r from-primary-400 to-secondary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-primary"></div>
+                          <span className="text-white/90 leading-relaxed">{activity}</span>
+                        </motion.li>
+                      ))}
                     </ul>
                   </motion.div>
                 
@@ -568,22 +568,21 @@ const TripPlanner = () => {
                   >
                     <h4 className="flex items-center text-xl font-display font-semibold text-white mb-4">
                       <Camera className="h-6 w-6 mr-3 text-secondary-400" />
-                    Must-Visit Attractions
+                      Must-Visit Attractions
                     </h4>
                     <ul className="space-y-3">
-                    {day.attractions.map((attraction, index) => (
-                      <motion.li 
-                        key={index} 
-                        className="flex items-start space-x-3"
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.9 + index * 0.05, ease: 'easeOut' }}
-                      >
-                        <div className="w-3 h-3 bg-gradient-to-r from-secondary-400 to-primary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-secondary"></div>
-                        <span className="text-white/90 leading-relaxed">{attraction}</span>
-                      </motion.li>
-                      </li>
-                    ))}
+                      {day.attractions.map((attraction, attractionIndex) => (
+                        <motion.li 
+                          key={attractionIndex} 
+                          className="flex items-start space-x-3"
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.4, delay: 0.9 + attractionIndex * 0.05, ease: 'easeOut' }}
+                        >
+                          <div className="w-3 h-3 bg-gradient-to-r from-secondary-400 to-primary-400 rounded-full mt-2 flex-shrink-0 shadow-glow-secondary"></div>
+                          <span className="text-white/90 leading-relaxed">{attraction}</span>
+                        </motion.li>
+                      ))}
                     </ul>
                   </motion.div>
                 </div>

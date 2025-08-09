@@ -249,6 +249,10 @@ const TripPlanner = () => {
         
         {/* Vacation Limit Warning */}
         {days && parseInt(days) > 30 && (
+          <p className="mt-2 text-sm text-red-600 text-center">
+            Maximum 30 days allowed
+          </p>
+        )}
       </div>
 
       {/* Generated Itinerary */}

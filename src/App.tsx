@@ -194,6 +194,14 @@ function App() {
     );
   }
 
+  if (currentPage === 'find-job') {
+    return (
+      <FindJobPage
+        onBack={() => setCurrentPage('app')}
+      />
+    );
+  }
+
   // Landing Page (Marketing/Unauthenticated)
   if (currentPage === 'landing') {
     return (

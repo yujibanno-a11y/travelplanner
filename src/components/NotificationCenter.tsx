@@ -1,33 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, AlertTriangle, CheckCircle, Info, X, Settings } from 'lucide-react';
-
-interface Notification {
-  id: string;
-  type: 'budget_exceeded' | 'category_limit' | 'daily_summary' | 'recommendation';
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-}
+import { useNotifications } from '../hooks/useSupabaseData';
 
 const NotificationCenter = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notifications, markAsRead, deleteNotification, addNotification } = useNotifications();
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [textNotifications, setTextNotifications] = useState(true);
   const [dailySummary, setDailySummary] = useState(true);
   const [budgetAlerts, setBudgetAlerts] = useState(true);
 
   useEffect(() => {
-    // Load notifications from localStorage
-    const savedNotifications = localStorage.getItem('notifications');
-    if (savedNotifications) {
-      const parsed = JSON.parse(savedNotifications).map((notif: any) => ({
-        ...notif,
-        timestamp: new Date(notif.timestamp)
-      }));
-      setNotifications(parsed);
-    }
-
     // Load notification settings
     const settings = localStorage.getItem('notificationSettings');
     if (settings) {
@@ -37,69 +19,9 @@ const NotificationCenter = () => {
       setDailySummary(parsedSettings.dailySummary ?? true);
       setBudgetAlerts(parsedSettings.budgetAlerts ?? true);
     }
-
-    // Generate some sample notifications
-    generateSampleNotifications();
   }, []);
 
-  const generateSampleNotifications = () => {
-    const sampleNotifications: Notification[] = [
-      {
-        id: '1',
-        type: 'budget_exceeded',
-        title: 'Daily Budget Exceeded',
-        message: 'You have spent $85 today, exceeding your daily limit of $75.',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-        read: false
-      },
-      {
-        id: '2',
-        type: 'category_limit',
-        title: 'Food Budget Alert',
-        message: 'Your food expenses for today ($35) have reached your daily limit.',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-        read: false
-      },
-      {
-        id: '3',
-        type: 'daily_summary',
-        title: 'Daily Expense Summary',
-        message: 'Yesterday you spent $62 total. Food: $25, Transportation: $15, Activities: $22.',
-        timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-        read: true
-      },
-      {
-        id: '4',
-        type: 'recommendation',
-        title: 'Budget-Friendly Recommendation',
-        message: 'Based on your remaining budget, try the local food market for affordable meals!',
-        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-        read: false
-      }
-    ];
-
-    const existing = localStorage.getItem('notifications');
-    if (!existing) {
-      setNotifications(sampleNotifications);
-      localStorage.setItem('notifications', JSON.stringify(sampleNotifications));
-    }
-  };
-
-  const markAsRead = (id: string) => {
-    const updatedNotifications = notifications.map(notif =>
-      notif.id === id ? { ...notif, read: true } : notif
-    );
-    setNotifications(updatedNotifications);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-  };
-
-  const deleteNotification = (id: string) => {
-    const updatedNotifications = notifications.filter(notif => notif.id !== id);
-    setNotifications(updatedNotifications);
-    localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
-  };
-
-  const saveNotificationSettings = () => {
+  const saveNotificationSettings = async () => {
     const settings = {
       email: emailNotifications,
       text: textNotifications,
@@ -109,18 +31,12 @@ const NotificationCenter = () => {
     localStorage.setItem('notificationSettings', JSON.stringify(settings));
     
     // Add a confirmation notification
-    const confirmationNotif: Notification = {
-      id: Date.now().toString(),
+    await addNotification({
       type: 'recommendation',
       title: 'Settings Updated',
       message: 'Your notification preferences have been saved successfully.',
-      timestamp: new Date(),
       read: false
-    };
-    
-    const updated = [confirmationNotif, ...notifications];
-    setNotifications(updated);
-    localStorage.setItem('notifications', JSON.stringify(updated));
+    });
   };
 
   const getNotificationIcon = (type: string) => {
@@ -252,8 +168,8 @@ const NotificationCenter = () => {
                     </div>
                     <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
                     <p className="text-xs text-gray-500">
-                      {notification.timestamp.toLocaleDateString()} at{' '}
-                      {notification.timestamp.toLocaleTimeString([], { 
+                      {new Date(notification.created_at).toLocaleDateString()} at{' '}
+                      {new Date(notification.created_at).toLocaleTimeString([], { 
                         hour: '2-digit', 
                         minute: '2-digit' 
                       })}

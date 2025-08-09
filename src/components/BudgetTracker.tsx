@@ -1,68 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Target, TrendingUp, AlertCircle, PiggyBank } from 'lucide-react';
-
-interface BudgetSettings {
-  dailyLimit: number;
-  totalBudget: number;
-  categories: {
-    food: number;
-    transportation: number;
-    activities: number;
-    souvenirs: number;
-  };
-}
+import { useBudgetSettings, useItineraries } from '../hooks/useSupabaseData';
 
 const BudgetTracker = () => {
-  const [budgetSettings, setBudgetSettings] = useState<BudgetSettings>({
-    dailyLimit: 0,
-    totalBudget: 0,
-    categories: {
+  const { budgetSettings, updateBudgetSettings, loading } = useBudgetSettings();
+  const { itineraries } = useItineraries();
+  const [localSettings, setLocalSettings] = useState({
+    daily_limit: 0,
+    total_budget: 0,
+    category_limits: {
       food: 0,
       transportation: 0,
       activities: 0,
       souvenirs: 0
     }
   });
-  
-  const [currentTrip, setCurrentTrip] = useState<any>(null);
 
   useEffect(() => {
-    // Load current trip and budget settings
-    const tripData = localStorage.getItem('currentTrip');
-    const budgetData = localStorage.getItem('budgetSettings');
-    
-    if (tripData) {
-      setCurrentTrip(JSON.parse(tripData));
+    if (budgetSettings) {
+      setLocalSettings({
+        daily_limit: budgetSettings.daily_limit,
+        total_budget: budgetSettings.total_budget,
+        category_limits: budgetSettings.category_limits
+      });
     }
-    
-    if (budgetData) {
-      setBudgetSettings(JSON.parse(budgetData));
-    }
-  }, []);
+  }, [budgetSettings]);
+
+  const currentTrip = itineraries.length > 0 ? itineraries[0] : null;
 
   const handleBudgetChange = (field: string, value: number) => {
-    if (field === 'dailyLimit' || field === 'totalBudget') {
-      setBudgetSettings(prev => ({
+    if (field === 'daily_limit' || field === 'total_budget') {
+      setLocalSettings(prev => ({
         ...prev,
         [field]: value
       }));
     } else {
-      setBudgetSettings(prev => ({
+      setLocalSettings(prev => ({
         ...prev,
-        categories: {
-          ...prev.categories,
+        category_limits: {
+          ...prev.category_limits,
           [field]: value
         }
       }));
     }
   };
 
-  const saveBudgetSettings = () => {
-    localStorage.setItem('budgetSettings', JSON.stringify(budgetSettings));
-    alert('Budget settings saved successfully!');
+  const saveBudgetSettings = async () => {
+    await updateBudgetSettings(localSettings);
   };
 
-  const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);
+  const totalCategoryBudget = Object.values(localSettings.category_limits).reduce((sum, val) => sum + val, 0);
 
   return (
     <div className="space-y-8">
@@ -82,11 +69,11 @@ const BudgetTracker = () => {
             </div>
             <div className="bg-white bg-opacity-20 rounded-xl p-4">
               <h3 className="text-lg font-semibold mb-2">Daily Budget</h3>
-              <p className="text-2xl font-bold">${budgetSettings.dailyLimit}</p>
+              <p className="text-2xl font-bold">${localSettings.daily_limit}</p>
             </div>
             <div className="bg-white bg-opacity-20 rounded-xl p-4">
               <h3 className="text-lg font-semibold mb-2">Total Budget</h3>
-              <p className="text-2xl font-bold">${budgetSettings.totalBudget}</p>
+              <p className="text-2xl font-bold">${localSettings.total_budget}</p>
             </div>
           </div>
         ) : (
@@ -115,8 +102,8 @@ const BudgetTracker = () => {
               <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <input
                 type="number"
-                value={budgetSettings.dailyLimit}
-                onChange={(e) => handleBudgetChange('dailyLimit', parseFloat(e.target.value) || 0)}
+                value={localSettings.daily_limit}
+                onChange={(e) => handleBudgetChange('daily_limit', parseFloat(e.target.value) || 0)}
                 placeholder="Enter daily limit"
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -131,8 +118,8 @@ const BudgetTracker = () => {
               <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <input
                 type="number"
-                value={budgetSettings.totalBudget}
-                onChange={(e) => handleBudgetChange('totalBudget', parseFloat(e.target.value) || 0)}
+                value={localSettings.total_budget}
+                onChange={(e) => handleBudgetChange('total_budget', parseFloat(e.target.value) || 0)}
                 placeholder="Enter total budget"
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -144,7 +131,7 @@ const BudgetTracker = () => {
         <div className="mb-8">
           <h4 className="text-xl font-bold text-gray-900 mb-4">Daily Category Limits</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(budgetSettings.categories).map(([category, amount]) => (
+            {Object.entries(localSettings.category_limits).map(([category, amount]) => (
               <div key={category} className="bg-gray-50 rounded-xl p-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 capitalize">
                   {category}
@@ -163,12 +150,12 @@ const BudgetTracker = () => {
             ))}
           </div>
           
-          {totalCategoryBudget > budgetSettings.dailyLimit && budgetSettings.dailyLimit > 0 && (
+          {totalCategoryBudget > localSettings.daily_limit && localSettings.daily_limit > 0 && (
             <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
               <div className="flex items-center space-x-2">
                 <AlertCircle className="h-5 w-5 text-red-500" />
                 <p className="text-red-700 font-medium">
-                  Category totals (${totalCategoryBudget}) exceed daily limit (${budgetSettings.dailyLimit})
+                  Category totals (${totalCategoryBudget}) exceed daily limit (${localSettings.daily_limit})
                 </p>
               </div>
             </div>
@@ -177,9 +164,10 @@ const BudgetTracker = () => {
 
         <button
           onClick={saveBudgetSettings}
+          disabled={loading}
           className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
         >
-          Save Budget Settings
+          {loading ? 'Saving...' : 'Save Budget Settings'}
         </button>
       </div>
 

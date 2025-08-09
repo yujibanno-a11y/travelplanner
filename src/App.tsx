@@ -1,27 +1,37 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
+
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet, User } from 'lucide-react';
 import { Route, Target, ReceiptText, PieChart, AlertTriangle } from 'lucide-react';
+import { AuthProvider } from './contexts/AuthContext';
 import { useEffect } from 'react';
+import AuthGuard from './components/auth/AuthGuard';
+import { useAuth } from './contexts/AuthContext';
+
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
 import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
+
 import Settings from './components/Settings';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
+import UserProfile from './components/UserProfile';
 
 type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
 type PageType = 'landing' | 'login' | 'signup' | 'reset-password' | 'app';
 
-function App() {
+
+function AppContent() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
+
   const [budgetSubmenuOpen, setBudgetSubmenuOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { profile, signOut } = useAuth();
 
   useEffect(() => {
     // Load theme preference
@@ -63,7 +73,9 @@ function App() {
     },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
     { id: 'notifications', label: 'Alerts', icon: Bell },
+
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
+
   ];
 
   const handleTabClick = (tabId: string, hasSubmenu?: boolean) => {
@@ -337,8 +349,10 @@ function App() {
         return <ExpenseSpreadsheet />;
       case 'notifications':
         return <NotificationCenter />;
+
       case 'settings':
         return <Settings />;
+
       default:
         return <TripPlanner />;
     }
@@ -362,6 +376,7 @@ function App() {
                   <DollarSign className="h-2.5 w-2.5 text-white" />
                 </div>
               </div>
+
               <h1 className={`text-2xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
@@ -480,6 +495,16 @@ function App() {
         </div>
       </nav>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AuthGuard>
+        <AppContent />
+      </AuthGuard>
+    </AuthProvider>
   );
 }
 

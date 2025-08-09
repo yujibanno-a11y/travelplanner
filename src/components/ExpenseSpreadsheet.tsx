@@ -1,29 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Calendar, TrendingUp, PieChart } from 'lucide-react';
-
-interface Expense {
-  id: string;
-  category: 'food' | 'transportation' | 'activities' | 'souvenirs';
-  amount: number;
-  description: string;
-  timestamp: Date;
-}
+import { useExpenses } from '../hooks/useSupabaseData';
 
 const ExpenseSpreadsheet = () => {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { expenses } = useExpenses();
   const [sortBy, setSortBy] = useState<'date' | 'amount' | 'category'>('date');
   const [filterBy, setFilterBy] = useState<string>('all');
-
-  useEffect(() => {
-    const savedExpenses = localStorage.getItem('expenses');
-    if (savedExpenses) {
-      const parsedExpenses = JSON.parse(savedExpenses).map((expense: any) => ({
-        ...expense,
-        timestamp: new Date(expense.timestamp)
-      }));
-      setExpenses(parsedExpenses);
-    }
-  }, []);
 
   const sortedAndFilteredExpenses = expenses
     .filter(expense => filterBy === 'all' || expense.category === filterBy)
@@ -35,7 +17,7 @@ const ExpenseSpreadsheet = () => {
           return a.category.localeCompare(b.category);
         case 'date':
         default:
-          return b.timestamp.getTime() - a.timestamp.getTime();
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
 
@@ -47,7 +29,7 @@ const ExpenseSpreadsheet = () => {
   }, {} as Record<string, number>);
 
   const dailyExpenses = expenses.reduce((acc, expense) => {
-    const date = expense.timestamp.toDateString();
+    const date = new Date(expense.created_at).toDateString();
     acc[date] = (acc[date] || 0) + expense.amount;
     return acc;
   }, {} as Record<string, number>);
@@ -58,7 +40,7 @@ const ExpenseSpreadsheet = () => {
       headers.join(','),
       ...sortedAndFilteredExpenses.map(expense => 
         [
-          expense.timestamp.toLocaleDateString(),
+          new Date(expense.created_at).toLocaleDateString(),
           expense.category,
           expense.amount,
           `"${expense.description.replace(/"/g, '""')}"`
@@ -209,9 +191,9 @@ const ExpenseSpreadsheet = () => {
               {sortedAndFilteredExpenses.map((expense, index) => (
                 <tr key={expense.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {expense.timestamp.toLocaleDateString()}
+                    {new Date(expense.created_at).toLocaleDateString()}
                     <div className="text-xs text-gray-500">
-                      {expense.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(expense.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

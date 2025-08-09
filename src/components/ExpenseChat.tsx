@@ -1,13 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, DollarSign, Coffee, Car, Camera, ShoppingBag, Bot, User } from 'lucide-react';
-
-interface Expense {
-  id: string;
-  category: 'food' | 'transportation' | 'activities' | 'souvenirs';
-  amount: number;
-  description: string;
-  timestamp: Date;
-}
+import { useExpenses, useBudgetSettings, useNotifications } from '../hooks/useSupabaseData';
 
 interface Message {
   id: string;
@@ -19,7 +12,9 @@ interface Message {
 const ExpenseChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const { expenses, addExpense } = useExpenses();
+  const { budgetSettings } = useBudgetSettings();
+  const { addNotification } = useNotifications();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const categoryIcons = {
@@ -37,12 +32,6 @@ const ExpenseChat = () => {
   };
 
   useEffect(() => {
-    // Load existing expenses
-    const savedExpenses = localStorage.getItem('expenses');
-    if (savedExpenses) {
-      setExpenses(JSON.parse(savedExpenses));
-    }
-
     // Initial bot message
     addBotMessage("Hi! I'm your expense tracking assistant. You can tell me about your expenses like: 'I spent $25 on lunch at the local cafe' or 'Taxi to airport cost $40'");
   }, []);
@@ -101,22 +90,18 @@ const ExpenseChat = () => {
     }
     
     return {
-      id: Date.now().toString(),
       category,
       amount,
       description: text,
-      timestamp: new Date()
     };
   };
 
-  const checkBudgetAlert = (newExpense: Expense) => {
-    const budgetSettings = localStorage.getItem('budgetSettings');
+  const checkBudgetAlert = async (newExpense: any) => {
     if (!budgetSettings) return;
     
-    const budget = JSON.parse(budgetSettings);
     const today = new Date().toDateString();
-    const todaysExpenses = [...expenses, newExpense].filter(
-      expense => new Date(expense.timestamp).toDateString() === today
+    const todaysExpenses = expenses.filter(
+      expense => new Date(expense.created_at).toDateString() === today
     );
     
     const totalToday = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -124,14 +109,28 @@ const ExpenseChat = () => {
       .filter(expense => expense.category === newExpense.category)
       .reduce((sum, expense) => sum + expense.amount, 0);
     
-    if (totalToday > budget.dailyLimit) {
-      addBotMessage(`⚠️ Budget Alert! You've exceeded your daily limit of $${budget.dailyLimit}. Today's total: $${totalToday.toFixed(2)}`);
-    } else if (categoryTotal > budget.categories[newExpense.category]) {
-      addBotMessage(`⚠️ Category Alert! You've exceeded your ${newExpense.category} budget of $${budget.categories[newExpense.category]}. Category total: $${categoryTotal.toFixed(2)}`);
+    if (totalToday > budgetSettings.daily_limit) {
+      const message = `⚠️ Budget Alert! You've exceeded your daily limit of $${budgetSettings.daily_limit}. Today's total: $${totalToday.toFixed(2)}`;
+      addBotMessage(message);
+      await addNotification({
+        type: 'budget_exceeded',
+        title: 'Daily Budget Exceeded',
+        message,
+        read: false
+      });
+    } else if (categoryTotal > budgetSettings.category_limits[newExpense.category]) {
+      const message = `⚠️ Category Alert! You've exceeded your ${newExpense.category} budget of $${budgetSettings.category_limits[newExpense.category]}. Category total: $${categoryTotal.toFixed(2)}`;
+      addBotMessage(message);
+      await addNotification({
+        type: 'category_limit',
+        title: `${newExpense.category} Budget Alert`,
+        message,
+        read: false
+      });
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -139,18 +138,22 @@ const ExpenseChat = () => {
     
     const expense = parseExpenseFromText(input);
     if (expense) {
-      const updatedExpenses = [...expenses, expense];
-      setExpenses(updatedExpenses);
-      localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
+      const { data, error } = await addExpense(expense);
       
-      checkBudgetAlert(expense);
+      if (error) {
+        addBotMessage("Sorry, I couldn't save that expense. Please try again.");
+        setInput('');
+        return;
+      }
       
-      const Icon = categoryIcons[expense.category];
+      await checkBudgetAlert(expense);
+      
+      const todaysTotal = expenses
+        .filter(e => new Date(e.created_at).toDateString() === new Date().toDateString())
+        .reduce((sum, e) => sum + e.amount, 0) + expense.amount;
+        
       addBotMessage(
-        `✅ Expense recorded: $${expense.amount.toFixed(2)} for ${expense.category}. Total expenses today: $${updatedExpenses
-          .filter(e => new Date(e.timestamp).toDateString() === new Date().toDateString())
-          .reduce((sum, e) => sum + e.amount, 0)
-          .toFixed(2)}`
+        `✅ Expense recorded: $${expense.amount.toFixed(2)} for ${expense.category}. Total expenses today: $${todaysTotal.toFixed(2)}`
       );
     } else {
       addBotMessage("I couldn't understand that expense. Please try something like: 'I spent $25 on lunch' or 'Taxi cost $15'");
@@ -241,7 +244,7 @@ const ExpenseChat = () => {
           {Object.entries(categoryIcons).map(([category, Icon]) => {
             const todaysExpenses = expenses.filter(
               expense => expense.category === category && 
-              new Date(expense.timestamp).toDateString() === new Date().toDateString()
+              new Date(expense.created_at).toDateString() === new Date().toDateString()
             );
             const total = todaysExpenses.reduce((sum, expense) => sum + expense.amount, 0);
             

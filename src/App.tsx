@@ -27,9 +27,6 @@ function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
-    // Check initial auth state
-    checkAuthState();
-    
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -50,6 +47,23 @@ function App() {
         }
       }
     );
+
+    // Check initial auth state only once
+    const checkInitialAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const user = await getCurrentUser();
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          setCurrentPage('app');
+        }
+      } catch (error) {
+        console.error('Error checking initial auth state:', error);
+      }
+    };
+    
+    checkInitialAuth();
 
     // Load theme preference
     const savedSettings = localStorage.getItem('userSettings');
@@ -101,19 +115,6 @@ function App() {
     }
   };
 
-  const checkAuthState = async () => {
-    try {
-      const user = await getCurrentUser();
-      if (user) {
-        setCurrentUser(user);
-        setIsAuthenticated(true);
-        setCurrentPage('app');
-      }
-    } catch (error) {
-      console.error('Error checking auth state:', error);
-    }
-  };
-
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },
     { 
@@ -147,11 +148,13 @@ function App() {
   };
 
   const handleLogin = () => {
-    // Auth state will be handled by the auth state listener
+    // Auth state is handled by the auth state listener
+    // No additional action needed here
   };
 
   const handleSignup = () => {
-    // Auth state will be handled by the auth state listener
+    // Auth state is handled by the auth state listener  
+    // No additional action needed here
   };
 
   const handleLogout = async () => {

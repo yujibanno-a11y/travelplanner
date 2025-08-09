@@ -282,7 +282,7 @@ const TripPlanner = () => {
         
         {!isAuthenticated && (
           <p className="mt-2 text-sm text-gray-600 text-center">
-            Sign in to save your itineraries to the cloud
+            Sign in to save your itineraries
           </p>
         )}
       </div>

@@ -6,8 +6,9 @@ import ExpenseChat from './components/ExpenseChat';
 import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
+import ToursAndExcursions from './components/ToursAndExcursions';
 
-type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications';
+type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'tours' | 'spreadsheet' | 'notifications';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
@@ -17,6 +18,7 @@ function App() {
     { id: 'budget', label: 'Budget', icon: DollarSign },
     { id: 'expenses', label: 'Add Expenses', icon: MessageCircle },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
+    { id: 'tours', label: 'Tours & Excursions', icon: MapPin },
     { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
     { id: 'notifications', label: 'Alerts', icon: Bell },
   ];
@@ -31,6 +33,8 @@ function App() {
         return <ExpenseChat />;
       case 'restaurants':
         return <RestaurantRecommendations />;
+      case 'tours':
+        return <ToursAndExcursions />;
       case 'spreadsheet':
         return <ExpenseSpreadsheet />;
       case 'notifications':

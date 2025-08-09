@@ -548,13 +548,7 @@ const TripPlanner = () => {
       <div className="space-y-8">
         {/* Trip Planning Form */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl">
-                <Sparkles className="h-6 w-6 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900">Plan Your Perfect Trip</h2>
-            </div>
+          <div className="mb-6">
             <button
               onClick={resetToDestinations}
               className="text-blue-600 hover:text-blue-800 font-medium"
@@ -802,7 +796,7 @@ const TripPlanner = () => {
                 )}
               </div>
             </div>
-
+            
             {/* Itinerary Days */}
             <div className="flex items-center space-x-3 mb-6">
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">

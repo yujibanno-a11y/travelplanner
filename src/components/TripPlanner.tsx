@@ -431,7 +431,7 @@ const TripPlanner = () => {
         {/* Call to Action */}
         <div className="text-center mt-16">
           <p className="text-lg text-gray-600 mb-6">
-            Can't find your dream destination? Let our AI help you plan the perfect trip.
+            Can't find your dream destination? Let our TravelPlanner help you plan the perfect trip.
           </p>
           <button
             onClick={() => setShowDestinations(false)}

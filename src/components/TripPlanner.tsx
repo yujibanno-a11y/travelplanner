@@ -295,7 +295,7 @@ const TripPlanner = () => {
       costs: ['€70-100 per day', '€50-80 per day', '€90-130 per day', '€60-90 per day']
     },
     
-    'london': {
+    london: {
       attractions: [
         "Visit the iconic Big Ben and Houses of Parliament",
         "Explore the Tower of London and see the Crown Jewels",
@@ -358,7 +358,7 @@ const TripPlanner = () => {
       costs: ['£80-120 per day', '£60-90 per day', '£100-150 per day', '£70-110 per day']
     },
 
-    'india': {
+    india: {
       attractions: [
         'Visit the iconic Taj Mahal in Agra',
         'Explore the Golden Temple in Amritsar',
@@ -1957,17 +1957,18 @@ const TripPlanner = () => {
         </div>
       </div>
 
-      {/* Destinations Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-serif font-light text-gray-900 mb-4">
-            Curated Destinations
+      {/* Destinations Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-serif font-light text-gray-900 mb-4">
+            Featured Destinations
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            From ancient wonders to modern marvels, discover places that will inspire your wanderlust
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            From ancient wonders to natural marvels, discover the world's most captivating places
           </p>
         </div>
 
+        {/* Destination Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {destinations.map((destination, index) => (
             <div
@@ -1979,80 +1980,75 @@ const TripPlanner = () => {
               }`}
               onClick={() => selectDestination(destination)}
             >
-              <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className="aspect-w-16 aspect-h-12">
+              <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                {/* Image Container */}
+                <div className="relative h-64 overflow-hidden">
                   <img
                     src={destination.image}
                     alt={`${destination.name}, ${destination.country}`}
-                    className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                      <ArrowRight className="h-6 w-6 text-gray-900" />
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <MapPin className="h-4 w-4" />
-                    <span className="text-sm font-medium">{destination.country}</span>
+
+                {/* Content */}
+                <div className="p-6">
+                  <div className="mb-3">
+                    <h3 className="text-2xl font-serif font-medium text-gray-900 mb-1">
+                      {destination.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 uppercase tracking-wide">
+                      {destination.country}
+                    </p>
                   </div>
                   
-                  <h3 className="text-2xl font-serif font-medium mb-2">
-                    {destination.name}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-200 mb-4 line-clamp-2">
+                  <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">
                     {destination.description}
                   </p>
                   
+                  {/* Highlights */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {destination.highlights.slice(0, 3).map((highlight, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-1 bg-white bg-opacity-20 rounded-full text-xs font-medium backdrop-blur-sm"
+                        className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
                       >
                         {highlight}
                       </span>
                     ))}
                   </div>
                   
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{destination.bestTime}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{destination.duration}</span>
-                    </div>
+                  {/* Trip Details */}
+                  <div className="flex justify-between text-sm text-gray-500 pt-4 border-t border-gray-100">
+                    <span>Best: {destination.bestTime}</span>
+                    <span>{destination.duration}</span>
                   </div>
-                </div>
-                
-                <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <ArrowRight className="h-5 w-5 text-gray-800" />
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Custom Destination Option */}
-        <div className="mt-12 text-center">
-          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-8 border border-gray-200">
-            <Sparkles className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4">
-              Don't see your dream destination?
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-              No worries! Our AI can create a personalized itinerary for any destination in the world. 
-              Just tell us where you want to go and we'll craft the perfect adventure for you.
-            </p>
-            <button
-              onClick={() => setShowDestinations(false)}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
-            >
-              Plan Custom Trip
-            </button>
-          </div>
+        {/* Call to Action */}
+        <div className="text-center mt-16">
+          <p className="text-lg text-gray-600 mb-6">
+            Can't find your dream destination? Let our TravelPlanner help you plan the perfect trip.
+          </p>
+          <button
+            onClick={() => setShowDestinations(false)}
+            className="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+          >
+            <Sparkles className="h-5 w-5" />
+            <span>Create Custom Itinerary</span>
+          </button>
         </div>
       </div>
     </div>

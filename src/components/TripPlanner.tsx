@@ -261,6 +261,440 @@ const TripPlanner = () => {
         'Learn basic Italian phrases - Romans appreciate the effort'
       ],
       costs: ['€70-100 per day', '€50-80 per day', '€90-130 per day', '€60-90 per day']
+    },
+    'india': {
+      attractions: [
+        'Visit the iconic Taj Mahal in Agra',
+        'Explore the Golden Temple in Amritsar',
+        'Take a boat ride on the Ganges in Varanasi',
+        'Discover the palaces of Rajasthan in Jaipur',
+        'Experience Kerala\'s backwaters on a houseboat',
+        'Trek in the Himalayas in Himachal Pradesh',
+        'Visit the beaches of Goa',
+        'Explore the caves of Ajanta and Ellora'
+      ],
+      restaurants: {
+        breakfast: [
+          'Local chai stall - Traditional tea and snacks',
+          'South Indian restaurant - Dosa and idli',
+          'Paratha corner - Stuffed flatbreads with curd',
+          'Hotel breakfast - Continental and Indian options',
+          'Street vendor - Fresh fruit and lassi'
+        ],
+        lunch: [
+          'Traditional thali restaurant - Complete meal platter',
+          'Mughlai restaurant - Rich North Indian cuisine',
+          'Regional specialty restaurant - Local flavors',
+          'Vegetarian restaurant - Pure veg Indian dishes',
+          'Heritage hotel restaurant - Royal cuisine'
+        ],
+        dinner: [
+          'Rooftop restaurant - City views with Indian cuisine',
+          'Fine dining Indian - Modern take on traditional dishes',
+          'Local dhaba - Authentic roadside eatery',
+          'Multi-cuisine restaurant - Indian and international',
+          'Cultural dinner with folk show - Traditional entertainment'
+        ]
+      },
+      activities: [
+        'Visit the iconic Taj Mahal in Agra',
+        'Explore the Golden Temple in Amritsar',
+        'Take a boat ride on the Ganges in Varanasi',
+        'Discover the palaces of Rajasthan in Jaipur',
+        'Experience Kerala\'s backwaters on a houseboat',
+        'Trek in the Himalayas in Himachal Pradesh',
+        'Visit the beaches of Goa',
+        'Explore the caves of Ajanta and Ellora'
+      ],
+      transportation: [
+        'Indian Railways - Extensive train network across the country',
+        'Domestic flights - Quick travel between major cities',
+        'Private taxi or car rental - Comfortable for longer distances',
+        'Auto-rickshaw - Convenient for short city trips',
+        'Metro systems - Available in major cities like Delhi and Mumbai'
+      ],
+      tips: [
+        'Respect local customs and dress modestly at religious sites',
+        'Try authentic Indian street food but choose busy stalls',
+        'Learn basic Hindi phrases - locals appreciate the effort',
+        'Carry hand sanitizer and tissues at all times',
+        'Bargain at markets but be respectful about prices',
+        'Stay hydrated and avoid tap water - stick to bottled water',
+        'Be prepared for crowds and noise in major tourist areas'
+      ],
+      costs: ['₹2,000-4,000 per day', '₹1,500-3,000 per day', '₹3,000-6,000 per day', '₹2,500-4,500 per day']
+    },
+    'hyderabad': {
+      attractions: [
+        'Visit the historic Charminar monument',
+        'Explore Golconda Fort and its acoustic marvels',
+        'Shop for pearls at Laad Bazaar',
+        'Enjoy authentic Hyderabadi biryani',
+        'Visit the Salar Jung Museum',
+        'Take a boat ride at Hussain Sagar Lake',
+        'Explore the Ramoji Film City',
+        'Visit the beautiful Chowmahalla Palace'
+      ],
+      restaurants: {
+        breakfast: [
+          'Cafe Niloufer - Famous for Irani chai and osmania biscuits',
+          'Ram Ki Bandi - Street food breakfast with dosas',
+          'Hotel Shadab - Traditional Hyderabadi breakfast',
+          'Minerva Coffee Shop - South Indian breakfast',
+          'Local bakery - Fresh bread and chai'
+        ],
+        lunch: [
+          'Paradise Restaurant - World-famous Hyderabadi biryani',
+          'Bawarchi - Another legendary biryani spot',
+          'Shah Ghouse - Authentic Hyderabadi cuisine',
+          'Jewel of Nizam - Royal Hyderabadi dishes',
+          'Rayalaseema Ruchulu - Andhra Pradesh specialties'
+        ],
+        dinner: [
+          'Ohri\'s - Multiple cuisine options with great ambiance',
+          'Firdaus at Taj Krishna - Upscale Hyderabadi dining',
+          'Adaa at Taj Falaknuma - Royal dining experience',
+          'Peshawri at ITC Kakatiya - North-West Frontier cuisine',
+          'Local street food at Tank Bund - Evening snacks'
+        ]
+      },
+      activities: [
+        'Visit the historic Charminar monument',
+        'Explore Golconda Fort and its acoustic marvels',
+        'Shop for pearls at Laad Bazaar',
+        'Enjoy authentic Hyderabadi biryani',
+        'Visit the Salar Jung Museum',
+        'Take a boat ride at Hussain Sagar Lake',
+        'Explore the Ramoji Film City',
+        'Visit the beautiful Chowmahalla Palace'
+      ],
+      transportation: [
+        'Hyderabad Metro - Clean and efficient for city travel',
+        'Ola/Uber - Convenient app-based taxi services',
+        'TSRTC buses - Affordable public bus transportation',
+        'Auto-rickshaws - Good for short distances',
+        'Private taxi - Comfortable for day trips to Ramoji Film City'
+      ],
+      tips: [
+        'Visit Charminar early morning or evening to avoid crowds',
+        'Don\'t miss trying authentic Hyderabadi biryani and haleem',
+        'Bargain at Laad Bazaar for pearls and traditional items',
+        'Book Ramoji Film City tickets online for better deals',
+        'Carry cash as many local vendors don\'t accept cards',
+        'Respect photography restrictions at historical monuments',
+        'Try local Irani chai at traditional cafes'
+      ],
+      costs: ['₹1,500-3,000 per day', '₹1,000-2,500 per day', '₹2,500-4,500 per day', '₹1,800-3,200 per day']
+    },
+    'bangalore': {
+      attractions: [
+        'Stroll through the beautiful Lalbagh Botanical Garden',
+        'Visit the majestic Bangalore Palace',
+        'Explore the vibrant MG Road and Brigade Road',
+        'Enjoy craft beer at local microbreweries',
+        'Visit the ISKCON Temple',
+        'Take a day trip to Nandi Hills for sunrise',
+        'Explore Cubbon Park in the city center',
+        'Shop at Commercial Street'
+      ],
+      restaurants: {
+        breakfast: [
+          'MTR - Legendary South Indian breakfast since 1924',
+          'Vidyarthi Bhavan - Famous for crispy dosas',
+          'Brahmin\'s Coffee Bar - Filter coffee and idli vada',
+          'Airlines Hotel - Traditional South Indian fare',
+          'Cafe Coffee Day - Modern coffee chain originated in Bangalore'
+        ],
+        lunch: [
+          'Koshy\'s - Iconic old-world charm restaurant',
+          'Mavalli Tiffin Rooms - Authentic Karnataka meals',
+          'Nagarjuna - Andhra-style spicy cuisine',
+          'The Only Place - Continental food and steaks',
+          'Corner House - Famous for ice creams and desserts'
+        ],
+        dinner: [
+          'Toit - Popular microbrewery with craft beers',
+          'The Fatty Bao - Asian cuisine with modern twist',
+          'Karavalli - Coastal Indian fine dining',
+          'Windmills Craftworks - Brewery with live jazz',
+          'UB City Mall - Multiple fine dining options'
+        ]
+      },
+      activities: [
+        'Stroll through the beautiful Lalbagh Botanical Garden',
+        'Visit the majestic Bangalore Palace',
+        'Explore the vibrant MG Road and Brigade Road',
+        'Enjoy craft beer at local microbreweries',
+        'Visit the ISKCON Temple',
+        'Take a day trip to Nandi Hills for sunrise',
+        'Explore Cubbon Park in the city center',
+        'Shop at Commercial Street'
+      ],
+      transportation: [
+        'Namma Metro - Efficient metro system covering major areas',
+        'Ola/Uber - Widely available app-based transportation',
+        'BMTC buses - Extensive public bus network',
+        'Auto-rickshaws - Convenient for short trips',
+        'Bike rentals - Good for exploring the city at your own pace'
+      ],
+      tips: [
+        'Visit Nandi Hills early morning for the best sunrise views',
+        'Try authentic South Indian filter coffee at local establishments',
+        'Explore the pub culture - Bangalore is known as India\'s pub capital',
+        'Book brewery tables in advance, especially on weekends',
+        'Carry light jackets - Bangalore weather can be unpredictable',
+        'Use metro for efficient travel during peak traffic hours',
+        'Don\'t miss shopping for silk sarees and sandalwood products'
+      ],
+      costs: ['₹2,000-4,000 per day', '₹1,500-3,000 per day', '₹3,000-5,500 per day', '₹2,200-4,200 per day']
+    },
+    'new delhi': {
+      attractions: [
+        'Visit the iconic Red Fort',
+        'Explore India Gate and Rajpath',
+        'Tour the magnificent Lotus Temple',
+        'Shop at Chandni Chowk market',
+        'Visit Humayun\'s Tomb',
+        'Explore the National Museum',
+        'Take a rickshaw ride in Old Delhi',
+        'Visit Akshardham Temple'
+      ],
+      restaurants: {
+        breakfast: [
+          'Paranthe Wali Gali - Famous stuffed parathas in Old Delhi',
+          'Karim\'s - Historic Mughlai restaurant since 1913',
+          'Saravana Bhavan - South Indian vegetarian chain',
+          'Khan Chacha - Rolls and kebabs in Khan Market',
+          'Local chai stall - Authentic Delhi street tea'
+        ],
+        lunch: [
+          'Bukhara at ITC Maurya - World-famous North-West Frontier cuisine',
+          'Indian Accent - Modern Indian fine dining',
+          'Pandara Road - Multiple restaurants with North Indian cuisine',
+          'Dilli Haat - Food court with regional Indian cuisines',
+          'Connaught Place - Various dining options in central Delhi'
+        ],
+        dinner: [
+          'Dum Pukht at ITC Maurya - Awadhi cuisine fine dining',
+          'Varq at Taj Mahal Hotel - Contemporary Indian cuisine',
+          'Lodi - Modern Indian restaurant with garden seating',
+          'Hauz Khas Village - Trendy restaurants and cafes',
+          'Chandni Chowk street food - Evening food walk'
+        ]
+      },
+      activities: [
+        'Visit the iconic Red Fort',
+        'Explore India Gate and Rajpath',
+        'Tour the magnificent Lotus Temple',
+        'Shop at Chandni Chowk market',
+        'Visit Humayun\'s Tomb',
+        'Explore the National Museum',
+        'Take a rickshaw ride in Old Delhi',
+        'Visit Akshardham Temple'
+      ],
+      transportation: [
+        'Delhi Metro - Extensive and efficient metro network',
+        'Ola/Uber - App-based taxi services',
+        'DTC buses - Public bus transportation',
+        'Auto-rickshaws - Convenient for short distances',
+        'Cycle rickshaws - Traditional transport in Old Delhi'
+      ],
+      tips: [
+        'Visit Red Fort early morning to avoid crowds and heat',
+        'Dress modestly when visiting religious sites like Lotus Temple',
+        'Try authentic Delhi street food but choose busy, clean stalls',
+        'Use Delhi Metro for efficient travel across the city',
+        'Bargain at markets like Chandni Chowk and Karol Bagh',
+        'Carry water and stay hydrated, especially in summer',
+        'Book tickets online for popular attractions to skip queues'
+      ],
+      costs: ['₹2,500-4,500 per day', '₹1,800-3,500 per day', '₹3,500-6,000 per day', '₹2,800-4,800 per day']
+    },
+    'delhi': {
+      attractions: [
+        'Visit the iconic Red Fort',
+        'Explore India Gate and Rajpath',
+        'Tour the magnificent Lotus Temple',
+        'Shop at Chandni Chowk market',
+        'Visit Humayun\'s Tomb',
+        'Explore the National Museum',
+        'Take a rickshaw ride in Old Delhi',
+        'Visit Akshardham Temple'
+      ],
+      restaurants: {
+        breakfast: [
+          'Paranthe Wali Gali - Famous stuffed parathas in Old Delhi',
+          'Karim\'s - Historic Mughlai restaurant since 1913',
+          'Saravana Bhavan - South Indian vegetarian chain',
+          'Khan Chacha - Rolls and kebabs in Khan Market',
+          'Local chai stall - Authentic Delhi street tea'
+        ],
+        lunch: [
+          'Bukhara at ITC Maurya - World-famous North-West Frontier cuisine',
+          'Indian Accent - Modern Indian fine dining',
+          'Pandara Road - Multiple restaurants with North Indian cuisine',
+          'Dilli Haat - Food court with regional Indian cuisines',
+          'Connaught Place - Various dining options in central Delhi'
+        ],
+        dinner: [
+          'Dum Pukht at ITC Maurya - Awadhi cuisine fine dining',
+          'Varq at Taj Mahal Hotel - Contemporary Indian cuisine',
+          'Lodi - Modern Indian restaurant with garden seating',
+          'Hauz Khas Village - Trendy restaurants and cafes',
+          'Chandni Chowk street food - Evening food walk'
+        ]
+      },
+      activities: [
+        'Visit the iconic Red Fort',
+        'Explore India Gate and Rajpath',
+        'Tour the magnificent Lotus Temple',
+        'Shop at Chandni Chowk market',
+        'Visit Humayun\'s Tomb',
+        'Explore the National Museum',
+        'Take a rickshaw ride in Old Delhi',
+        'Visit Akshardham Temple'
+      ],
+      transportation: [
+        'Delhi Metro - Extensive and efficient metro network',
+        'Ola/Uber - App-based taxi services',
+        'DTC buses - Public bus transportation',
+        'Auto-rickshaws - Convenient for short distances',
+        'Cycle rickshaws - Traditional transport in Old Delhi'
+      ],
+      tips: [
+        'Visit Red Fort early morning to avoid crowds and heat',
+        'Dress modestly when visiting religious sites like Lotus Temple',
+        'Try authentic Delhi street food but choose busy, clean stalls',
+        'Use Delhi Metro for efficient travel across the city',
+        'Bargain at markets like Chandni Chowk and Karol Bagh',
+        'Carry water and stay hydrated, especially in summer',
+        'Book tickets online for popular attractions to skip queues'
+      ],
+      costs: ['₹2,500-4,500 per day', '₹1,800-3,500 per day', '₹3,500-6,000 per day', '₹2,800-4,800 per day']
+    },
+    'mumbai': {
+      attractions: [
+        'Visit the iconic Gateway of India',
+        'Take a ferry to Elephanta Caves',
+        'Stroll along Marine Drive at sunset',
+        'Explore the bustling Crawford Market',
+        'Visit the Prince of Wales Museum',
+        'Experience Bollywood at Film City',
+        'Enjoy street food at Juhu Beach',
+        'Shop at Colaba Causeway'
+      ],
+      restaurants: {
+        breakfast: [
+          'Cafe Mocha - Popular breakfast spot in Bandra',
+          'Kyani & Co - Irani cafe with bun maska and chai',
+          'Theobroma - Bakery chain famous for brownies',
+          'Britannia & Co - Parsi restaurant with berry pulao',
+          'Street vendor - Vada pav and cutting chai'
+        ],
+        lunch: [
+          'Trishna - Michelin-starred seafood restaurant',
+          'Mahesh Lunch Home - Konkani seafood specialties',
+          'Bademiya - Famous for kebabs and rolls',
+          'Leopold Cafe - Historic cafe in Colaba',
+          'Dabbawala lunch - Experience Mumbai\'s famous lunch delivery'
+        ],
+        dinner: [
+          'Wasabi by Morimoto - Japanese fine dining',
+          'Indigo - European cuisine with Indian influences',
+          'Khyber - North Indian cuisine in elegant setting',
+          'Juhu Beach - Street food and chaat in the evening',
+          'Linking Road - Shopping and street food combination'
+        ]
+      },
+      activities: [
+        'Visit the iconic Gateway of India',
+        'Take a ferry to Elephanta Caves',
+        'Stroll along Marine Drive at sunset',
+        'Explore the bustling Crawford Market',
+        'Visit the Prince of Wales Museum',
+        'Experience Bollywood at Film City',
+        'Enjoy street food at Juhu Beach',
+        'Shop at Colaba Causeway'
+      ],
+      transportation: [
+        'Mumbai Local Trains - Lifeline of the city, very crowded but efficient',
+        'Mumbai Metro - Limited but growing network',
+        'Ola/Uber - App-based taxi services',
+        'BEST buses - Public bus transportation',
+        'Taxis - Black and yellow taxis, negotiate fare beforehand'
+      ],
+      tips: [
+        'Experience local train travel but avoid peak hours if possible',
+        'Try authentic Mumbai street food like vada pav and pav bhaji',
+        'Visit Marine Drive during sunset for the best experience',
+        'Book Elephanta Caves ferry tickets in advance during peak season',
+        'Bargain at street markets like Colaba Causeway and Linking Road',
+        'Stay hydrated and carry an umbrella during monsoon season',
+        'Respect the fast-paced lifestyle - Mumbai never sleeps'
+      ],
+      costs: ['₹3,000-5,500 per day', '₹2,200-4,200 per day', '₹4,000-7,000 per day', '₹3,200-5,800 per day']
+    },
+    'france': {
+      attractions: [
+        'Visit the Eiffel Tower in Paris',
+        'Explore the Palace of Versailles',
+        'Tour the Louvre Museum',
+        'Walk along the French Riviera in Nice',
+        'Visit the châteaux of the Loire Valley',
+        'Explore the lavender fields of Provence',
+        'Take a wine tour in Bordeaux',
+        'Visit the D-Day beaches in Normandy'
+      ],
+      restaurants: {
+        breakfast: [
+          'Local boulangerie - Fresh croissants and pain au chocolat',
+          'Cafe de Flore - Historic Parisian cafe',
+          'Du Pain et des Idées - Artisanal bakery',
+          'Hotel breakfast - Continental European breakfast',
+          'Street market - Fresh fruits and local pastries'
+        ],
+        lunch: [
+          'Bistro in Lyon - Traditional French cuisine',
+          'Seaside restaurant in Nice - Mediterranean flavors',
+          'Wine estate in Bordeaux - Lunch with wine tasting',
+          'Countryside auberge - Regional French specialties',
+          'Parisian brasserie - Classic French dishes'
+        ],
+        dinner: [
+          'Michelin-starred restaurant - Fine French dining',
+          'Traditional bistro - Coq au vin and French classics',
+          'Provence restaurant - Mediterranean French cuisine',
+          'Normandy creperie - Sweet and savory crepes',
+          'Wine bar - French cheeses and charcuterie'
+        ]
+      },
+      activities: [
+        'Visit the Eiffel Tower in Paris',
+        'Explore the Palace of Versailles',
+        'Tour the Louvre Museum',
+        'Walk along the French Riviera in Nice',
+        'Visit the châteaux of the Loire Valley',
+        'Explore the lavender fields of Provence',
+        'Take a wine tour in Bordeaux',
+        'Visit the D-Day beaches in Normandy'
+      ],
+      transportation: [
+        'TGV high-speed trains - Fast travel between major cities',
+        'Regional trains - Connect smaller towns and cities',
+        'Metro systems - Available in Paris, Lyon, and other major cities',
+        'Car rental - Great for exploring countryside and wine regions',
+        'Domestic flights - Quick travel for longer distances'
+      ],
+      tips: [
+        'Learn basic French phrases - locals appreciate the effort',
+        'Book popular attractions like Louvre and Eiffel Tower in advance',
+        'Try regional specialties in each area you visit',
+        'Respect meal times - lunch is typically 12-2pm, dinner after 7pm',
+        'Dress elegantly, especially for dinner in nice restaurants',
+        'Validate train tickets before boarding to avoid fines',
+        'Explore local markets for authentic French products and food'
+      ],
+      costs: ['€90-150 per day', '€70-120 per day', '€120-200 per day', '€85-140 per day']
     }
   };
   // Featured destinations data

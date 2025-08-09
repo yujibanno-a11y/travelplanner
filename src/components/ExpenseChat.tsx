@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, DollarSign, Coffee, Car, Camera, ShoppingBag, Bot, User } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { getCurrentUser } from '../lib/auth';
+import { supabase, getCurrentUserId } from '../lib/supabase';
 
 interface Expense {
   id: string;
@@ -23,7 +22,7 @@ const ExpenseChat = () => {
   const [input, setInput] = useState('');
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const categoryIcons = {
     food: Coffee,
@@ -42,8 +41,8 @@ const ExpenseChat = () => {
   useEffect(() => {
     // Check authentication status
     const checkAuth = async () => {
-      const user = await getCurrentUser();
-      setCurrentUser(user);
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
       
       if (user) {
         // Load expenses from Supabase for authenticated users
@@ -65,12 +64,13 @@ const ExpenseChat = () => {
 
   const loadExpensesFromSupabase = async () => {
     try {
-      if (!currentUser) return;
+      const userId = await getCurrentUserId();
+      if (!userId) return;
 
       const { data: expenses, error } = await supabase
         .from('expenses')
         .select('*')
-        .eq('owner_id', currentUser.id)
+        .eq('owner_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -94,12 +94,13 @@ const ExpenseChat = () => {
 
   const saveExpenseToSupabase = async (expense: Expense) => {
     try {
-      if (!currentUser) return;
+      const userId = await getCurrentUserId();
+      if (!userId) return;
 
       const { error } = await supabase
         .from('expenses')
         .insert({
-          owner_id: currentUser.id,
+          owner_id: userId,
           category: expense.category,
           amount: expense.amount,
           description: expense.description
@@ -213,7 +214,7 @@ const ExpenseChat = () => {
       localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
       
       // Save to Supabase if authenticated
-      if (currentUser) {
+      if (isAuthenticated) {
         await saveExpenseToSupabase(expense);
       }
       
@@ -305,7 +306,7 @@ const ExpenseChat = () => {
               <span className="hidden sm:inline">Send</span>
             </button>
           </div>
-          {!currentUser && (
+          {!isAuthenticated && (
             <p className="mt-2 text-sm text-gray-600 text-center">
               Sign in to sync your expenses across devices
             </p>

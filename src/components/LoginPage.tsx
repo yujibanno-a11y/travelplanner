@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock } from 'lucide-react';
-import { signIn } from '../lib/auth';
 
 interface LoginPageProps {
   onBack: () => void;
@@ -42,19 +41,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
     if (!validateForm()) return;
     
     setIsLoading(true);
-    setErrors({});
     
-    try {
-      await signIn(email, password);
-      onLogin();
-    } catch (error: any) {
+    // Simulate API call
+    setTimeout(() => {
       setIsLoading(false);
-      setErrors({ 
-        email: error.message.includes('Invalid login credentials') 
-          ? 'Invalid email or password' 
-          : error.message 
-      });
-    }
+      onLogin();
+    }, 1500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

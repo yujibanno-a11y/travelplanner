@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { getCurrentUser } from '../lib/auth';
+import { supabase, getCurrentUserId } from '../lib/supabase';
 
 interface ItineraryDay {
   day: number;
@@ -15,13 +14,13 @@ const TripPlanner = () => {
   const [days, setDays] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   React.useEffect(() => {
     // Check authentication status
     const checkAuth = async () => {
-      const user = await getCurrentUser();
-      setCurrentUser(user);
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
     };
     checkAuth();
   }, []);
@@ -68,20 +67,21 @@ const TripPlanner = () => {
     localStorage.setItem('currentTrip', JSON.stringify(tripData));
     
     // Save to Supabase if authenticated
-    if (currentUser) {
+    if (isAuthenticated) {
       await saveItineraryToSupabase(destination, numDays, mockItinerary);
     }
   };
 
   const saveItineraryToSupabase = async (destination: string, days: number, itinerary: ItineraryDay[]) => {
     try {
-      if (!currentUser) return;
+      const userId = await getCurrentUserId();
+      if (!userId) return;
 
       // Create the main itinerary record
       const { data: itineraryRecord, error: itineraryError } = await supabase
         .from('itineraries')
         .insert({
-          owner_id: currentUser.id,
+          owner_id: userId,
           destination: destination,
           days: days,
           itinerary_data: itinerary
@@ -207,7 +207,7 @@ const TripPlanner = () => {
           )}
         </button>
         
-        {!currentUser && (
+        {!isAuthenticated && (
           <p className="mt-2 text-sm text-gray-600 text-center">
             Sign in to save your itineraries to the cloud
           </p>

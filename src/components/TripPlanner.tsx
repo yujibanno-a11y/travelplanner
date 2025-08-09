@@ -3,9 +3,16 @@ import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, ArrowRig
 
 interface ItineraryDay {
   day: number;
-  activities: string[];
   attractions: string[];
+  restaurants: {
+    breakfast?: string;
+    lunch: string;
+    dinner: string;
+  };
+  activities: string[];
   tips: string;
+  transportation: string;
+  estimatedCost: string;
 }
 
 interface Destination {
@@ -29,6 +36,18 @@ interface TripFormData {
   otherNotes: string;
 }
 
+interface DestinationData {
+  attractions: string[];
+  restaurants: {
+    breakfast: string[];
+    lunch: string[];
+    dinner: string[];
+  };
+  activities: string[];
+  transportation: string[];
+  tips: string[];
+  costs: string[];
+}
 const TripPlanner = () => {
   const [formData, setFormData] = useState<TripFormData>({
     destination: '',
@@ -42,7 +61,209 @@ const TripPlanner = () => {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDestinations, setShowDestinations] = useState(true);
+  const [showPrintView, setShowPrintView] = useState(false);
 
+  // Enhanced destination-specific data
+  const destinationDatabase: Record<string, DestinationData> = {
+    'paris': {
+      attractions: [
+        'Eiffel Tower and Trocadéro Gardens',
+        'Louvre Museum and Mona Lisa',
+        'Notre-Dame Cathedral (exterior) and Sainte-Chapelle',
+        'Arc de Triomphe and Champs-Élysées',
+        'Sacré-Cœur Basilica and Montmartre District',
+        'Seine River Cruise',
+        'Palace of Versailles (day trip)',
+        'Musée d\'Orsay and Impressionist Art',
+        'Latin Quarter and Panthéon',
+        'Marais District and Place des Vosges'
+      ],
+      restaurants: {
+        breakfast: [
+          'Du Pain et des Idées - Artisanal bakery with incredible pastries',
+          'Breizh Café - Modern crêperie in Le Marais',
+          'L\'As du Fallafel - Famous falafel in the Jewish quarter',
+          'Pierre Hermé - Luxury macarons and pastries',
+          'Café de Flore - Historic café in Saint-Germain'
+        ],
+        lunch: [
+          'L\'Ami Jean - Traditional Basque bistro',
+          'Marché des Enfants Rouges - Historic covered market',
+          'Le Comptoir du Relais - Classic French bistro',
+          'Breizh Café - Gourmet crêpes and galettes',
+          'L\'As du Fallafel - Best falafel in the Marais'
+        ],
+        dinner: [
+          'Le Procope - Historic restaurant since 1686',
+          'L\'Ami Jean - Lively Basque cuisine',
+          'Le Train Bleu - Belle Époque restaurant in Gare de Lyon',
+          'Bistrot Paul Bert - Classic Parisian bistro',
+          'Le Mary Celeste - Modern small plates and natural wines'
+        ]
+      },
+      activities: [
+        'Seine River evening cruise with dinner',
+        'Cooking class in a Parisian kitchen',
+        'Wine tasting in historic cellars',
+        'Photography walk through Montmartre',
+        'Vintage shopping in Le Marais',
+        'Picnic in Luxembourg Gardens',
+        'Evening cabaret show at Moulin Rouge',
+        'Art workshop in an artist\'s studio',
+        'Bike tour along the Seine',
+        'French pastry making class'
+      ],
+      transportation: [
+        'Metro day pass (€7.50) - unlimited travel on metro, bus, and tram',
+        'Vélib\' bike sharing - €8 for day pass',
+        'Walking - most attractions are within walking distance',
+        'Taxi or Uber for longer distances',
+        'RER train to Versailles (€7.30 each way)'
+      ],
+      tips: [
+        'Book Louvre tickets online in advance to skip the lines',
+        'Visit Eiffel Tower at sunset for the best photos and lighting',
+        'Try authentic French pastries from local boulangeries',
+        'Learn basic French greetings - locals appreciate the effort',
+        'Carry a reusable water bottle - Paris has many public fountains',
+        'Dress smartly for dinner - Parisians take dining seriously',
+        'Explore beyond tourist areas - discover hidden neighborhood gems'
+      ],
+      costs: ['€80-120 per day', '€60-90 per day', '€100-150 per day', '€70-100 per day']
+    },
+    'tokyo': {
+      attractions: [
+        'Senso-ji Temple and Asakusa District',
+        'Tokyo Skytree and Sumida River views',
+        'Meiji Shrine and Harajuku fashion district',
+        'Shibuya Crossing and Hachiko Statue',
+        'Tsukiji Outer Market and sushi breakfast',
+        'Imperial Palace East Gardens',
+        'Ginza luxury shopping district',
+        'Ueno Park and Tokyo National Museum',
+        'Akihabara Electric Town',
+        'Tokyo Station and Marunouchi area'
+      ],
+      restaurants: {
+        breakfast: [
+          'Tsukiji Outer Market - Fresh sushi and street food',
+          'Bills Omotesando - Famous ricotta hotcakes',
+          'Ippudo Ramen - Morning ramen experience',
+          'Starbucks Reserve Roastery - Premium coffee experience',
+          'Local convenience store - Authentic Japanese breakfast'
+        ],
+        lunch: [
+          'Sukiyabashi Jiro - World-famous sushi (reservation required)',
+          'Ichiran Ramen - Individual booth ramen experience',
+          'Gonpachi Shibuya - Traditional izakaya atmosphere',
+          'Kaikaya by the Sea - Fresh seafood in Shibuya',
+          'Tempura Daikokuya - Historic tempura restaurant'
+        ],
+        dinner: [
+          'Robot Restaurant - Dinner show in Shinjuku',
+          'Nabezo - All-you-can-eat shabu-shabu',
+          'Kozasa - Traditional kaiseki cuisine',
+          'Golden Gai - Tiny bars in Shinjuku',
+          'Omoide Yokocho - Memory Lane yakitori alleys'
+        ]
+      },
+      activities: [
+        'Traditional tea ceremony experience',
+        'Sumo wrestling tournament or practice viewing',
+        'Karaoke night in Shibuya',
+        'Sake tasting tour in traditional breweries',
+        'Manga and anime culture tour in Akihabara',
+        'Cherry blossom viewing (seasonal)',
+        'Traditional onsen (hot spring) experience',
+        'Sushi making class with a master chef',
+        'Tokyo Bay evening cruise',
+        'Vintage kimono rental and photoshoot'
+      ],
+      transportation: [
+        'JR Pass (7-day: ¥29,650) - unlimited JR trains including Shinkansen',
+        'Tokyo Metro 24-hour ticket (¥800) - unlimited subway travel',
+        'IC Card (Suica/Pasmo) - convenient for all public transport',
+        'Taxi - expensive but convenient for short distances',
+        'Bicycle rental - great for exploring neighborhoods'
+      ],
+      tips: [
+        'Bow slightly when greeting - it shows respect for Japanese culture',
+        'Remove shoes when entering homes, temples, and some restaurants',
+        'Don\'t eat or drink while walking - find a designated area',
+        'Learn to use chopsticks properly before your trip',
+        'Carry cash - many places don\'t accept credit cards',
+        'Download Google Translate with camera feature for menus',
+        'Be quiet on public transportation - talking loudly is considered rude'
+      ],
+      costs: ['¥8,000-12,000 per day', '¥6,000-9,000 per day', '¥10,000-15,000 per day', '¥7,000-11,000 per day']
+    },
+    'rome': {
+      attractions: [
+        'Colosseum and Roman Forum archaeological area',
+        'Vatican City - St. Peter\'s Basilica and Sistine Chapel',
+        'Pantheon and Piazza della Rotonda',
+        'Trevi Fountain and Spanish Steps',
+        'Palatine Hill and Imperial Palace ruins',
+        'Castel Sant\'Angelo and Ponte Sant\'Angelo',
+        'Villa Borghese Gardens and Galleria Borghese',
+        'Trastevere neighborhood and Santa Maria',
+        'Campo de\' Fiori market and Piazza Navona',
+        'Capitoline Museums and Capitoline Hill'
+      ],
+      restaurants: {
+        breakfast: [
+          'Sant\'Eustachio Il Caffè - Historic coffee roastery',
+          'Pasticceria Regoli - Traditional Roman pastries',
+          'Barnum Café - Artisanal coffee and cornetti',
+          'Ginger - Modern breakfast spot near Colosseum',
+          'Local bar - Stand-up espresso and cornetto'
+        ],
+        lunch: [
+          'Da Enzo al 29 - Authentic Roman trattoria',
+          'Armando al Pantheon - Historic restaurant since 1961',
+          'Checchino dal 1887 - Traditional Roman cuisine',
+          'Il Sorpasso - Modern Italian with great wine selection',
+          'Mercato Centrale Roma - Gourmet food hall'
+        ],
+        dinner: [
+          'Glass Hostaria - Michelin-starred modern Italian',
+          'Da Valentino - Family-run trattoria in Trastevere',
+          'Il Pagliaccio - Two Michelin stars fine dining',
+          'Osteria del Sostegno - Hidden gem near Pantheon',
+          'Piperno - Historic Jewish-Roman cuisine'
+        ]
+      },
+      activities: [
+        'Gladiator school experience near Colosseum',
+        'Roman cooking class with market tour',
+        'Evening aperitivo tour in Trastevere',
+        'Underground Rome tour - catacombs and crypts',
+        'Vespa tour of Rome\'s seven hills',
+        'Wine tasting in Frascati hills (day trip)',
+        'Art workshop in a Renaissance palazzo',
+        'Evening stroll and gelato tasting',
+        'Opera performance at Terme di Caracalla',
+        'Photography tour of hidden Rome'
+      ],
+      transportation: [
+        'Roma Pass (72h: €38.50) - public transport + museum entries',
+        'Metro day pass (€7) - unlimited metro, bus, and tram',
+        'Walking - historic center is very walkable',
+        'Taxi or Uber for longer distances',
+        'Bike sharing - limited but growing network'
+      ],
+      tips: [
+        'Book Vatican Museums online to skip 2-hour queues',
+        'Visit major attractions early morning or late afternoon',
+        'Dress modestly for churches - cover shoulders and knees',
+        'Try authentic Roman dishes: carbonara, amatriciana, cacio e pepe',
+        'Throw a coin in Trevi Fountain to ensure your return to Rome',
+        'Avoid restaurants with tourist menus near major attractions',
+        'Learn basic Italian phrases - Romans appreciate the effort'
+      ],
+      costs: ['€70-100 per day', '€50-80 per day', '€90-130 per day', '€60-90 per day']
+    }
+  };
   // Featured destinations data
   const destinations: Destination[] = [
     {
@@ -180,89 +401,101 @@ const TripPlanner = () => {
     const numDays = parseInt(formData.duration);
     const mockItinerary: ItineraryDay[] = [];
     
-    // Enhanced mock data with more realistic activities and attractions
-    const destinationActivities = {
-      morning: [
-        'Start your day with a walking tour of the historic city center',
-        'Visit the famous morning market and try local breakfast specialties',
-        'Explore the main cathedral or religious site',
-        'Take a guided tour of the old town district',
-        'Visit the local art museum or cultural center'
+    // Get destination-specific data or use fallback
+    const destinationKey = formData.destination.toLowerCase().split(',')[0].trim();
+    const destinationData = destinationDatabase[destinationKey] || {
+      attractions: [
+        'Historic City Center and Main Square',
+        'Local Art Museum and Cultural Center',
+        'Traditional Market and Shopping District',
+        'Scenic Viewpoint and Observation Deck',
+        'Religious Sites and Architecture',
+        'Waterfront Promenade and Harbor',
+        'Botanical Gardens and City Parks',
+        'Local Neighborhoods and Hidden Gems'
       ],
-      afternoon: [
-        'Enjoy lunch at a highly-rated local restaurant',
-        'Take a scenic boat ride or cable car tour',
-        'Explore the botanical gardens or city park',
-        'Visit the main shopping district and local boutiques',
-        'Tour a famous palace, castle, or historical landmark'
+      restaurants: {
+        breakfast: [
+          'Local Café - Traditional breakfast and coffee',
+          'Market Bakery - Fresh pastries and local specialties',
+          'Hotel Restaurant - Continental breakfast buffet',
+          'Street Food Vendor - Authentic local morning treats'
+        ],
+        lunch: [
+          'Traditional Restaurant - Local cuisine and specialties',
+          'Bistro in Historic District - Casual dining with local flavors',
+          'Market Food Hall - Variety of local vendors',
+          'Rooftop Restaurant - Great views and regional dishes'
+        ],
+        dinner: [
+          'Fine Dining Restaurant - Upscale local cuisine',
+          'Family-Run Tavern - Authentic traditional dishes',
+          'Modern Fusion Restaurant - Contemporary local flavors',
+          'Waterfront Restaurant - Fresh seafood and sunset views'
+        ]
+      },
+      activities: [
+        'Walking tour of historic neighborhoods',
+        'Local cooking class and market visit',
+        'Cultural performance or show',
+        'Artisan workshop experience',
+        'Photography tour of scenic spots',
+        'Wine or local beverage tasting',
+        'Bike tour of the city',
+        'Sunset viewing from best vantage point'
       ],
-      evening: [
-        'Watch the sunset from the best viewpoint in the city',
-        'Experience the local nightlife and entertainment district',
-        'Enjoy dinner at a rooftop restaurant with panoramic views',
-        'Attend a cultural show or traditional performance',
-        'Take an evening stroll along the waterfront or main promenade'
-      ]
+      transportation: [
+        'Public transport day pass - convenient for city travel',
+        'Walking - most attractions within walking distance',
+        'Taxi or rideshare for longer distances',
+        'Bike rental for exploring neighborhoods'
+      ],
+      tips: [
+        'Book popular attractions in advance to avoid queues',
+        'Try local specialties and traditional dishes',
+        'Learn basic phrases in the local language',
+        'Carry a map and have offline navigation ready',
+        'Respect local customs and dress codes',
+        'Stay hydrated and wear comfortable walking shoes'
+      ],
+      costs: ['$60-90 per day', '$40-70 per day', '$80-120 per day', '$50-80 per day']
     };
 
-    const touristAttractions = [
-      'Historic Old Town Square',
-      'National Art Gallery',
-      'Central Cathedral',
-      'Royal Palace',
-      'Scenic Lookout Point',
-      'Local Market Hall',
-      'Botanical Gardens',
-      'Waterfront Promenade',
-      'Cultural Heritage Museum',
-      'Traditional Craft Quarter'
-    ];
-
-    const funActivities = [
-      'Food walking tour',
-      'Photography workshop',
-      'Cooking class with locals',
-      'Bike tour of the city',
-      'River cruise',
-      'Wine or beer tasting',
-      'Street art tour',
-      'Local dance lesson',
-      'Artisan workshop visit',
-      'Sunset hiking trail'
-    ];
-
     for (let i = 1; i <= numDays; i++) {
-      // Randomly select activities for variety
-      const morningActivity = destinationActivities.morning[Math.floor(Math.random() * destinationActivities.morning.length)];
-      const afternoonActivity = destinationActivities.afternoon[Math.floor(Math.random() * destinationActivities.afternoon.length)];
-      const eveningActivity = destinationActivities.evening[Math.floor(Math.random() * destinationActivities.evening.length)];
-      
-      // Select random attractions and activities
-      const dayAttractions = touristAttractions
+      // Select attractions for the day
+      const dayAttractions = destinationData.attractions
         .sort(() => 0.5 - Math.random())
-        .slice(0, 3)
-        .map(attraction => `${attraction} in ${formData.destination}`);
+        .slice(0, 2 + Math.floor(i / 3)); // More attractions on later days
       
-      const dayFunActivities = funActivities
+      // Select activities for the day
+      const dayActivities = destinationData.activities
         .sort(() => 0.5 - Math.random())
         .slice(0, 2);
+      
+      // Select restaurants for the day
+      const restaurants = {
+        breakfast: i > 1 ? destinationData.restaurants.breakfast[Math.floor(Math.random() * destinationData.restaurants.breakfast.length)] : undefined,
+        lunch: destinationData.restaurants.lunch[Math.floor(Math.random() * destinationData.restaurants.lunch.length)],
+        dinner: destinationData.restaurants.dinner[Math.floor(Math.random() * destinationData.restaurants.dinner.length)]
+      };
+      
+      // Select transportation and tips
+      const transportation = destinationData.transportation[Math.floor(Math.random() * destinationData.transportation.length)];
+      const tip = destinationData.tips[Math.floor(Math.random() * destinationData.tips.length)];
+      const cost = destinationData.costs[Math.floor(Math.random() * destinationData.costs.length)];
 
       mockItinerary.push({
         day: i,
-        activities: [
-          `Morning: ${morningActivity}`,
-          `Afternoon: ${afternoonActivity}`,
-          `Evening: ${eveningActivity}`
-        ],
-        attractions: [
-          ...dayAttractions,
-          ...dayFunActivities
-        ],
+        attractions: dayAttractions,
+        restaurants,
+        activities: dayActivities,
+        transportation,
+        estimatedCost: cost,
         tips: i === 1 
-          ? `Start early to make the most of your first day! Don't forget comfortable walking shoes and try the local breakfast specialties.`
+          ? `Welcome to ${formData.destination}! ${tip} Start early to make the most of your first day.`
           : i === numDays 
-          ? `Last day - perfect time for souvenir shopping and revisiting your favorite spots from the trip!`
-          : `Pro tip: Book popular attractions in advance and always carry a water bottle. Day ${i} is great for exploring local neighborhoods!`
+          ? `Last day in ${formData.destination} - perfect time for souvenir shopping and revisiting your favorite spots!`
+          : tip
       });
     }
     
@@ -293,6 +526,30 @@ const TripPlanner = () => {
     });
   };
 
+  const shareItinerary = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `My ${formData.destination} Travel Itinerary`,
+        text: `Check out my ${formData.duration}-day travel itinerary for ${formData.destination}!`,
+        url: window.location.href
+      });
+    } else {
+      // Fallback: copy to clipboard
+      const itineraryText = `My ${formData.destination} Travel Itinerary\n\n${itinerary.map(day => 
+        `Day ${day.day}:\nAttractions: ${day.attractions.join(', ')}\nActivities: ${day.activities.join(', ')}`
+      ).join('\n\n')}`;
+      navigator.clipboard.writeText(itineraryText);
+      alert('Itinerary copied to clipboard!');
+    }
+  };
+
+  const printItinerary = () => {
+    setShowPrintView(true);
+    setTimeout(() => {
+      window.print();
+      setShowPrintView(false);
+    }, 100);
+  };
   if (!showDestinations) {
     return (
       <div className="space-y-8">

@@ -24,8 +24,6 @@ interface TripFormData {
   startDate: string;
   duration: string;
   groupSize: string;
-  dailyBudget: string;
-  currency: string;
   interests: string;
   exclusions: string;
   otherNotes: string;
@@ -37,8 +35,6 @@ const TripPlanner = () => {
     startDate: '',
     duration: '',
     groupSize: '',
-    dailyBudget: '',
-    currency: 'USD',
     interests: '',
     exclusions: '',
     otherNotes: ''
@@ -184,21 +180,89 @@ const TripPlanner = () => {
     const numDays = parseInt(formData.duration);
     const mockItinerary: ItineraryDay[] = [];
     
+    // Enhanced mock data with more realistic activities and attractions
+    const destinationActivities = {
+      morning: [
+        'Start your day with a walking tour of the historic city center',
+        'Visit the famous morning market and try local breakfast specialties',
+        'Explore the main cathedral or religious site',
+        'Take a guided tour of the old town district',
+        'Visit the local art museum or cultural center'
+      ],
+      afternoon: [
+        'Enjoy lunch at a highly-rated local restaurant',
+        'Take a scenic boat ride or cable car tour',
+        'Explore the botanical gardens or city park',
+        'Visit the main shopping district and local boutiques',
+        'Tour a famous palace, castle, or historical landmark'
+      ],
+      evening: [
+        'Watch the sunset from the best viewpoint in the city',
+        'Experience the local nightlife and entertainment district',
+        'Enjoy dinner at a rooftop restaurant with panoramic views',
+        'Attend a cultural show or traditional performance',
+        'Take an evening stroll along the waterfront or main promenade'
+      ]
+    };
+
+    const touristAttractions = [
+      'Historic Old Town Square',
+      'National Art Gallery',
+      'Central Cathedral',
+      'Royal Palace',
+      'Scenic Lookout Point',
+      'Local Market Hall',
+      'Botanical Gardens',
+      'Waterfront Promenade',
+      'Cultural Heritage Museum',
+      'Traditional Craft Quarter'
+    ];
+
+    const funActivities = [
+      'Food walking tour',
+      'Photography workshop',
+      'Cooking class with locals',
+      'Bike tour of the city',
+      'River cruise',
+      'Wine or beer tasting',
+      'Street art tour',
+      'Local dance lesson',
+      'Artisan workshop visit',
+      'Sunset hiking trail'
+    ];
+
     for (let i = 1; i <= numDays; i++) {
+      // Randomly select activities for variety
+      const morningActivity = destinationActivities.morning[Math.floor(Math.random() * destinationActivities.morning.length)];
+      const afternoonActivity = destinationActivities.afternoon[Math.floor(Math.random() * destinationActivities.afternoon.length)];
+      const eveningActivity = destinationActivities.evening[Math.floor(Math.random() * destinationActivities.evening.length)];
+      
+      // Select random attractions and activities
+      const dayAttractions = touristAttractions
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(attraction => `${attraction} in ${formData.destination}`);
+      
+      const dayFunActivities = funActivities
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 2);
+
       mockItinerary.push({
         day: i,
         activities: [
-          `Morning: Explore ${formData.destination} city center`,
-          `Afternoon: Visit local museums and galleries`,
-          `Evening: Sunset dinner at rooftop restaurant`
+          `Morning: ${morningActivity}`,
+          `Afternoon: ${afternoonActivity}`,
+          `Evening: ${eveningActivity}`
         ],
         attractions: [
-          `${formData.destination} Historic District`,
-          'Local Art Museum',
-          'Central Park/Square',
-          'Popular Viewpoint'
+          ...dayAttractions,
+          ...dayFunActivities
         ],
-        tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
+        tips: i === 1 
+          ? `Start early to make the most of your first day! Don't forget comfortable walking shoes and try the local breakfast specialties.`
+          : i === numDays 
+          ? `Last day - perfect time for souvenir shopping and revisiting your favorite spots from the trip!`
+          : `Pro tip: Book popular attractions in advance and always carry a water bottle. Day ${i} is great for exploring local neighborhoods!`
       });
     }
     
@@ -315,36 +379,8 @@ const TripPlanner = () => {
             </div>
 
             {/* Row 3: Daily Budget */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                <DollarSign className="inline h-4 w-4 mr-1" />
-                What is your daily budget per person?
-              </label>
-              <div className="flex space-x-3">
-                <input
-                  type="number"
-                  value={formData.dailyBudget}
-                  onChange={(e) => handleInputChange('dailyBudget', e.target.value)}
-                  placeholder="Amount"
-                  min="0"
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                />
-                <select
-                  value={formData.currency}
-                  onChange={(e) => handleInputChange('currency', e.target.value)}
-                  className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                  <option value="JPY">JPY</option>
-                  <option value="CAD">CAD</option>
-                  <option value="AUD">AUD</option>
-                </select>
-              </div>
-            </div>
             
-            {/* Row 4: Interests */}
+            {/* Row 3: Interests */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 What do you want to see and do?
@@ -358,7 +394,7 @@ const TripPlanner = () => {
               />
             </div>
 
-            {/* Row 5: Exclusions */}
+            {/* Row 4: Exclusions */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 What would you prefer to exclude?
@@ -372,7 +408,7 @@ const TripPlanner = () => {
               />
             </div>
 
-            {/* Row 6: Other Notes */}
+            {/* Row 5: Other Notes */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Other Notes
@@ -408,11 +444,29 @@ const TripPlanner = () => {
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
-                <Clock className="h-6 w-6 text-white" />
+                <MapPin className="h-6 w-6 text-white" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900">
-                Your {formData.destination} Itinerary ({formData.duration} Days)
+                Your {formData.destination} Travel Itinerary ({formData.duration} Days)
               </h3>
+            </div>
+            
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">📋 Trip Summary</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-gray-700">Destination:</span>
+                  <p className="text-gray-600">{formData.destination}</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Duration:</span>
+                  <p className="text-gray-600">{formData.duration} days</p>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Group Size:</span>
+                  <p className="text-gray-600">{formData.groupSize || 'Not specified'} people</p>
+                </div>
+              </div>
             </div>
             
             {itinerary.map((day) => (
@@ -421,34 +475,43 @@ const TripPlanner = () => {
                   <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-2 px-4 rounded-full">
                     Day {day.day}
                   </div>
+                  {formData.startDate && (
+                    <div className="text-sm text-gray-600">
+                      {new Date(new Date(formData.startDate).getTime() + (day.day - 1) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-4">
                       <Clock className="h-5 w-5 mr-2 text-blue-500" />
-                      Activities
+                      Daily Schedule
                     </h4>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {day.activities.map((activity, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-gray-700">{activity}</span>
+                        <li key={index} className="flex items-start space-x-3">
+                          <div className="w-3 h-3 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                          <span className="text-gray-700 leading-relaxed">{activity}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                   
                   <div>
-                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-3">
+                    <h4 className="flex items-center text-lg font-semibold text-gray-800 mb-4">
                       <Camera className="h-5 w-5 mr-2 text-green-500" />
-                      Must-Visit Attractions
+                      Tourist Places & Fun Activities
                     </h4>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {day.attractions.map((attraction, index) => (
-                        <li key={index} className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-gray-700">{attraction}</span>
+                        <li key={index} className="flex items-start space-x-3">
+                          <div className="w-3 h-3 bg-green-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                          <span className="text-gray-700 leading-relaxed">{attraction}</span>
                         </li>
                       ))}
                     </ul>
@@ -457,7 +520,7 @@ const TripPlanner = () => {
                 
                 <div className="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
                   <p className="text-sm text-gray-700">
-                    <strong>💡 Tip:</strong> {day.tips}
+                    <strong>💡 Travel Tip:</strong> {day.tips}
                   </p>
                 </div>
               </div>

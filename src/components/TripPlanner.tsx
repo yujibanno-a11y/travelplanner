@@ -25,51 +25,85 @@ const TripPlanner = () => {
     checkAuth();
   }, []);
 
-  // Simulated AI-generated itineraries
   const generateItinerary = async () => {
     if (!destination || !days) return;
     
     setIsGenerating(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const numDays = parseInt(days);
-    const mockItinerary: ItineraryDay[] = [];
-    
-    for (let i = 1; i <= numDays; i++) {
-      mockItinerary.push({
-        day: i,
-        activities: [
-          `Morning: Explore ${destination} city center`,
-          `Afternoon: Visit local museums and galleries`,
-          `Evening: Sunset dinner at rooftop restaurant`
-        ],
-        attractions: [
-          `${destination} Historic District`,
-          'Local Art Museum',
-          'Central Park/Square',
-          'Popular Viewpoint'
-        ],
-        tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
+    try {
+      // Call the Supabase edge function to generate AI itinerary
+      const { data, error } = await supabase.functions.invoke('generate-itinerary', {
+        body: {
+          destination: destination,
+          days: parseInt(days)
+        }
       });
+
+      if (error) {
+        console.error('Error calling edge function:', error);
+        throw error;
+      }
+
+      if (!data || !data.itinerary) {
+        throw new Error('No itinerary data received');
+      }
+
+      const generatedItinerary = data.itinerary;
+      setItinerary(generatedItinerary);
+      
+      // Save to both localStorage and Supabase
+      const tripData = {
+        destination,
+        days: parseInt(days),
+        itinerary: generatedItinerary
+      };
+      localStorage.setItem('currentTrip', JSON.stringify(tripData));
+      
+      // Save to Supabase if authenticated
+      if (isAuthenticated) {
+        await saveItineraryToSupabase(destination, parseInt(days), generatedItinerary);
+      }
+    } catch (error) {
+      console.error('Error generating itinerary:', error);
+      
+      // Fallback to basic itinerary if AI generation fails
+      const numDays = parseInt(days);
+      const fallbackItinerary: ItineraryDay[] = [];
+      
+      for (let i = 1; i <= numDays; i++) {
+        fallbackItinerary.push({
+          day: i,
+          activities: [
+            `Morning: Explore ${destination} city center`,
+            `Afternoon: Visit local museums and galleries`,
+            `Evening: Sunset dinner at rooftop restaurant`
+          ],
+          attractions: [
+            `${destination} Historic District`,
+            'Local Art Museum',
+            'Central Park/Square',
+            'Popular Viewpoint'
+          ],
+          tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
+        });
+      }
+      
+      setItinerary(fallbackItinerary);
+      
+      // Save fallback data
+      const tripData = {
+        destination,
+        days: numDays,
+        itinerary: fallbackItinerary
+      };
+      localStorage.setItem('currentTrip', JSON.stringify(tripData));
+      
+      if (isAuthenticated) {
+        await saveItineraryToSupabase(destination, numDays, fallbackItinerary);
+      }
     }
     
-    setItinerary(mockItinerary);
     setIsGenerating(false);
-    
-    // Save to both localStorage and Supabase
-    const tripData = {
-      destination,
-      days: numDays,
-      itinerary: mockItinerary
-    };
-    localStorage.setItem('currentTrip', JSON.stringify(tripData));
-    
-    // Save to Supabase if authenticated
-    if (isAuthenticated) {
-      await saveItineraryToSupabase(destination, numDays, mockItinerary);
-    }
   };
 
   const saveItineraryToSupabase = async (destination: string, days: number, itinerary: ItineraryDay[]) => {
@@ -200,7 +234,7 @@ const TripPlanner = () => {
           {isGenerating ? (
             <div className="flex items-center justify-center space-x-2">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>Generating Your Itinerary...</span>
+              <span>AI is Creating Your Itinerary...</span>
             </div>
           ) : (
             `Generate AI Itinerary${isAuthenticated ? ' & Save' : ''}`

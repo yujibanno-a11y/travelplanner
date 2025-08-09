@@ -111,9 +111,9 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
         <div className="glass backdrop-blur-md rounded-xl shadow-lg p-8 border border-white/20">
           <div className="bg-green-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-6">
             <CheckCircle className="h-8 w-8 text-green-400" />
-            <h1 className="text-2xl font-bold text-white mb-2">Reset your password</h1>
-            <p className="text-white/70">Enter your email address and we'll send you a link to reset your password</p>
           </div>
+            <h1 className="text-2xl font-bold text-white mb-2">Reset your password</h1>
+            <p className="text-white/70 mb-6">Enter your email address and we'll send you a link to reset your password</p>
 
           {/* Reset Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -172,12 +172,12 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
           {/* Help Text */}
           <div className="mt-6 text-center">
             <p className="text-sm text-white/70">
-          <p className="text-white/70 mb-6">
+              Remember your password?{' '}
               <button
                 onClick={onBack}
                 className="font-semibold text-primary-400 hover:text-primary-300 transition-colors duration-200"
               >
-            <p className="text-sm text-white/60">
+                Back to login
               </button>
             </p>
           </div>

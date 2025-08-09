@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building } from 'lucide-react';
-
-interface ItineraryDay {
-  day: number;
-  activities: string[];
-  attractions: string[];
-  tips: string;
-}
+import { useItineraries } from '../hooks/useSupabaseData';
 
 const TripPlanner = () => {
   const [destination, setDestination] = useState('');
   const [days, setDays] = useState('');
-  const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
+  const [currentItinerary, setCurrentItinerary] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const { addItinerary } = useItineraries();
 
   // Simulated AI-generated itineraries
   const generateItinerary = async () => {
@@ -24,7 +19,7 @@ const TripPlanner = () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     const numDays = parseInt(days);
-    const mockItinerary: ItineraryDay[] = [];
+    const mockItinerary = [];
     
     for (let i = 1; i <= numDays; i++) {
       mockItinerary.push({
@@ -44,15 +39,15 @@ const TripPlanner = () => {
       });
     }
     
-    setItinerary(mockItinerary);
+    setCurrentItinerary(mockItinerary);
     setIsGenerating(false);
     
-    // Save to localStorage
-    localStorage.setItem('currentTrip', JSON.stringify({
+    // Save to database
+    await addItinerary({
       destination,
       days: numDays,
-      itinerary: mockItinerary
-    }));
+      itinerary_data: mockItinerary
+    });
   };
 
   return (
@@ -115,7 +110,7 @@ const TripPlanner = () => {
       </div>
 
       {/* Generated Itinerary */}
-      {itinerary.length > 0 && (
+      {currentItinerary.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center space-x-3">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
@@ -126,7 +121,7 @@ const TripPlanner = () => {
             </h3>
           </div>
           
-          {itinerary.map((day) => (
+          {currentItinerary.map((day) => (
             <div key={day.day} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white font-bold py-2 px-4 rounded-full">

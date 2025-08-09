@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
-import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell } from 'lucide-react';
+import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, User } from 'lucide-react';
+import { AuthProvider } from './contexts/AuthContext';
+import AuthGuard from './components/auth/AuthGuard';
+import { useAuth } from './contexts/AuthContext';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
 import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
+import UserProfile from './components/UserProfile';
 
-type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications';
+type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'profile';
 
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState<TabType>('plan');
+  const { profile, signOut } = useAuth();
 
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },
@@ -19,6 +24,7 @@ function App() {
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
     { id: 'spreadsheet', label: 'Expense Sheet', icon: Plane },
     { id: 'notifications', label: 'Alerts', icon: Bell },
+    { id: 'profile', label: 'Profile', icon: User },
   ];
 
   const renderActiveTab = () => {
@@ -35,6 +41,8 @@ function App() {
         return <ExpenseSpreadsheet />;
       case 'notifications':
         return <NotificationCenter />;
+      case 'profile':
+        return <UserProfile />;
       default:
         return <TripPlanner />;
     }
@@ -52,8 +60,20 @@ function App() {
               </div>
               <h1 className="text-2xl font-bold text-gray-900">TravelPlanner</h1>
             </div>
-            <div className="hidden md:block text-sm text-gray-600">
-              Your AI-powered travel companion
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="text-sm text-gray-600">
+                Welcome, {profile?.full_name || profile?.email || 'Traveler'}!
+              </div>
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`p-2 rounded-lg transition-colors ${
+                  activeTab === 'profile' 
+                    ? 'bg-blue-100 text-blue-600' 
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <User className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -89,6 +109,16 @@ function App() {
         {renderActiveTab()}
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AuthGuard>
+        <AppContent />
+      </AuthGuard>
+    </AuthProvider>
   );
 }
 

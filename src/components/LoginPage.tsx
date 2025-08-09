@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock } from 'lucide-react';
+import { signIn } from '../lib/auth';
 
 interface LoginPageProps {
   onBack: () => void;
@@ -15,6 +16,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
@@ -40,13 +42,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
     
     if (!validateForm()) return;
     
+    setAuthError('');
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await signIn(email, password);
       setIsLoading(false);
       onLogin();
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      setAuthError(error.message || 'Login failed. Please try again.');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -146,6 +152,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onBack, onLogin, onNavigateToSign
                 Forgot password?
               </button>
             </div>
+
+            {/* Auth Error */}
+            {authError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{authError}</p>
+              </div>
+            )}
 
             {/* Login Button */}
             <button

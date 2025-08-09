@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock, User } from 'lucide-react';
+import { signUp } from '../lib/auth';
 
 interface SignupPageProps {
   onBack: () => void;
@@ -18,6 +19,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -53,13 +55,17 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
     
     if (!validateForm()) return;
     
+    setAuthError('');
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await signUp(formData.email, formData.password, formData.name);
       setIsLoading(false);
       onSignup();
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      setAuthError(error.message || 'Signup failed. Please try again.');
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -201,6 +207,13 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
                 <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>
               )}
             </div>
+
+            {/* Auth Error */}
+            {authError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{authError}</p>
+              </div>
+            )}
 
             {/* Signup Button */}
             <button

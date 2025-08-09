@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Plane, MapPin, DollarSign, MessageCircle, UtensilsCrossed, Bell, ChevronDown, ChevronRight, Settings as SettingsIcon, Receipt, Wallet } from 'lucide-react';
 import { Route, Target, ReceiptText, PieChart, AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
+import { getCurrentUser, signOut, type AuthUser } from './lib/auth';
+import { supabase } from './lib/supabase';
 import TripPlanner from './components/TripPlanner';
 import BudgetTracker from './components/BudgetTracker';
 import ExpenseChat from './components/ExpenseChat';
@@ -22,8 +24,28 @@ function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('landing');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
+    // Check initial auth state
+    checkAuthState();
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const user = await getCurrentUser();
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          setCurrentPage('app');
+        } else {
+          setCurrentUser(null);
+          setIsAuthenticated(false);
+          setCurrentPage('landing');
+        }
+      }
+    );
+
     // Load theme preference
     const savedSettings = localStorage.getItem('userSettings');
     if (savedSettings) {
@@ -45,8 +67,24 @@ function App() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const checkAuthState = async () => {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        setCurrentPage('app');
+      }
+    } catch (error) {
+      console.error('Error checking auth state:', error);
+    }
+  };
 
   const tabs = [
     { id: 'plan', label: 'Plan Trip', icon: MapPin },
@@ -81,18 +119,20 @@ function App() {
   };
 
   const handleLogin = () => {
-    setIsAuthenticated(true);
-    setCurrentPage('app');
+    // Auth state will be handled by the auth state listener
   };
 
   const handleSignup = () => {
-    setIsAuthenticated(true);
-    setCurrentPage('app');
+    // Auth state will be handled by the auth state listener
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentPage('landing');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // Auth state will be handled by the auth state listener
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   // Render different pages based on currentPage state
@@ -374,7 +414,9 @@ function App() {
               <div className="flex items-center space-x-4">
                 <span className={`text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>Welcome back!</span>
+                }`}>
+                  Welcome back{currentUser?.full_name ? `, ${currentUser.full_name}` : ''}!
+                </span>
                 <button 
                   onClick={handleLogout}
                   className={`font-medium text-sm transition-colors duration-200 ${

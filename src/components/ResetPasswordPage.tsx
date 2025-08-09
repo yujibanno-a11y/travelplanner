@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Mail, CheckCircle } from 'lucide-react';
+import { resetPassword } from '../lib/auth';
 
 interface ResetPasswordPageProps {
   onBack: () => void;
@@ -10,6 +11,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [authError, setAuthError] = useState('');
 
   const validateEmail = (email: string) => {
     return /\S+@\S+\.\S+/.test(email);
@@ -29,13 +31,17 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
     }
     
     setError('');
+    setAuthError('');
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      await resetPassword(email);
       setIsLoading(false);
       setIsSuccess(true);
-    }, 1500);
+    } catch (error: any) {
+      setIsLoading(false);
+      setAuthError(error.message || 'Failed to send reset email. Please try again.');
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -138,6 +144,13 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
                 <p className="mt-1 text-xs text-red-600">{error}</p>
               )}
             </div>
+
+            {/* Auth Error */}
+            {authError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{authError}</p>
+              </div>
+            )}
 
             {/* Send Reset Link Button */}
             <button

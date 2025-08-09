@@ -310,7 +310,7 @@ const TripPlanner = () => {
       name: 'Iceland',
       country: 'Iceland',
       description: 'Witness the raw power of nature with glaciers, geysers, waterfalls, and the mesmerizing Northern Lights.',
-      image: 'https://images.pexels.com/photos/1433052/pexels-photo-1433052.jpeg?auto=compress&cs=tinysrgb&w=800',
+      image: 'https://images.pexels.com/photos/1433052/pexels-photo-1433052.jpeg?auto=compress&cs=tinysrgb&w=1600',
       highlights: ['Northern Lights', 'Blue Lagoon', 'Ring Road'],
       bestTime: 'June - August, September - March',
       duration: '7-12 days'
@@ -804,14 +804,8 @@ const TripPlanner = () => {
                 )}
               </div>
             </div>
-              <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-3 rounded-xl">
-                <MapPin className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                Your {formData.destination} Travel Itinerary ({formData.duration} Days)
-              </h3>
-            </div>
-            
+
+            <div>
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 mb-6">
               <h4 className="text-lg font-semibold text-gray-800 mb-2">📋 Trip Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -828,6 +822,7 @@ const TripPlanner = () => {
                   <p className="text-gray-600">{formData.groupSize || 'Not specified'} people</p>
                 </div>
               </div>
+            </div>
             </div>
             
             {itinerary.map((day) => (

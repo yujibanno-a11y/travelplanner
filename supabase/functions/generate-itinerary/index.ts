@@ -49,12 +49,14 @@ serve(async (req) => {
     }
 
     // Create the prompt for OpenAI
-    const prompt = `Create a detailed ${days}-day travel itinerary for ${destination}. 
+    const prompt = `Create a detailed ${days}-day travel itinerary for ${destination}. Each day should have UNIQUE activities and attractions - do not repeat the same activities, attractions, or locations across different days.
 
 For each day, provide:
-1. 3 specific activities with time of day (morning, afternoon, evening)
-2. 4 must-visit attractions
+1. 3 UNIQUE specific activities with time of day (morning, afternoon, evening) - ensure no activity is repeated across days
+2. 4 UNIQUE must-visit attractions - ensure no attraction is repeated across days
 3. One practical tip for that day
+
+IMPORTANT: Make sure each day has completely different activities and attractions. Vary the types of experiences (cultural, outdoor, food, shopping, entertainment, etc.) and locations within ${destination}.
 
 Format the response as a JSON array where each day has this structure:
 {
@@ -73,7 +75,6 @@ Format the response as a JSON array where each day has this structure:
   "tips": "Practical tip for this day"
 }
 
-Make the activities specific to ${destination} and include local experiences, cultural sites, and popular attractions. Ensure activities are realistic and well-timed throughout each day.`
 
     // Call OpenAI API
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {

@@ -215,20 +215,66 @@ const TripPlanner = () => {
       const numDays = parseInt(days);
       const fallbackItinerary: ItineraryDay[] = [];
       
+      // Create arrays of unique activities and attractions to avoid duplicates
+      const baseActivities = [
+        'Explore the historic city center and main square',
+        'Visit the most famous museum or cultural site',
+        'Take a guided walking tour of local neighborhoods',
+        'Experience local markets and street food',
+        'Enjoy panoramic city views from a viewpoint',
+        'Discover hidden gems and local favorites',
+        'Relax in beautiful parks or gardens',
+        'Try authentic local cuisine at recommended restaurants',
+        'Shop for unique souvenirs and local crafts',
+        'Take photos at iconic landmarks',
+        'Experience local nightlife and entertainment',
+        'Visit religious or spiritual sites',
+        'Explore waterfront areas or beaches',
+        'Take day trips to nearby attractions',
+        'Participate in cultural activities or workshops'
+      ];
+      
+      const baseAttractions = [
+        `${destination} Historic District`,
+        'Main Art Museum',
+        'Central Cathedral or Religious Site',
+        'Popular Viewpoint or Observatory',
+        'Local Market or Bazaar',
+        'Waterfront Promenade',
+        'City Park or Gardens',
+        'Cultural Center',
+        'Old Town Square',
+        'Modern Art Gallery',
+        'Archaeological Site',
+        'Botanical Garden',
+        'Local Theater',
+        'Riverside Walk',
+        'Shopping District',
+        'Food Market',
+        'Scenic Overlook',
+        'Historical Monument'
+      ];
+      
       for (let i = 1; i <= numDays; i++) {
+        // Select unique activities for this day
+        const dayActivities = [
+          `Morning: ${baseActivities[(i - 1) * 3] || baseActivities[i % baseActivities.length]}`,
+          `Afternoon: ${baseActivities[(i - 1) * 3 + 1] || baseActivities[(i + 5) % baseActivities.length]}`,
+          `Evening: ${baseActivities[(i - 1) * 3 + 2] || baseActivities[(i + 10) % baseActivities.length]}`
+        ];
+        
+        // Select unique attractions for this day
+        const dayAttractions = [
+          baseAttractions[(i - 1) * 4] || baseAttractions[i % baseAttractions.length],
+          baseAttractions[(i - 1) * 4 + 1] || baseAttractions[(i + 4) % baseAttractions.length],
+          baseAttractions[(i - 1) * 4 + 2] || baseAttractions[(i + 8) % baseAttractions.length],
+          baseAttractions[(i - 1) * 4 + 3] || baseAttractions[(i + 12) % baseAttractions.length]
+        ];
+        
         fallbackItinerary.push({
           day: i,
-          activities: [
-            `Morning: Explore ${destination} city center`,
-            `Afternoon: Visit local museums and galleries`,
-            `Evening: Sunset dinner at rooftop restaurant`
-          ],
-          attractions: [
-            `${destination} Historic District`,
-            'Local Art Museum',
-            'Central Park/Square',
-            'Popular Viewpoint'
-          ],
+          activities: dayActivities,
+          attractions: dayAttractions,
           tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
         });
       }

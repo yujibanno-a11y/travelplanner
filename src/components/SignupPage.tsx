@@ -70,9 +70,11 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+    // Clear specific field error when user starts typing
+    setErrors(prev => ({ ...prev, [field]: '' }));
+    // Clear auth error when user makes changes
+    if (authError) {
+      setAuthError('');
     }
   };
 

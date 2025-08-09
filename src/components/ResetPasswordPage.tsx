@@ -96,11 +96,11 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 px-6 py-8 md:px-16 md:py-16">
+    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 px-6 py-8 md:px-16 md:py-16">
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 mb-8 transition-colors duration-200"
+        className="flex items-center space-x-2 text-white/60 hover:text-white mb-8 transition-colors duration-200 glass backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 hover:border-white/30"
       >
         <ArrowLeft className="h-5 w-5" />
         <span>Back to Login</span>
@@ -108,22 +108,22 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
 
       {/* Reset Password Card */}
       <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Reset your password</h1>
-            <p className="text-gray-600">Enter your email address and we'll send you a link to reset your password</p>
+        <div className="glass backdrop-blur-md rounded-xl shadow-lg p-8 border border-white/20">
+          <div className="bg-green-500/20 rounded-full p-4 w-16 h-16 mx-auto mb-6">
+            <CheckCircle className="h-8 w-8 text-green-400" />
+            <h1 className="text-2xl font-bold text-white mb-2">Reset your password</h1>
+            <p className="text-white/70">Enter your email address and we'll send you a link to reset your password</p>
           </div>
 
           {/* Reset Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
-              <label htmlFor="reset-email" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="reset-email" className="block text-sm font-semibold text-white/80 mb-2">
                 Email address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-white/60" />
                 <input
                   id="reset-email"
                   type="email"
@@ -135,20 +135,20 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
                   onKeyPress={handleKeyPress}
                   placeholder="Enter your email address"
                   aria-label="Email address for password reset"
-                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    error ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  className={`w-full pl-10 pr-4 py-3 glass backdrop-blur-md border rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white placeholder-white/60 transition-all duration-300 ${
+                    error ? 'border-red-400/50 bg-red-500/10' : 'border-white/20'
                   }`}
                 />
               </div>
               {error && (
-                <p className="mt-1 text-xs text-red-600">{error}</p>
+                <p className="mt-1 text-xs text-red-400">{error}</p>
               )}
             </div>
 
             {/* Auth Error */}
             {authError && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p className="text-red-700 text-sm">{authError}</p>
+              <div className="p-4 bg-red-500/10 border border-red-400/30 rounded-xl backdrop-blur-md">
+                <p className="text-red-400 text-sm">{authError}</p>
               </div>
             )}
 
@@ -156,11 +156,11 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-dark-900 py-3 px-6 rounded-xl font-semibold hover:from-primary-400 hover:to-secondary-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-glow-primary"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-dark-900"></div>
                   <span>Sending reset link...</span>
                 </div>
               ) : (
@@ -171,13 +171,13 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ onBack }) => {
 
           {/* Help Text */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Remember your password?{' '}
+            <p className="text-sm text-white/70">
+          <p className="text-white/70 mb-6">
               <button
                 onClick={onBack}
-                className="font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200"
+                className="font-semibold text-primary-400 hover:text-primary-300 transition-colors duration-200"
               >
-                Back to login
+            <p className="text-sm text-white/60">
               </button>
             </p>
           </div>

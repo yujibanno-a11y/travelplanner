@@ -78,6 +78,10 @@ const SignupPage: React.FC<SignupPageProps> = ({ onBack, onSignup, onNavigateToL
       // Handle specific Supabase errors
       if (error.message?.includes('Invalid API key')) {
         errorMessage = 'Configuration error: Invalid API key. Please check your Supabase settings.';
+      } else if (error.message?.includes('For security purposes, you can only request this after')) {
+        errorMessage = 'Too many signup attempts from this device. Please wait a minute and try again.';
+      } else if (error.message?.includes('over_email_send_rate_limit')) {
+        errorMessage = 'Too many signup attempts from this device. Please wait a minute and try again.';
       } else if (error.message?.includes('signup is disabled')) {
         errorMessage = 'User registration is currently disabled. Please contact support.';
       } else if (error.message?.includes('email')) {

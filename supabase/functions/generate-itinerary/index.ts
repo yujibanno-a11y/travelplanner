@@ -137,17 +137,17 @@ Format the response as a JSON array where each day has this structure:
       itinerary = Array.from({ length: days }, (_, i) => ({
         day: i + 1,
         activities: [
-          `Morning: Explore ${destination} city center`,
-          `Afternoon: Visit local museums and cultural sites`,
-          `Evening: Enjoy dinner at a traditional restaurant`
+          \`Morning: Explore ${destination} city center`,
+          \`Afternoon: Visit local museums and cultural sites`,
+          \`Evening: Enjoy dinner at a traditional restaurant`
         ],
         attractions: [
-          `${destination} Historic District`,
+          \`${destination} Historic District`,
           'Local Art Museum',
           'Central Square',
           'Popular Viewpoint'
         ],
-        tips: `Day ${i + 1}: Wear comfortable walking shoes and bring a camera!`
+        tips: \`Day ${i + 1}: Wear comfortable walking shoes and bring a camera!`
       }))
     }
 
@@ -169,3 +169,6 @@ Format the response as a JSON array where each day has this structure:
     )
   }
 })
+  }
+}
+)

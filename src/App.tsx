@@ -172,12 +172,12 @@ function App() {
             
             {/* Hero Content - Centered */}
             <div className="flex flex-col items-center justify-center pb-8 pt-8 space-y-2">
-              <h2 className={\`text-3xl font-bold transition-colors duration-300 ${
+              <h2 className={`text-3xl font-bold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>
                 Plan adventures. Spend smarter.
               </h2>
-              <p className={\`text-base text-center max-w-2xl transition-colors duration-300 ${
+              <p className={`text-base text-center max-w-2xl transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 AI-generated itineraries with real-time expense tracking and budget insights. <br />All in one travel wallet.
@@ -199,7 +199,7 @@ function App() {
         {/* Features Section Headline */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16">
           <div className="text-center">
-            <h2 className={\`text-3xl font-bold mb-4 transition-colors duration-300 ${
+            <h2 className={`text-3xl font-bold mb-4 transition-colors duration-300 ${
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}>
               All-in-one features
@@ -368,7 +368,7 @@ function App() {
             {/* Auth Container - Right Side */}
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-4">
-                <span className={\`text-sm transition-colors duration-300 ${
+                <span className={`text-sm transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
                 }`}>Welcome back!</span>
                 <button 
@@ -391,14 +391,14 @@ function App() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className={\`fixed bottom-0 left-0 right-0 border-t z-50 shadow-lg transition-colors duration-300 ${
+      <nav className={`fixed bottom-0 left-0 right-0 border-t z-50 shadow-lg transition-colors duration-300 ${
         isDarkMode 
           ? 'bg-gray-800 border-gray-700' 
           : 'bg-white border-gray-200'
       }`}>
         {/* Budget Submenu */}
         {budgetSubmenuOpen && (
-          <div className={\`border-t px-4 py-3 transition-colors duration-300 ${
+          <div className={`border-t px-4 py-3 transition-colors duration-300 ${
             isDarkMode 
               ? 'bg-gray-700 border-gray-600' 
               : 'bg-gray-50 border-gray-200'

@@ -155,7 +155,7 @@ function App() {
               <div className="flex items-center space-x-4">
                 <button 
                   onClick={() => setCurrentPage('login')}
-                  className={\`font-medium text-sm transition-colors duration-200 ${
+                  className={`font-medium text-sm transition-colors duration-200 ${
                     isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
                   }`}
                 >
@@ -212,15 +212,15 @@ function App() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12">
             {/* Trip Planning */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
               }`}>
                 <Route className="h-7 w-7 text-blue-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Trip Planning</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Build a day-by-day itinerary with estimated costs and pre-picked activities so you start every morning ready to roll.
@@ -229,15 +229,15 @@ function App() {
 
             {/* Set Budget */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
               }`}>
                 <Target className="h-7 w-7 text-green-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Set Budget</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Enter your trip budget once and the app keeps a running tally to make sure you never overspend.
@@ -246,15 +246,15 @@ function App() {
 
             {/* Enter Expenses */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-purple-900/50' : 'bg-purple-100'
               }`}>
                 <ReceiptText className="h-7 w-7 text-purple-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Enter Expenses</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Log purchases in seconds—online or offline—and see your total update instantly.
@@ -263,15 +263,15 @@ function App() {
 
             {/* Budget Tracker */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-indigo-900/50' : 'bg-indigo-100'
               }`}>
                 <PieChart className="h-7 w-7 text-indigo-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Budget Tracker</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 View charts that break spending down by category, giving you a crystal-clear picture of where the money goes.
@@ -280,15 +280,15 @@ function App() {
 
             {/* Alerts */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-red-900/50' : 'bg-red-100'
               }`}>
                 <AlertTriangle className="h-7 w-7 text-red-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Alerts</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Get a friendly nudge the moment you edge past your budget limit, before small splurges snowball.
@@ -297,15 +297,15 @@ function App() {
 
             {/* Restaurants */}
             <div className="flex flex-col items-center text-center space-y-3">
-              <div className={\`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors duration-300 ${
                 isDarkMode ? 'bg-orange-900/50' : 'bg-orange-100'
               }`}>
                 <UtensilsCrossed className="h-7 w-7 text-orange-600" aria-hidden="true" />
               </div>
-              <h3 className={\`text-lg font-semibold transition-colors duration-300 ${
+              <h3 className={`text-lg font-semibold transition-colors duration-300 ${
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}>Restaurants</h3>
-              <p className={\`leading-relaxed transition-colors duration-300 ${
+              <p className={`leading-relaxed transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Browse restaurant picks filtered by cuisine and price so great meals fit smoothly into your budget.
@@ -373,7 +373,7 @@ function App() {
                 }`}>Welcome back!</span>
                 <button 
                   onClick={handleLogout}
-                  className={\`font-medium text-sm transition-colors duration-200 ${
+                  className={`font-medium text-sm transition-colors duration-200 ${
                     isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
                   }`}
                 >
@@ -410,7 +410,7 @@ function App() {
                   <button
                     key={submenuItem.id}
                     onClick={() => setActiveTab(submenuItem.id as TabType)}
-                    className={\`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs whitespace-nowrap transition-colors duration-200 min-w-0 ${
+                    className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs whitespace-nowrap transition-colors duration-200 min-w-0 ${
                       activeTab === submenuItem.id
                         ? isDarkMode 
                           ? 'bg-blue-900/50 text-blue-400' 
@@ -441,7 +441,7 @@ function App() {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id, tab.hasSubmenu)}
-                className={\`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs transition-colors duration-200 min-w-0 ${
+                className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg font-medium text-xs transition-colors duration-200 min-w-0 ${
                   isActive
                     ? isDarkMode
                       ? 'text-blue-400 bg-blue-900/50'
@@ -454,7 +454,7 @@ function App() {
                 <div className="relative">
                   <Icon className="h-6 w-6" />
                   {tab.hasSubmenu && (
-                    <div className={\`absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors duration-300 ${
+                    <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors duration-300 ${
                       budgetSubmenuOpen 
                         ? 'bg-blue-500' 
                         : isDarkMode 

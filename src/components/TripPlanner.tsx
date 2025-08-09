@@ -62,6 +62,53 @@ const TripPlanner = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDestinations, setShowDestinations] = useState(true);
 
+  // Destination-specific images
+  const getDestinationImage = (destination: string) => {
+    const destinationImages: { [key: string]: string } = {
+      'paris': 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'tokyo': 'https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'new york': 'https://images.pexels.com/photos/290386/pexels-photo-290386.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'london': 'https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'rome': 'https://images.pexels.com/photos/2064827/pexels-photo-2064827.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'morocco': 'https://images.pexels.com/photos/3889742/pexels-photo-3889742.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'marrakech': 'https://images.pexels.com/photos/3889742/pexels-photo-3889742.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'casablanca': 'https://images.pexels.com/photos/12935080/pexels-photo-12935080.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'fez': 'https://images.pexels.com/photos/3889742/pexels-photo-3889742.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'miami': 'https://images.pexels.com/photos/571169/pexels-photo-571169.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'las vegas': 'https://images.pexels.com/photos/161772/las-vegas-strip-nevada-gambling-161772.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'dubai': 'https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'sydney': 'https://images.pexels.com/photos/783682/pexels-photo-783682.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'barcelona': 'https://images.pexels.com/photos/819764/pexels-photo-819764.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'amsterdam': 'https://images.pexels.com/photos/1388030/pexels-photo-1388030.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'bangkok': 'https://images.pexels.com/photos/1007426/pexels-photo-1007426.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'singapore': 'https://images.pexels.com/photos/1134166/pexels-photo-1134166.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'mumbai': 'https://images.pexels.com/photos/1007426/pexels-photo-1007426.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'delhi': 'https://images.pexels.com/photos/789750/pexels-photo-789750.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'new delhi': 'https://images.pexels.com/photos/789750/pexels-photo-789750.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'bangalore': 'https://images.pexels.com/photos/1007426/pexels-photo-1007426.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'hyderabad': 'https://images.pexels.com/photos/789750/pexels-photo-789750.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'india': 'https://images.pexels.com/photos/789750/pexels-photo-789750.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'france': 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800'
+    };
+
+    const lowerDestination = destination.toLowerCase();
+    
+    // Try exact match first
+    if (destinationImages[lowerDestination]) {
+      return destinationImages[lowerDestination];
+    }
+    
+    // Try partial match
+    for (const [key, image] of Object.entries(destinationImages)) {
+      if (lowerDestination.includes(key) || key.includes(lowerDestination)) {
+        return image;
+      }
+    }
+    
+    // Default travel image
+    return 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=800';
+  };
+
   // Enhanced destination-specific data
   const destinationDatabase: Record<string, DestinationData> = {
     'paris': {
@@ -324,6 +371,69 @@ const TripPlanner = () => {
         "Tipping is typically 10-15% in restaurants if service charge isn't included"
       ],
       costs: ['£80-120 per day', '£60-90 per day', '£100-150 per day', '£70-110 per day']
+    },
+
+    'morocco': {
+      attractions: [
+        'Explore Marrakech souks and Jemaa el-Fnaa square',
+        'Take a Sahara Desert tour with camel trekking',
+        'Wander through Fez medina and traditional crafts',
+        'Visit Casablanca Hassan II Mosque',
+        'Trek in the Atlas Mountains',
+        'Discover the blue city of Chefchaouen',
+        'Experience traditional Moroccan hammam',
+        'Taste authentic tagines and mint tea'
+      ],
+      restaurants: {
+        breakfast: [
+          'Local café - Moroccan mint tea and pastries',
+          'Riad breakfast - Traditional Moroccan spread',
+          'French bakery - Croissants and coffee',
+          'Hotel restaurant - Continental breakfast',
+          'Street vendor - Fresh orange juice and msemen'
+        ],
+        lunch: [
+          'Traditional riad - Authentic tagines and couscous',
+          'Medina restaurant - Local Moroccan specialties',
+          'Rooftop terrace - Views with traditional dishes',
+          'Local market - Fresh ingredients and street food',
+          'Berber family meal - Home-cooked mountain cuisine'
+        ],
+        dinner: [
+          'Fine dining riad - Upscale Moroccan cuisine',
+          'Desert camp - Traditional Berber dinner under stars',
+          'Coastal restaurant - Fresh seafood and tagines',
+          'Mountain lodge - Hearty Berber dishes',
+          'Medina courtyard - Atmospheric traditional dining'
+        ]
+      },
+      activities: [
+        'Explore Marrakech souks and Jemaa el-Fnaa square',
+        'Take a Sahara Desert tour with camel trekking',
+        'Wander through Fez medina and traditional crafts',
+        'Visit Casablanca Hassan II Mosque',
+        'Trek in the Atlas Mountains',
+        'Discover the blue city of Chefchaouen',
+        'Experience traditional Moroccan hammam',
+        'Taste authentic tagines and mint tea'
+      ],
+      transportation: [
+        'Private driver - Most convenient for longer distances',
+        'CTM buses - Comfortable intercity travel',
+        'Grand taxis - Shared taxis between cities',
+        'Local taxis - Within cities and towns',
+        'Train - Limited but comfortable for major routes'
+      ],
+      tips: [
+        'Bargain at markets but be respectful about prices',
+        'Dress modestly, especially when visiting religious sites',
+        'Try authentic Moroccan mint tea and tagines',
+        'Learn basic Arabic or French phrases',
+        'Respect local customs and prayer times',
+        'Stay hydrated and protect yourself from the sun',
+        'Book desert tours through reputable operators'
+      ],
+      costs: ['$40-70 per day', '$30-50 per day', '$60-100 per day', '$35-60 per day']
     },
 
     india: {

@@ -53,7 +53,7 @@ const DebugPanel = () => {
   };
 
   const testSignup = async () => {
-    const testEmail = `test-${Date.now()}@example.com`;
+    const testEmail = `test-${Date.now()}@test.com`;
     const testPassword = 'TestPassword123!';
 
     try {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, DollarSign, Coffee, Car, Camera, ShoppingBag, Bot, User } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase, getCurrentUserId } from '../lib/supabase';
 import GlassCard from './GlassCard';
 import GlassButton from './GlassButton';
 
@@ -25,7 +24,6 @@ const ExpenseChat = () => {
   const [input, setInput] = useState('');
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const categoryIcons = {
     food: Coffee,
@@ -42,82 +40,16 @@ const ExpenseChat = () => {
   };
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-      
-      if (user) {
-        // Load expenses from Supabase for authenticated users
-        await loadExpensesFromSupabase();
-      } else {
-        // Load from localStorage for non-authenticated users
-        const savedExpenses = localStorage.getItem('expenses');
-        if (savedExpenses) {
-          setExpenses(JSON.parse(savedExpenses));
-        }
-      }
-    };
-    
-    checkAuth();
+    // Load from localStorage
+    const savedExpenses = localStorage.getItem('expenses');
+    if (savedExpenses) {
+      setExpenses(JSON.parse(savedExpenses));
+    }
 
     // Initial bot message
     addBotMessage("Hi! I'm your expense tracking assistant. You can tell me about your expenses like: 'I spent $25 on lunch at the local cafe' or 'Taxi to airport cost $40'");
   }, []);
 
-  const loadExpensesFromSupabase = async () => {
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
-
-      const { data: expenses, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('owner_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error loading expenses:', error);
-        return;
-      }
-
-      const formattedExpenses = expenses.map(expense => ({
-        id: expense.id,
-        category: expense.category as 'food' | 'transportation' | 'activities' | 'souvenirs',
-        amount: parseFloat(expense.amount),
-        description: expense.description,
-        timestamp: new Date(expense.created_at)
-      }));
-
-      setExpenses(formattedExpenses);
-    } catch (error) {
-      console.error('Error loading expenses from Supabase:', error);
-    }
-  };
-
-  const saveExpenseToSupabase = async (expense: Expense) => {
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
-
-      const { error } = await supabase
-        .from('expenses')
-        .insert({
-          owner_id: userId,
-          category: expense.category,
-          amount: expense.amount,
-          description: expense.description
-        });
-
-      if (error) {
-        console.error('Error saving expense to Supabase:', error);
-      } else {
-        console.log('Expense saved to Supabase successfully!');
-      }
-    } catch (error) {
-      console.error('Error saving expense to Supabase:', error);
-    }
-  };
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -213,13 +145,8 @@ const ExpenseChat = () => {
       const updatedExpenses = [...expenses, expense];
       setExpenses(updatedExpenses);
       
-      // Save to localStorage for all users
+      // Save to localStorage
       localStorage.setItem('expenses', JSON.stringify(updatedExpenses));
-      
-      // Save to Supabase if authenticated
-      if (isAuthenticated) {
-        await saveExpenseToSupabase(expense);
-      }
       
       checkBudgetAlert(expense);
       
@@ -302,7 +229,7 @@ const ExpenseChat = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={`Tell me about an expense... (e.g., 'I spent $25 on lunch')${isAuthenticated ? ' - Will be saved to cloud' : ''}`}
+                placeholder="Tell me about an expense... (e.g., 'I spent $25 on lunch')"
                 className="flex-1 px-4 py-3 glass backdrop-blur-md border border-white/20 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white placeholder-white/60 transition-all duration-300"
               />
               <GlassButton
@@ -315,11 +242,6 @@ const ExpenseChat = () => {
                 <span className="hidden sm:inline">Send</span>
               </GlassButton>
             </div>
-            {!isAuthenticated && (
-              <p className="mt-2 text-sm text-white/60 text-center">
-                Sign in to sync your expenses across devices
-              </p>
-            )}
           </form>
         </GlassCard>
       </motion.div>

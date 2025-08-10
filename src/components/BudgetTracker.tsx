@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Target, TrendingUp, AlertCircle, PiggyBank } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase, getCurrentUserId } from '../lib/supabase';
 import GlassCard from './GlassCard';
 import GlassButton from './GlassButton';
 import GlassInput from './GlassInput';
@@ -30,25 +29,13 @@ const BudgetTracker = () => {
   });
   
   const [currentTrip, setCurrentTrip] = useState<any>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-      
-      if (user) {
-        await loadBudgetFromSupabase();
-      } else {
-        // Load from localStorage for non-authenticated users
-        const budgetData = localStorage.getItem('budgetSettings');
-        if (budgetData) {
-          setBudgetSettings(JSON.parse(budgetData));
-        }
-      }
-    };
-    
-    checkAuth();
+    // Load from localStorage
+    const budgetData = localStorage.getItem('budgetSettings');
+    if (budgetData) {
+      setBudgetSettings(JSON.parse(budgetData));
+    }
 
     // Load current trip and budget settings
     const tripData = localStorage.getItem('currentTrip');
@@ -57,67 +44,6 @@ const BudgetTracker = () => {
       setCurrentTrip(JSON.parse(tripData));
     }
   }, []);
-
-  const loadBudgetFromSupabase = async () => {
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
-
-      const { data: budget, error } = await supabase
-        .from('budget_settings')
-        .select('*')
-        .eq('owner_id', userId)
-        .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-        console.error('Error loading budget:', error);
-        return;
-      }
-
-      if (budget) {
-        setBudgetSettings({
-          dailyLimit: parseFloat(budget.daily_limit) || 0,
-          totalBudget: parseFloat(budget.total_budget) || 0,
-          categories: budget.category_limits || {
-            food: 0,
-            transportation: 0,
-            activities: 0,
-            souvenirs: 0
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error loading budget from Supabase:', error);
-    }
-  };
-
-  const saveBudgetToSupabase = async () => {
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
-
-      const { error } = await supabase
-        .from('budget_settings')
-        .upsert({
-          owner_id: userId,
-          daily_limit: budgetSettings.dailyLimit,
-          total_budget: budgetSettings.totalBudget,
-          category_limits: budgetSettings.categories
-        }, {
-          onConflict: 'owner_id'
-        });
-
-      if (error) {
-        console.error('Error saving budget to Supabase:', error);
-        throw error;
-      } else {
-        console.log('Budget saved to Supabase successfully!');
-      }
-    } catch (error) {
-      console.error('Error saving budget to Supabase:', error);
-      throw error;
-    }
-  };
 
   const handleBudgetChange = (field: string, value: number) => {
     if (field === 'dailyLimit' || field === 'totalBudget') {
@@ -137,30 +63,10 @@ const BudgetTracker = () => {
   };
 
   const saveBudgetSettings = async () => {
-    // Save to localStorage for all users
+    // Save to localStorage
     localStorage.setItem('budgetSettings', JSON.stringify(budgetSettings));
     
-    let saveMessage = 'Budget settings saved successfully!';
-    let hasError = false;
-    
-    // Save to Supabase if authenticated
-    if (isAuthenticated) {
-      try {
-        await saveBudgetToSupabase();
-        saveMessage += ' (Synced to cloud)';
-      } catch (error) {
-        console.error('Failed to sync to cloud:', error);
-        saveMessage += ' (Local only - cloud sync failed)';
-        hasError = true;
-      }
-    }
-    
-    // Show success/error message
-    if (hasError) {
-      alert(saveMessage + '\n\nPlease check your internet connection and try again.');
-    } else {
-      alert(saveMessage);
-    }
+    alert('Budget settings saved successfully!');
   };
 
   const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);
@@ -289,14 +195,8 @@ const BudgetTracker = () => {
             onClick={saveBudgetSettings}
             className="w-full py-4 text-lg shadow-glow-primary"
           >
-            {isAuthenticated ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
+            Save Budget Settings
           </GlassButton>
-        
-          {!isAuthenticated && (
-            <p className="mt-3 text-sm text-white/60 text-center">
-              Sign in to sync your budget settings across devices
-            </p>
-          )}
         </GlassCard>
       </motion.div>
 

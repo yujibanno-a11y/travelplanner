@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Calendar, Sparkles, Clock, Camera, Mountain, Building, MessageCircle, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { supabase, getCurrentUserId } from '../lib/supabase';
 import { useItineraryHistory } from '../hooks/useItineraryHistory';
 import { useTheme } from './ThemeProvider';
 import GlassCard from './GlassCard';
@@ -27,7 +26,6 @@ const TripPlanner = () => {
   const [days, setDays] = useState('');
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showDaysLimitModal, setShowDaysLimitModal] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
@@ -61,13 +59,6 @@ const TripPlanner = () => {
   } = useItineraryHistory(itinerary);
 
   React.useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
-    };
-    checkAuth();
-
     // Check if mobile
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -173,44 +164,6 @@ const TripPlanner = () => {
     setIsGenerating(true);
     
     try {
-      // Call the Supabase edge function to generate AI itinerary
-      const { data, error } = await supabase.functions.invoke('generate-itinerary', {
-        body: {
-          destination: destination,
-          days: parseInt(days)
-        }
-      });
-
-      if (error) {
-        console.error('Error calling edge function:', error);
-        throw error;
-      }
-
-      if (!data || !data.itinerary) {
-        throw new Error('No itinerary data received');
-      }
-
-      const generatedItinerary = data.itinerary;
-      setItinerary(generatedItinerary);
-      
-      // Push to history
-      pushState(generatedItinerary);
-      
-      // Save to both localStorage and Supabase
-      const tripData = {
-        destination,
-        days: parseInt(days),
-        itinerary: generatedItinerary
-      };
-      localStorage.setItem('currentTrip', JSON.stringify(tripData));
-      
-      // Save to Supabase if authenticated
-      if (isAuthenticated) {
-        await saveItineraryToSupabase(destination, parseInt(days), generatedItinerary);
-      }
-    } catch (error) {
-      console.error('Error generating itinerary:', error);
-      
       // Fallback to basic itinerary if AI generation fails
       const numDays = parseInt(days);
       const fallbackItinerary: ItineraryDay[] = [];
@@ -291,93 +244,11 @@ const TripPlanner = () => {
         itinerary: fallbackItinerary
       };
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
-      
-      if (isAuthenticated) {
-        await saveItineraryToSupabase(destination, numDays, fallbackItinerary);
-      }
+    } catch (error) {
+      console.error('Error generating itinerary:', error);
     }
     
     setIsGenerating(false);
-  };
-
-  const saveItineraryToSupabase = async (destination: string, days: number, itinerary: ItineraryDay[]) => {
-    try {
-      const userId = await getCurrentUserId();
-      if (!userId) return;
-
-      // Create the main itinerary record
-      const { data: itineraryRecord, error: itineraryError } = await supabase
-        .from('itineraries')
-        .insert({
-          owner_id: userId,
-          destination: destination,
-          days: days,
-          itinerary_data: itinerary
-        })
-        .select()
-        .single();
-
-      if (itineraryError) {
-        console.error('Error saving itinerary:', itineraryError);
-        return;
-      }
-
-      // Create itinerary items for each day
-      const itineraryItems = [];
-      
-      for (const day of itinerary) {
-        // Add activities
-        for (const activity of day.activities) {
-          const timeOfDay = activity.toLowerCase().includes('morning') ? 'morning' :
-                          activity.toLowerCase().includes('afternoon') ? 'afternoon' :
-                          activity.toLowerCase().includes('evening') ? 'evening' : 'all_day';
-          
-          itineraryItems.push({
-            itinerary_id: itineraryRecord.id,
-            day_number: day.day,
-            type: 'activity',
-            title: activity.split(':')[1]?.trim() || activity,
-            description: activity,
-            time_of_day: timeOfDay,
-            estimated_cost: Math.floor(Math.random() * 50) + 10 // Random cost for demo
-          });
-        }
-
-        // Add attractions
-        for (const attraction of day.attractions) {
-          itineraryItems.push({
-            itinerary_id: itineraryRecord.id,
-            day_number: day.day,
-            type: 'attraction',
-            title: attraction,
-            description: `Visit ${attraction}`,
-            estimated_cost: Math.floor(Math.random() * 30) + 5
-          });
-        }
-
-        // Add tip
-        itineraryItems.push({
-          itinerary_id: itineraryRecord.id,
-          day_number: day.day,
-          type: 'tip',
-          title: `Day ${day.day} Tip`,
-          description: day.tips,
-          estimated_cost: 0
-        });
-      }
-
-      const { error: itemsError } = await supabase
-        .from('itinerary_items')
-        .insert(itineraryItems);
-
-      if (itemsError) {
-        console.error('Error saving itinerary items:', itemsError);
-      } else {
-        console.log('Itinerary saved successfully to Supabase!');
-      }
-    } catch (error) {
-      console.error('Error saving to Supabase:', error);
-    }
   };
 
   return (
@@ -498,22 +369,11 @@ const TripPlanner = () => {
               ) : (
                 <>
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Generate AI Itinerary{isAuthenticated ? ' & Save' : ''}
+                  Generate AI Itinerary
                 </>
               )}
             </GlassButton>
           </motion.div>
-        
-          {!isAuthenticated && (
-            <motion.p 
-              className="mt-3 text-sm text-white/60 text-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.8, ease: 'easeOut' }}
-            >
-              Sign in to save your itineraries to the cloud
-            </motion.p>
-          )}
         </GlassCard>
       </motion.div>
 

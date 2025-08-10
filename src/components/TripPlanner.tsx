@@ -163,6 +163,169 @@ const TripPlanner = () => {
     
     setIsGenerating(true);
     
+    // Destination-specific data
+    const destinationData = {
+      'paris': {
+        activities: [
+          'Visit the Eiffel Tower at sunset',
+          'Explore the Louvre Museum and see the Mona Lisa',
+          'Stroll through Montmartre and visit Sacré-Cœur',
+          'Take a Seine River cruise',
+          'Walk through the Latin Quarter',
+          'Visit Notre-Dame Cathedral (exterior)',
+          'Explore the Champs-Élysées and Arc de Triomphe',
+          'Discover the Palace of Versailles',
+          'Browse the Marché aux Puces flea market',
+          'Enjoy a picnic in Luxembourg Gardens'
+        ],
+        places: [
+          'Eiffel Tower - Iconic iron lattice tower with panoramic city views',
+          'Louvre Museum - World\'s largest art museum housing the Mona Lisa',
+          'Montmartre District - Historic hilltop area with cobblestone streets',
+          'Seine River - Historic river perfect for romantic boat cruises',
+          'Latin Quarter - Medieval streets filled with cafés and bookshops',
+          'Champs-Élysées - Famous avenue for shopping and people-watching',
+          'Palace of Versailles - Opulent royal château with stunning gardens',
+          'Musée d\'Orsay - Impressive collection of Impressionist masterpieces',
+          'Sainte-Chapelle - Gothic chapel with breathtaking stained glass',
+          'Le Marais - Trendy neighborhood with Jewish quarter and boutiques'
+        ]
+      },
+      'tokyo': {
+        activities: [
+          'Experience the bustling Shibuya Crossing',
+          'Visit the serene Senso-ji Temple in Asakusa',
+          'Explore the trendy Harajuku district',
+          'Take in city views from Tokyo Skytree',
+          'Stroll through the Imperial Palace East Gardens',
+          'Experience a traditional tea ceremony',
+          'Visit the famous Tsukiji Outer Market',
+          'Explore the electronic wonderland of Akihabara',
+          'Enjoy cherry blossoms in Ueno Park',
+          'Take a day trip to Mount Fuji'
+        ],
+        places: [
+          'Shibuya Crossing - World\'s busiest pedestrian crossing',
+          'Senso-ji Temple - Tokyo\'s oldest Buddhist temple in historic Asakusa',
+          'Harajuku - Youth culture hub famous for unique fashion',
+          'Tokyo Skytree - Tallest structure in Japan with observation decks',
+          'Imperial Palace - Former Edo Castle with beautiful East Gardens',
+          'Meiji Shrine - Peaceful Shinto shrine surrounded by forest',
+          'Tsukiji Outer Market - Fresh seafood and street food paradise',
+          'Akihabara - Electronics district and anime culture center',
+          'Ueno Park - Cultural district with museums and seasonal cherry blossoms',
+          'Ginza - Upscale shopping district with luxury boutiques'
+        ]
+      },
+      'new york': {
+        activities: [
+          'Visit the Statue of Liberty and Ellis Island',
+          'Explore Central Park and rent a bike',
+          'See a Broadway show in Times Square',
+          'Walk across the Brooklyn Bridge',
+          'Visit the 9/11 Memorial and Museum',
+          'Explore the High Line elevated park',
+          'Take the Staten Island Ferry for free Statue views',
+          'Visit the Metropolitan Museum of Art',
+          'Explore diverse neighborhoods like SoHo and Greenwich Village',
+          'Experience the energy of Wall Street and Financial District'
+        ],
+        places: [
+          'Statue of Liberty - Iconic symbol of freedom on Liberty Island',
+          'Central Park - 843-acre green oasis in Manhattan',
+          'Times Square - Bright lights and Broadway theaters',
+          'Brooklyn Bridge - Historic suspension bridge with walkway',
+          '9/11 Memorial - Moving tribute at World Trade Center site',
+          'High Line - Elevated park built on former railway tracks',
+          'Metropolitan Museum - One of world\'s largest and most prestigious art museums',
+          'Empire State Building - Art Deco skyscraper with observation decks',
+          'SoHo - Trendy neighborhood known for cast-iron architecture and shopping',
+          'Greenwich Village - Historic bohemian neighborhood with charming streets'
+        ]
+      },
+      'london': {
+        activities: [
+          'Tour the Tower of London and see the Crown Jewels',
+          'Ride the London Eye for panoramic city views',
+          'Explore the British Museum\'s vast collections',
+          'Watch the Changing of the Guard at Buckingham Palace',
+          'Stroll through Hyde Park and Speaker\'s Corner',
+          'Take a Thames River cruise',
+          'Explore the vibrant Camden Market',
+          'Visit Shakespeare\'s Globe Theatre',
+          'Discover the historic Borough Market',
+          'Take a day trip to Windsor Castle'
+        ],
+        places: [
+          'Tower of London - Historic castle housing the Crown Jewels',
+          'London Eye - Giant observation wheel on the South Bank',
+          'British Museum - World-class museum with artifacts from around the globe',
+          'Buckingham Palace - Official residence of the British monarch',
+          'Hyde Park - Royal park perfect for walks and outdoor activities',
+          'Westminster Abbey - Gothic church where monarchs are crowned',
+          'Camden Market - Alternative market with unique shops and food stalls',
+          'Tate Modern - Contemporary art museum in former power station',
+          'Covent Garden - Historic market area with street performers',
+          'Notting Hill - Colorful neighborhood famous for Portobello Road Market'
+        ]
+      },
+      'rome': {
+        activities: [
+          'Explore the ancient Colosseum and Roman Forum',
+          'Visit Vatican City and the Sistine Chapel',
+          'Throw a coin in the Trevi Fountain',
+          'Climb the Spanish Steps',
+          'Wander through the charming Trastevere neighborhood',
+          'Visit the Pantheon and marvel at its architecture',
+          'Explore the Borghese Gallery and Gardens',
+          'Take a food tour and try authentic Roman cuisine',
+          'Visit the Castel Sant\'Angelo',
+          'Explore the underground Catacombs'
+        ],
+        places: [
+          'Colosseum - Ancient amphitheater and iconic symbol of Rome',
+          'Vatican City - Smallest country in the world with St. Peter\'s Basilica',
+          'Trevi Fountain - Baroque fountain where wishes come true',
+          'Spanish Steps - Famous stairway connecting Piazza di Spagna',
+          'Trastevere - Medieval neighborhood with narrow cobblestone streets',
+          'Pantheon - Best-preserved Roman building with impressive dome',
+          'Roman Forum - Heart of ancient Rome with ruins and temples',
+          'Borghese Gallery - Art museum in beautiful villa with gardens',
+          'Castel Sant\'Angelo - Cylindrical building originally Hadrian\'s mausoleum',
+          'Piazza Navona - Baroque square with beautiful fountains and street artists'
+        ]
+      }
+    };
+
+    // Get destination-specific content or use generic content
+    const destKey = destination.toLowerCase();
+    const destData = destinationData[destKey] || {
+      activities: [
+        'Explore the main city center and historic districts',
+        'Visit local museums and cultural sites',
+        'Try authentic local cuisine at recommended restaurants',
+        'Take guided tours of famous landmarks',
+        'Explore local markets and shopping areas',
+        'Visit parks and natural attractions',
+        'Experience local nightlife and entertainment',
+        'Take day trips to nearby attractions',
+        'Participate in cultural activities and events',
+        'Discover hidden gems and local favorites'
+      ],
+      places: [
+        'Historic City Center - Main area with key landmarks and attractions',
+        'Local Museums - Cultural institutions showcasing regional history',
+        'Traditional Markets - Local markets with authentic goods and food',
+        'Main Cathedral/Temple - Primary religious or spiritual site',
+        'Central Park/Gardens - Green spaces for relaxation and recreation',
+        'Waterfront Area - Scenic areas along rivers, lakes, or coastline',
+        'Arts District - Area known for galleries, theaters, and cultural venues',
+        'Old Town - Historic quarter with traditional architecture',
+        'Observation Deck - High vantage point for city or landscape views',
+        'Local Neighborhoods - Authentic residential areas with local character'
+      ]
+    };
+
     try {
       // Fallback to basic itinerary if AI generation fails
       const numDays = parseInt(days);
@@ -192,31 +355,15 @@ const TripPlanner = () => {
         'Main Art Museum',
         'Central Cathedral or Religious Site',
         'Popular Viewpoint or Observatory',
-        'Local Market or Bazaar',
-        'Waterfront Promenade',
-        'City Park or Gardens',
-        'Cultural Center',
-        'Old Town Square',
-        'Modern Art Gallery',
-        'Archaeological Site',
-        'Botanical Garden',
-        'Local Theater',
-        'Riverside Walk',
-        'Shopping District',
-        'Food Market',
-        'Scenic Overlook',
-        'Historical Monument'
       ];
-      
-      for (let i = 1; i <= numDays; i++) {
-        // Select unique activities for this day
-        const dayActivities = [
-          `Morning: ${baseActivities[(i - 1) * 3] || baseActivities[i % baseActivities.length]}`,
-          `Afternoon: ${baseActivities[(i - 1) * 3 + 1] || baseActivities[(i + 5) % baseActivities.length]}`,
-          `Evening: ${baseActivities[(i - 1) * 3 + 2] || baseActivities[(i + 10) % baseActivities.length]}`
-        ];
         
-        // Select unique attractions for this day
+      for (let i = 1; i <= numDays; i++) {
+        const dayNumber = i;
+        const dayActivities = destData.activities
+          .slice((i - 1) * 3, i * 3)
+          .concat(baseActivities.slice((i - 1) * 2, i * 2))
+          .slice(0, 4);
+        
         const dayAttractions = [
           baseAttractions[(i - 1) * 4] || baseAttractions[i % baseAttractions.length],
           baseAttractions[(i - 1) * 4 + 1] || baseAttractions[(i + 4) % baseAttractions.length],
@@ -224,10 +371,15 @@ const TripPlanner = () => {
           baseAttractions[(i - 1) * 4 + 3] || baseAttractions[(i + 12) % baseAttractions.length]
         ];
         
+        const dayPlaces = destData.places
+          .slice((i - 1) * 3, i * 3)
+          .concat(dayAttractions)
+          .slice(0, 4);
+        
         fallbackItinerary.push({
-          day: i,
+          day: dayNumber,
           activities: dayActivities,
-          attractions: dayAttractions,
+          attractions: dayPlaces,
           tips: `Don't forget to try the local cuisine and bring comfortable walking shoes for day ${i}!`
         });
       }

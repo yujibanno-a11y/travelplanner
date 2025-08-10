@@ -46,6 +46,19 @@ const ExpenseChat = () => {
       setExpenses(JSON.parse(savedExpenses));
     }
 
+    // Reset food expenses to zero (one-time operation)
+    const resetFoodExpenses = () => {
+      const savedExpenses = localStorage.getItem('expenses');
+      if (savedExpenses) {
+        const allExpenses = JSON.parse(savedExpenses);
+        const nonFoodExpenses = allExpenses.filter((expense: Expense) => expense.category !== 'food');
+        localStorage.setItem('expenses', JSON.stringify(nonFoodExpenses));
+        setExpenses(nonFoodExpenses);
+      }
+    };
+    
+    // Execute the reset
+    resetFoodExpenses();
     // Initial bot message
     addBotMessage("Hi! I'm your expense tracking assistant. You can tell me about your expenses like: 'I spent $25 on lunch at the local cafe' or 'Taxi to airport cost $40'");
   }, []);

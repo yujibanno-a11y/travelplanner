@@ -26,6 +26,24 @@ const ExpenseSpreadsheet = () => {
       }));
       setExpenses(parsedExpenses);
     }
+    
+    // Reset food expenses to zero (one-time operation)
+    const resetFoodExpenses = () => {
+      const savedExpenses = localStorage.getItem('expenses');
+      if (savedExpenses) {
+        const allExpenses = JSON.parse(savedExpenses);
+        const nonFoodExpenses = allExpenses.filter((expense: any) => expense.category !== 'food');
+        localStorage.setItem('expenses', JSON.stringify(nonFoodExpenses));
+        const parsedNonFoodExpenses = nonFoodExpenses.map((expense: any) => ({
+          ...expense,
+          timestamp: new Date(expense.timestamp)
+        }));
+        setExpenses(parsedNonFoodExpenses);
+      }
+    };
+    
+    // Execute the reset
+    resetFoodExpenses();
   }, []);
 
   const sortedAndFilteredExpenses = expenses

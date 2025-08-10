@@ -367,6 +367,26 @@ const TripPlanner = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
       >
+        {/* Headlines */}
+        <div className="text-center mb-12">
+          <motion.h1 
+            className="text-4xl md:text-5xl font-display font-bold text-white text-glow mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+          >
+            Plan adventures. Spend smarter.
+          </motion.h1>
+          <motion.p 
+            className="text-xl text-white/80 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
+          >
+            AI-generated itineraries with real-time expense tracking and budget insights. All in one travel wallet.
+          </motion.p>
+        </div>
+
         <GlassCard className="p-8" glow="primary">
           <div className="flex items-center space-x-3 mb-6">
             <h2 className="text-3xl font-display font-bold text-white text-glow">Plan Your Perfect Trip</h2>

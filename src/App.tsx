@@ -110,7 +110,6 @@ function App() {
             >
               <div className="flex flex-col">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-white/80">Welcome to TravelPlanner!</span>
                 </div>
               </div>
               <h1 className="text-2xl font-display font-bold text-white text-glow">

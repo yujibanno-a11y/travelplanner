@@ -7,7 +7,6 @@ import GlassCard from './GlassCard';
 import GlassButton from './GlassButton';
 import GlassInput from './GlassInput';
 import SkeletonLoader from './SkeletonLoader';
-import ChatPanel from './ChatPanel';
 import ErrorModal from './ErrorModal';
 import { UserPreferences, ItineraryAction } from '../types/chat';
 
@@ -26,7 +25,6 @@ const TripPlanner = () => {
   const [itinerary, setItinerary] = useState<ItineraryDay[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDaysLimitModal, setShowDaysLimitModal] = useState(false);
-  const [isChatOpen, setIsChatOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [onFindJobPage, setOnFindJobPage] = useState(false);
   const { reducedMotion } = useTheme();
@@ -78,54 +76,6 @@ const TripPlanner = () => {
     localStorage.setItem('userPreferences', JSON.stringify(newPreferences));
   };
 
-  const handleItineraryAction = (action: ItineraryAction) => {
-    let newItinerary = [...itinerary];
-    
-    switch (action.type) {
-      case 'regenerateDay':
-        if (action.payload.day && action.payload.activities) {
-          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
-          if (dayIndex !== -1) {
-            newItinerary[dayIndex] = {
-              ...newItinerary[dayIndex],
-              activities: action.payload.activities,
-              attractions: action.payload.attractions || newItinerary[dayIndex].attractions,
-              tips: action.payload.tips || newItinerary[dayIndex].tips
-            };
-          }
-        }
-        break;
-        
-      case 'insertActivity':
-        if (action.payload.day && action.payload.activity) {
-          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
-          if (dayIndex !== -1) {
-            newItinerary[dayIndex].activities.push(action.payload.activity);
-          }
-        }
-        break;
-        
-      case 'lightenDay':
-        if (action.payload.day) {
-          const dayIndex = newItinerary.findIndex(d => d.day === action.payload.day);
-          if (dayIndex !== -1 && newItinerary[dayIndex].activities.length > 1) {
-            newItinerary[dayIndex].activities = newItinerary[dayIndex].activities.slice(0, -1);
-          }
-        }
-        break;
-        
-      case 'updateItinerary':
-        if (action.payload.itinerary) {
-          newItinerary = action.payload.itinerary;
-        }
-        break;
-    }
-    
-    if (JSON.stringify(newItinerary) !== JSON.stringify(itinerary)) {
-      pushState(newItinerary);
-      setItinerary(newItinerary);
-    }
-  };
 
   const handleUndo = () => {
     const previousItinerary = undo();
@@ -412,21 +362,7 @@ const TripPlanner = () => {
       >
         <div className="w-32"></div>
         
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
-        >
-          <GlassButton
-            variant="primary"
-            size="md"
-            onClick={() => setIsChatOpen(true)}
-            className="shadow-glow-primary"
-          >
-            <MessageCircle className="h-4 w-4 mr-2" />
-            AI Assistant
-          </GlassButton>
-        </motion.div>
+        <div className="w-32"></div>
       </motion.div>
 
       {/* Trip Planning Form */}
@@ -639,20 +575,6 @@ const TripPlanner = () => {
         </motion.div>
       )}
 
-      {/* Chat Panel */}
-      <ChatPanel
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
-        userPreferences={userPreferences}
-        onUpdatePreferences={handleUpdatePreferences}
-        currentItinerary={itinerary}
-        onItineraryAction={handleItineraryAction}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        isMobile={isMobile}
-      />
 
 
       {/* Days Limit Error Modal */}

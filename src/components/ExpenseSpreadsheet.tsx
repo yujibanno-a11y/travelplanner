@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, Download, Calendar, TrendingUp, PieChart } from 'lucide-react';
+import { motion } from 'framer-motion';
+import GlassCard from './GlassCard';
+import GlassButton from './GlassButton';
 
 interface Expense {
   id: string;
@@ -78,172 +81,201 @@ const ExpenseSpreadsheet = () => {
   return (
     <div className="space-y-8">
       {/* Header with Stats */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
-        <div className="flex items-center space-x-3 mb-6">
-          <FileText className="h-8 w-8" />
-          <h2 className="text-3xl font-bold">Expense Spreadsheet</h2>
-        </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="primary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary">
+              <FileText className="h-8 w-8 text-dark-900" />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-white text-glow">Expense Spreadsheet</h2>
+          </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white bg-opacity-20 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-indigo-100">Total Expenses</h3>
-            <p className="text-2xl font-bold">${totalExpenses.toFixed(2)}</p>
-          </div>
-          <div className="bg-white bg-opacity-20 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-indigo-100">Total Transactions</h3>
-            <p className="text-2xl font-bold">{expenses.length}</p>
-          </div>
-          <div className="bg-white bg-opacity-20 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-indigo-100">Average per Day</h3>
-            <p className="text-2xl font-bold">
-              ${Object.keys(dailyExpenses).length > 0 
-                ? (totalExpenses / Object.keys(dailyExpenses).length).toFixed(2) 
-                : '0.00'}
-            </p>
-          </div>
-          <div className="bg-white bg-opacity-20 rounded-xl p-4">
-            <h3 className="text-sm font-medium text-indigo-100">Days Tracked</h3>
-            <p className="text-2xl font-bold">{Object.keys(dailyExpenses).length}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Category Breakdown */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="flex items-center space-x-3 mb-6">
-          <PieChart className="h-6 w-6 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">Category Breakdown</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(categoryTotals).map(([category, amount]) => (
-            <div key={category} className="bg-gray-50 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700 capitalize">{category}</span>
-                <span className="text-lg font-bold text-gray-900">${amount.toFixed(2)}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(amount / totalExpenses) * 100}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-600 mt-1">
-                {((amount / totalExpenses) * 100).toFixed(1)}% of total
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+              <h3 className="text-sm font-medium text-white/80">Total Expenses</h3>
+              <p className="text-2xl font-bold text-primary-400">${totalExpenses.toFixed(2)}</p>
+            </div>
+            <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+              <h3 className="text-sm font-medium text-white/80">Total Transactions</h3>
+              <p className="text-2xl font-bold text-secondary-400">{expenses.length}</p>
+            </div>
+            <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+              <h3 className="text-sm font-medium text-white/80">Average per Day</h3>
+              <p className="text-2xl font-bold text-primary-400">
+                ${Object.keys(dailyExpenses).length > 0 
+                  ? (totalExpenses / Object.keys(dailyExpenses).length).toFixed(2) 
+                  : '0.00'}
               </p>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+              <h3 className="text-sm font-medium text-white/80">Days Tracked</h3>
+              <p className="text-2xl font-bold text-secondary-400">{Object.keys(dailyExpenses).length}</p>
+            </div>
+          </div>
+        </GlassCard>
+      </motion.div>
+
+      {/* Category Breakdown */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-6" glow="secondary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-secondary-500 to-primary-500 p-3 rounded-2xl shadow-glow-secondary">
+              <PieChart className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-xl font-display font-bold text-white text-glow">Category Breakdown</h3>
+          </div>
+        
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.entries(categoryTotals).map(([category, amount]) => (
+              <div key={category} className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-white/80 capitalize">{category}</span>
+                  <span className="text-lg font-bold text-primary-400">${amount.toFixed(2)}</span>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-2">
+                  <div 
+                    className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(amount / totalExpenses) * 100}%` }}
+                  ></div>
+                </div>
+                <p className="text-xs text-white/60 mt-1">
+                  {((amount / totalExpenses) * 100).toFixed(1)}% of total
+                </p>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </motion.div>
 
       {/* Controls */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'date' | 'amount' | 'category')}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                <option value="date">Date (Newest First)</option>
-                <option value="amount">Amount (Highest First)</option>
-                <option value="category">Category</option>
-              </select>
-            </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-6" glow="primary">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-1">Sort By</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'date' | 'amount' | 'category')}
+                  className="px-4 py-2 glass backdrop-blur-md border border-white/20 rounded-lg focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white"
+                >
+                  <option value="date">Date (Newest First)</option>
+                  <option value="amount">Amount (Highest First)</option>
+                  <option value="category">Category</option>
+                </select>
+              </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Filter By Category</label>
-              <select
-                value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              >
-                <option value="all">All Categories</option>
-                <option value="food">Food</option>
-                <option value="transportation">Transportation</option>
-                <option value="activities">Activities</option>
-                <option value="souvenirs">Souvenirs</option>
-              </select>
+              <div>
+                <label className="block text-sm font-medium text-white/80 mb-1">Filter By Category</label>
+                <select
+                  value={filterBy}
+                  onChange={(e) => setFilterBy(e.target.value)}
+                  className="px-4 py-2 glass backdrop-blur-md border border-white/20 rounded-lg focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="food">Food</option>
+                  <option value="transportation">Transportation</option>
+                  <option value="activities">Activities</option>
+                  <option value="souvenirs">Souvenirs</option>
+                </select>
+              </div>
             </div>
-          </div>
           
-          <button
-            onClick={exportToCSV}
-            className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-2 rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200"
-          >
-            <Download className="h-5 w-5" />
-            <span>Export CSV</span>
-          </button>
-        </div>
-      </div>
+            <GlassButton
+              variant="secondary"
+              onClick={exportToCSV}
+              className="flex items-center space-x-2 shadow-glow-secondary"
+            >
+              <Download className="h-5 w-5" />
+              <span>Export CSV</span>
+            </GlassButton>
+          </div>
+        </GlassCard>
+      </motion.div>
 
       {/* Expense Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Expense Details ({sortedAndFilteredExpenses.length} entries)
-          </h3>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Category
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Description
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {sortedAndFilteredExpenses.map((expense, index) => (
-                <tr key={expense.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {expense.timestamp.toLocaleDateString()}
-                    <div className="text-xs text-gray-500">
-                      {expense.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${
-                      expense.category === 'food' ? 'bg-orange-100 text-orange-800' :
-                      expense.category === 'transportation' ? 'bg-blue-100 text-blue-800' :
-                      expense.category === 'activities' ? 'bg-green-100 text-green-800' :
-                      'bg-purple-100 text-purple-800'
-                    }`}>
-                      {expense.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
-                    ${expense.amount.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                    {expense.description}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {sortedAndFilteredExpenses.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No expenses found</h3>
-            <p className="text-gray-600">Start adding expenses to see them here!</p>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.6, ease: 'easeOut' }}
+      >
+        <GlassCard className="overflow-hidden" glow="secondary">
+          <div className="px-6 py-4 border-b border-white/20">
+            <h3 className="text-lg font-display font-semibold text-white">
+              Expense Details ({sortedAndFilteredExpenses.length} entries)
+            </h3>
           </div>
-        )}
-      </div>
+        
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="glass backdrop-blur-md border-b border-white/20">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white/80 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
+                    Description
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="glass backdrop-blur-md divide-y divide-white/10">
+                {sortedAndFilteredExpenses.map((expense, index) => (
+                  <tr key={expense.id} className={index % 2 === 0 ? 'bg-white/5' : 'bg-white/10'}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                      {expense.timestamp.toLocaleDateString()}
+                      <div className="text-xs text-white/60">
+                        {expense.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${
+                        expense.category === 'food' ? 'bg-orange-500/20 text-orange-400 border border-orange-400/30' :
+                        expense.category === 'transportation' ? 'bg-blue-500/20 text-blue-400 border border-blue-400/30' :
+                        expense.category === 'activities' ? 'bg-green-500/20 text-green-400 border border-green-400/30' :
+                        'bg-purple-500/20 text-purple-400 border border-purple-400/30'
+                      }`}>
+                        {expense.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary-400 text-right">
+                      ${expense.amount.toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-white/80 max-w-xs truncate">
+                      {expense.description}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        
+          {sortedAndFilteredExpenses.length === 0 && (
+            <div className="text-center py-12">
+              <FileText className="h-16 w-16 text-white/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No expenses found</h3>
+              <p className="text-white/60">Start adding expenses to see them here!</p>
+            </div>
+          )}
+        </GlassCard>
+      </motion.div>
     </div>
   );
 };

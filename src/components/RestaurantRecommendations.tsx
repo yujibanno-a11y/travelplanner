@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { UtensilsCrossed, Star, MapPin, DollarSign, Filter, Search } from 'lucide-react';
+import { motion } from 'framer-motion';
+import GlassCard from './GlassCard';
+import GlassButton from './GlassButton';
+import GlassInput from './GlassInput';
 
 interface Restaurant {
   id: string;
@@ -146,153 +150,179 @@ const RestaurantRecommendations = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl shadow-lg p-8 text-white">
-        <div className="flex items-center space-x-3 mb-4">
-          <UtensilsCrossed className="h-8 w-8" />
-          <h2 className="text-3xl font-bold">Restaurant Recommendations</h2>
-        </div>
-        <p className="text-orange-100">Find the perfect dining spots based on your budget and preferences</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="primary">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary">
+              <UtensilsCrossed className="h-8 w-8 text-dark-900" />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-white text-glow">Restaurant Recommendations</h2>
+          </div>
+          <p className="text-white/80">Find the perfect dining spots based on your budget and preferences</p>
+        </GlassCard>
+      </motion.div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="flex items-center space-x-3 mb-6">
-          <Filter className="h-6 w-6 text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-900">Filter Restaurants</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Budget Slider */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Max Budget per Person: ${maxBudget}
-            </label>
-            <input
-              type="range"
-              min="10"
-              max="100"
-              value={maxBudget}
-              onChange={(e) => setMaxBudget(parseInt(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-            />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>$10</span>
-              <span>$100</span>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-6" glow="secondary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-secondary-500 to-primary-500 p-3 rounded-2xl shadow-glow-secondary">
+              <Filter className="h-6 w-6 text-white" />
             </div>
+            <h3 className="text-xl font-display font-bold text-white text-glow">Filter Restaurants</h3>
           </div>
-
-          {/* Cuisine Filter */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Cuisine Type
-            </label>
-            <select
-              value={selectedCuisine}
-              onChange={(e) => setSelectedCuisine(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            >
-              {cuisineTypes.map(cuisine => (
-                <option key={cuisine} value={cuisine}>
-                  {cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Search */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Search Restaurants
-            </label>
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+        
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Budget Slider */}
+            <div>
+              <label className="block text-sm font-semibold text-white/80 mb-2">
+                Max Budget per Person: ${maxBudget}
+              </label>
               <input
+                type="range"
+                min="10"
+                max="100"
+                value={maxBudget}
+                onChange={(e) => setMaxBudget(parseInt(e.target.value))}
+                className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+              />
+              <div className="flex justify-between text-xs text-white/60 mt-1">
+                <span>$10</span>
+                <span>$100</span>
+              </div>
+            </div>
+
+            {/* Cuisine Filter */}
+            <div>
+              <label className="block text-sm font-semibold text-white/80 mb-2">
+                Cuisine Type
+              </label>
+              <select
+                value={selectedCuisine}
+                onChange={(e) => setSelectedCuisine(e.target.value)}
+                className="w-full px-4 py-2 glass backdrop-blur-md border border-white/20 rounded-xl focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white"
+              >
+                {cuisineTypes.map(cuisine => (
+                  <option key={cuisine} value={cuisine}>
+                    {cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Search */}
+            <div>
+              <label className="block text-sm font-semibold text-white/80 mb-2">
+                Search Restaurants
+              </label>
+              <GlassInput
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Search by name or specialty..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                icon={<Search className="h-4 w-4" />}
               />
             </div>
           </div>
-        </div>
-      </div>
+        </GlassCard>
+      </motion.div>
 
       {/* Results */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">
-            Top {restaurants.length} Restaurants
-          </h3>
-          <div className="text-sm text-gray-600">
-            Sorted by rating (highest first)
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="group cursor-pointer bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1">
-              <div className="aspect-w-16 aspect-h-10 bg-gray-200">
-                <img
-                  src={restaurant.image}
-                  alt={restaurant.name}
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <h4 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">
-                    {restaurant.name}
-                  </h4>
-                  <span className="text-lg font-bold text-green-600">
-                    ${restaurant.avgCost}
-                  </span>
-                </div>
-                
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="flex items-center">
-                    {renderStars(restaurant.rating)}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    {restaurant.rating} ({restaurant.reviews} reviews)
-                  </span>
-                </div>
-                
-                <div className="flex items-center text-sm text-gray-600 mb-3">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  <span>{restaurant.address}</span>
-                </div>
-                
-                <div className="mb-3">
-                  <span className="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full capitalize">
-                    {restaurant.cuisine}
-                  </span>
-                  <span className="inline-block bg-gray-200 text-gray-800 text-xs font-medium px-2 py-1 rounded-full ml-2">
-                    {restaurant.priceRange}
-                  </span>
-                </div>
-                
-                <div className="flex flex-wrap gap-1">
-                  {restaurant.specialties.slice(0, 3).map((specialty, index) => (
-                    <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                      {specialty}
-                    </span>
-                  ))}
-                </div>
-              </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-6" glow="primary">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-display font-bold text-white text-glow">
+              Top {restaurants.length} Restaurants
+            </h3>
+            <div className="text-sm text-white/60">
+              Sorted by rating (highest first)
             </div>
-          ))}
-        </div>
-
-        {restaurants.length === 0 && (
-          <div className="text-center py-12">
-            <UtensilsCrossed className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No restaurants found</h3>
-            <p className="text-gray-600">Try adjusting your filters to see more options.</p>
           </div>
-        )}
-      </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {restaurants.map((restaurant, index) => (
+              <motion.div
+                key={restaurant.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 + index * 0.1, ease: 'easeOut' }}
+              >
+                <GlassCard className="group cursor-pointer overflow-hidden hover:shadow-lg transition-all duration-200 transform hover:-translate-y-1" hover={true}>
+                  <div className="aspect-w-16 aspect-h-10 bg-white/10">
+                    <img
+                      src={restaurant.image}
+                      alt={restaurant.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
+              
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="text-lg font-semibold text-white group-hover:text-primary-400 transition-colors">
+                        {restaurant.name}
+                      </h4>
+                      <span className="text-lg font-bold text-secondary-400">
+                        ${restaurant.avgCost}
+                      </span>
+                    </div>
+                
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="flex items-center">
+                        {renderStars(restaurant.rating)}
+                      </div>
+                      <span className="text-sm text-white/60">
+                        {restaurant.rating} ({restaurant.reviews} reviews)
+                      </span>
+                    </div>
+                
+                    <div className="flex items-center text-sm text-white/60 mb-3">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{restaurant.address}</span>
+                    </div>
+                
+                    <div className="mb-3">
+                      <span className="inline-block bg-primary-500/20 text-primary-400 border border-primary-400/30 text-xs font-medium px-2 py-1 rounded-full capitalize">
+                        {restaurant.cuisine}
+                      </span>
+                      <span className="inline-block bg-secondary-500/20 text-secondary-400 border border-secondary-400/30 text-xs font-medium px-2 py-1 rounded-full ml-2">
+                        {restaurant.priceRange}
+                      </span>
+                    </div>
+                
+                    <div className="flex flex-wrap gap-1">
+                      {restaurant.specialties.slice(0, 3).map((specialty, index) => (
+                        <span key={index} className="text-xs bg-white/10 text-white/80 border border-white/20 px-2 py-1 rounded-full">
+                          {specialty}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+
+          {restaurants.length === 0 && (
+            <div className="text-center py-12">
+              <UtensilsCrossed className="h-16 w-16 text-white/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
+              <p className="text-white/60">Try adjusting your filters to see more options.</p>
+            </div>
+          )}
+        </GlassCard>
+      </motion.div>
     </div>
   );
 };

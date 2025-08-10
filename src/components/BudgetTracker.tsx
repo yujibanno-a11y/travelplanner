@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Target, TrendingUp, AlertCircle, PiggyBank } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { supabase, getCurrentUserId } from '../lib/supabase';
+import GlassCard from './GlassCard';
+import GlassButton from './GlassButton';
+import GlassInput from './GlassInput';
 
 interface BudgetSettings {
   dailyLimit: number;
@@ -144,157 +148,173 @@ const BudgetTracker = () => {
   return (
     <div className="space-y-8">
       {/* Budget Overview */}
-      <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl shadow-lg p-8 text-white">
-        <div className="flex items-center space-x-3 mb-6">
-          <PiggyBank className="h-8 w-8" />
-          <h2 className="text-3xl font-bold">Budget Overview</h2>
-        </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="primary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary">
+              <PiggyBank className="h-8 w-8 text-dark-900" />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-white text-glow">Budget Overview</h2>
+          </div>
         
-        {currentTrip ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white bg-opacity-20 rounded-xl p-4">
-              <h3 className="text-lg font-semibold mb-2">Trip Details</h3>
-              <p className="text-emerald-100">{currentTrip.destination}</p>
-              <p className="text-emerald-100">{currentTrip.days} days</p>
-            </div>
-            <div className="bg-white bg-opacity-20 rounded-xl p-4">
-              <h3 className="text-lg font-semibold mb-2">Daily Budget</h3>
-              <p className="text-2xl font-bold">${budgetSettings.dailyLimit}</p>
-            </div>
-            <div className="bg-white bg-opacity-20 rounded-xl p-4">
-              <h3 className="text-lg font-semibold mb-2">Total Budget</h3>
-              <p className="text-2xl font-bold">${budgetSettings.totalBudget}</p>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white bg-opacity-20 rounded-xl p-6 text-center">
-            <AlertCircle className="h-12 w-12 mx-auto mb-4 text-yellow-300" />
-            <p className="text-lg">Please plan a trip first to set up your budget!</p>
-          </div>
-        )}
-      </div>
-
-      {/* Budget Settings */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-3 rounded-xl">
-            <Target className="h-6 w-6 text-white" />
-          </div>
-          <h3 className="text-2xl font-bold text-gray-900">Set Your Budget</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Daily Spending Limit
-            </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <input
-                type="number"
-                value={budgetSettings.dailyLimit}
-                onChange={(e) => handleBudgetChange('dailyLimit', parseFloat(e.target.value) || 0)}
-                placeholder="Enter daily limit"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Total Trip Budget
-            </label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <input
-                type="number"
-                value={budgetSettings.totalBudget}
-                onChange={(e) => handleBudgetChange('totalBudget', parseFloat(e.target.value) || 0)}
-                placeholder="Enter total budget"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Category Budget Breakdown */}
-        <div className="mb-8">
-          <h4 className="text-xl font-bold text-gray-900 mb-4">Daily Category Limits</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(budgetSettings.categories).map(([category, amount]) => (
-              <div key={category} className="bg-gray-50 rounded-xl p-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-2 capitalize">
-                  {category}
-                </label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => handleBudgetChange(category, parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+          {currentTrip ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <h3 className="text-lg font-semibold mb-2 text-white">Trip Details</h3>
+                <p className="text-white/80">{currentTrip.destination}</p>
+                <p className="text-white/80">{currentTrip.days} days</p>
               </div>
-            ))}
-          </div>
-          
-          {totalCategoryBudget > budgetSettings.dailyLimit && budgetSettings.dailyLimit > 0 && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-5 w-5 text-red-500" />
-                <p className="text-red-700 font-medium">
-                  Category totals (${totalCategoryBudget}) exceed daily limit (${budgetSettings.dailyLimit})
-                </p>
+              <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <h3 className="text-lg font-semibold mb-2 text-white">Daily Budget</h3>
+                <p className="text-2xl font-bold text-primary-400">${budgetSettings.dailyLimit}</p>
               </div>
+              <div className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+                <h3 className="text-lg font-semibold mb-2 text-white">Total Budget</h3>
+                <p className="text-2xl font-bold text-secondary-400">${budgetSettings.totalBudget}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="glass backdrop-blur-md rounded-xl p-6 text-center border border-white/20">
+              <AlertCircle className="h-12 w-12 mx-auto mb-4 text-primary-400" />
+              <p className="text-lg text-white">Please plan a trip first to set up your budget!</p>
             </div>
           )}
-        </div>
+        </GlassCard>
+      </motion.div>
 
-        <button
-          onClick={saveBudgetSettings}
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 transform hover:scale-[1.02]"
-        >
-          {isAuthenticated ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
-        </button>
+      {/* Budget Settings */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="secondary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-secondary-500 to-primary-500 p-3 rounded-2xl shadow-glow-secondary">
+              <Target className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-2xl font-display font-bold text-white text-glow">Set Your Budget</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div>
+              <label className="block text-sm font-semibold text-white/80 mb-2">
+                Daily Spending Limit
+              </label>
+              <GlassInput
+                type="number"
+                value={budgetSettings.dailyLimit.toString()}
+                onChange={(e) => handleBudgetChange('dailyLimit', parseFloat(e.target.value) || 0)}
+                placeholder="Enter daily limit"
+                icon={<DollarSign className="h-4 w-4" />}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-white/80 mb-2">
+                Total Trip Budget
+              </label>
+              <GlassInput
+                type="number"
+                value={budgetSettings.totalBudget.toString()}
+                onChange={(e) => handleBudgetChange('totalBudget', parseFloat(e.target.value) || 0)}
+                placeholder="Enter total budget"
+                icon={<DollarSign className="h-4 w-4" />}
+              />
+            </div>
+          </div>
+
+          {/* Category Budget Breakdown */}
+          <div className="mb-8">
+            <h4 className="text-xl font-display font-bold text-white mb-4">Daily Category Limits</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Object.entries(budgetSettings.categories).map(([category, amount]) => (
+                <div key={category} className="glass backdrop-blur-md rounded-xl p-4 border border-white/20">
+                  <label className="block text-sm font-semibold text-white/80 mb-2 capitalize">
+                    {category}
+                  </label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-3 h-4 w-4 text-white/60" />
+                    <input
+                      type="number"
+                      value={amount}
+                      onChange={(e) => handleBudgetChange(category, parseFloat(e.target.value) || 0)}
+                      placeholder="0"
+                      className="w-full pl-9 pr-3 py-2 glass backdrop-blur-md border border-white/20 rounded-lg focus:ring-2 focus:ring-primary-500/50 focus:border-primary-400/50 bg-white/5 text-white placeholder-white/60 transition-all duration-300"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          
+            {totalCategoryBudget > budgetSettings.dailyLimit && budgetSettings.dailyLimit > 0 && (
+              <div className="mt-4 p-4 glass backdrop-blur-md rounded-xl border border-red-400/30 bg-red-500/10">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="h-5 w-5 text-red-400" />
+                  <p className="text-red-400 font-medium">
+                    Category totals (${totalCategoryBudget}) exceed daily limit (${budgetSettings.dailyLimit})
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <GlassButton
+            variant="primary"
+            size="lg"
+            onClick={saveBudgetSettings}
+            className="w-full py-4 text-lg shadow-glow-primary"
+          >
+            {isAuthenticated ? 'Save Budget Settings (Cloud Sync)' : 'Save Budget Settings (Local Only)'}
+          </GlassButton>
         
-        {!isAuthenticated && (
-          <p className="mt-2 text-sm text-gray-600 text-center">
-            Sign in to sync your budget settings across devices
-          </p>
-        )}
-      </div>
+          {!isAuthenticated && (
+            <p className="mt-3 text-sm text-white/60 text-center">
+              Sign in to sync your budget settings across devices
+            </p>
+          )}
+        </GlassCard>
+      </motion.div>
 
       {/* Budget Recommendations */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-3 rounded-xl">
-            <TrendingUp className="h-6 w-6 text-white" />
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+      >
+        <GlassCard className="p-8" glow="primary">
+          <div className="flex items-center space-x-3 mb-6">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-500 p-3 rounded-2xl shadow-glow-primary">
+              <TrendingUp className="h-6 w-6 text-dark-900" />
+            </div>
+            <h3 className="text-2xl font-display font-bold text-white text-glow">Smart Recommendations</h3>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900">Smart Recommendations</h3>
-        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-            <h4 className="font-semibold text-gray-800 mb-2">💡 Budget-Friendly Activities</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Free walking tours and city parks</li>
-              <li>• Local markets and street food</li>
-              <li>• Museums with free admission days</li>
-            </ul>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 glass backdrop-blur-md rounded-xl border border-primary-400/30 bg-primary-500/10">
+              <h4 className="font-semibold text-white mb-2">💡 Budget-Friendly Activities</h4>
+              <ul className="text-sm text-white/80 space-y-1">
+                <li>• Free walking tours and city parks</li>
+                <li>• Local markets and street food</li>
+                <li>• Museums with free admission days</li>
+              </ul>
+            </div>
           
-          <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
-            <h4 className="font-semibold text-gray-800 mb-2">💰 Money-Saving Tips</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Book activities in advance for discounts</li>
-              <li>• Use public transportation passes</li>
-              <li>• Look for lunch specials at restaurants</li>
-            </ul>
+            <div className="p-6 glass backdrop-blur-md rounded-xl border border-secondary-400/30 bg-secondary-500/10">
+              <h4 className="font-semibold text-white mb-2">💰 Money-Saving Tips</h4>
+              <ul className="text-sm text-white/80 space-y-1">
+                <li>• Book activities in advance for discounts</li>
+                <li>• Use public transportation passes</li>
+                <li>• Look for lunch specials at restaurants</li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </div>
+        </GlassCard>
+      </motion.div>
     </div>
   );
 };

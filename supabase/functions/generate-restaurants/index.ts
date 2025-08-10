@@ -1,26 +1,6 @@
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-}
-
-interface RestaurantRequest {
-  destination: string
-  days: number
-  budget?: number
-}
-
-interface Restaurant {
-  id: string
-  name: string
-  cuisine: string
-  rating: number
-  priceRange: string
-  avgCost: number
-  address: string
-  image: string
-  reviews: number
-  specialties: string[]
 }
 
 Deno.serve(async (req) => {
@@ -30,66 +10,50 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { destination, days, budget = 50 }: RestaurantRequest = await req.json()
-
-    if (!destination) {
-      return new Response(
-        JSON.stringify({ error: 'Missing destination parameter' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
-    }
-
+    console.log('Restaurant generation function called')
+    
+    // Get the OpenAI API key from environment
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openaiApiKey) {
-      console.error('OpenAI API key not found in environment variables')
-      return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      console.error('OPENAI_API_KEY not found in environment variables')
+      throw new Error('OpenAI API key not configured')
+    }
+
+    // Parse request body
+    const { destination, budget = 'medium' } = await req.json()
+    console.log('Generating restaurants for:', { destination, budget })
+
+    if (!destination) {
+      throw new Error('Destination is required')
     }
 
     // Create the prompt for OpenAI
-    const prompt = `Generate a list of 8-12 diverse restaurants in ${destination} for travelers. Consider a budget of approximately $${budget} per person per meal.
+    const prompt = `Generate a list of 8-12 diverse restaurants for ${destination}. Consider the budget level: ${budget}.
 
-Include a variety of:
-- Price ranges (budget-friendly to mid-range)
-- Cuisine types (local specialties, international options)
-- Different neighborhoods/areas in ${destination}
-- Highly rated establishments with good reviews
+Please return a JSON array of restaurant objects with this exact structure:
+[
+  {
+    "name": "Restaurant Name",
+    "cuisine": "Cuisine Type",
+    "rating": 4.5,
+    "priceRange": "$$ - $$$",
+    "address": "Full address in ${destination}",
+    "specialty": "Famous dish or specialty",
+    "description": "Brief description of the restaurant"
+  }
+]
 
-For each restaurant, provide:
-1. A realistic restaurant name that could exist in ${destination}
-2. Cuisine type (focus on local specialties and popular international cuisines)
-3. Rating between 4.0-4.9 (realistic high ratings)
-4. Price range: $ (under $25), $$ ($25-50), $$$ ($50+)
-5. Average cost per person for a meal
-6. Realistic address/area in ${destination}
-7. Number of reviews (realistic range: 200-2000)
-8. 2-4 specialty dishes or features
-
-Format the response as a JSON array where each restaurant has this structure:
-{
-  "id": "unique_id",
-  "name": "Restaurant Name",
-  "cuisine": "cuisine_type",
-  "rating": 4.5,
-  "priceRange": "$$",
-  "avgCost": 35,
-  "address": "Address in ${destination}",
-  "image": "https://images.pexels.com/photos/restaurant-photo-id/pexels-photo-restaurant-photo-id.jpeg?auto=compress&cs=tinysrgb&w=400",
-  "reviews": 850,
-  "specialties": ["Dish 1", "Dish 2", "Dish 3"]
-}
-
-Use realistic Pexels image URLs for restaurant/food photos. Make sure all restaurants are diverse and represent the local food scene of ${destination}.`
+Requirements:
+- Include a mix of local specialties and international cuisines
+- Vary the price ranges based on the budget (${budget})
+- Use realistic restaurant names that would exist in ${destination}
+- Include accurate-sounding addresses for ${destination}
+- Ratings should be between 3.8 and 4.9
+- Make sure all restaurants feel authentic to ${destination}
+- Return ONLY the JSON array, no additional text`
 
     // Call OpenAI API
+    console.log('Calling OpenAI API...')
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -100,113 +64,65 @@ Use realistic Pexels image URLs for restaurant/food photos. Make sure all restau
         model: 'gpt-3.5-turbo',
         messages: [
           {
-            role: 'system',
-            content: 'You are a local food expert and travel guide. Provide detailed, realistic restaurant recommendations in valid JSON format only. Do not include any text outside the JSON response.'
-          },
-          {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 2500,
-        temperature: 0.8,
+        max_tokens: 2000,
+        temperature: 0.7,
       }),
-    }).catch((fetchError) => {
-      console.error('Fetch error when calling OpenAI:', fetchError)
-      throw new Error(`Failed to connect to OpenAI API: ${fetchError.message}`)
     })
 
     if (!openaiResponse.ok) {
-      const error = await openaiResponse.text()
-      console.error('OpenAI API error:', error)
-      console.error('OpenAI Response status:', openaiResponse.status)
-      return new Response(
-        JSON.stringify({ error: 'Failed to generate restaurants' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+      const errorText = await openaiResponse.text()
+      console.error('OpenAI API error:', openaiResponse.status, errorText)
+      throw new Error(`OpenAI API error: ${openaiResponse.status}`)
     }
 
     const openaiData = await openaiResponse.json()
-    const generatedContent = openaiData.choices[0]?.message?.content
+    console.log('OpenAI response received')
 
-    if (!generatedContent) {
-      return new Response(
-        JSON.stringify({ error: 'No content generated' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
+    // Parse the response
+    const content = openaiData.choices[0]?.message?.content
+    if (!content) {
+      throw new Error('No content received from OpenAI')
     }
 
-    // Parse the JSON response from OpenAI
-    let restaurants: Restaurant[]
+    // Try to parse the JSON response
+    let restaurants
     try {
-      restaurants = JSON.parse(generatedContent)
+      restaurants = JSON.parse(content)
     } catch (parseError) {
-      console.error('Failed to parse OpenAI response:', parseError)
-      console.error('Raw response:', generatedContent)
-      
-      // Fallback to mock data if parsing fails
-      restaurants = [
-        {
-          id: '1',
-          name: `${destination} Local Bistro`,
-          cuisine: 'local',
-          rating: 4.6,
-          priceRange: '$$',
-          avgCost: 32,
-          address: `Main Street, ${destination}`,
-          image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400',
-          reviews: 750,
-          specialties: ['Local Specialty', 'Seasonal Menu', 'Craft Cocktails']
-        },
-        {
-          id: '2',
-          name: `${destination} Street Food`,
-          cuisine: 'street food',
-          rating: 4.4,
-          priceRange: '$',
-          avgCost: 18,
-          address: `Food District, ${destination}`,
-          image: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=400',
-          reviews: 920,
-          specialties: ['Quick Bites', 'Local Flavors', 'Affordable Meals']
-        },
-        {
-          id: '3',
-          name: `${destination} Fine Dining`,
-          cuisine: 'international',
-          rating: 4.8,
-          priceRange: '$$$',
-          avgCost: 65,
-          address: `Uptown, ${destination}`,
-          image: 'https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg?auto=compress&cs=tinysrgb&w=400',
-          reviews: 420,
-          specialties: ['Tasting Menu', 'Wine Pairing', 'Chef Special']
-        }
-      ]
+      console.error('Failed to parse OpenAI response as JSON:', content)
+      throw new Error('Invalid JSON response from OpenAI')
     }
+
+    // Validate the response structure
+    if (!Array.isArray(restaurants)) {
+      throw new Error('OpenAI response is not an array')
+    }
+
+    console.log(`Generated ${restaurants.length} restaurants for ${destination}`)
 
     return new Response(
       JSON.stringify({ restaurants }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     )
 
   } catch (error) {
-    console.error('Edge function error:', error)
-    console.error('Error details:', error.message, error.stack)
+    console.error('Error in generate-restaurants function:', error)
+    
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      JSON.stringify({ 
+        error: error.message,
+        restaurants: [] 
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      },
     )
   }
 })

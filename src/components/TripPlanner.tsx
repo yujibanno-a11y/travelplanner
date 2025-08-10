@@ -113,6 +113,17 @@ const TripPlanner = () => {
     setIsGenerating(true);
     
     try {
+      // Check if Supabase is properly configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseKey || 
+          supabaseUrl.includes('your_supabase') || 
+          supabaseKey.includes('your_supabase')) {
+        console.warn('Supabase not configured, using fallback itinerary');
+        throw new Error('Supabase configuration missing');
+      }
+
       // Call the Supabase edge function to generate itinerary using OpenAI
       const { data, error } = await supabase.functions.invoke('generate-itinerary', {
         body: {
@@ -123,7 +134,7 @@ const TripPlanner = () => {
       });
 
       if (error) {
-        console.error('Error calling edge function:', error);
+        console.error('Error calling edge function:', error.message || error);
         throw new Error('Failed to generate itinerary');
       }
 
@@ -150,6 +161,11 @@ const TripPlanner = () => {
 
     } catch (error) {
       console.error('Error generating itinerary:', error);
+      
+      // Show user-friendly message about configuration
+      if (error.message?.includes('Supabase configuration') || error.message?.includes('Failed to fetch')) {
+        console.warn('Using fallback itinerary due to Supabase configuration issues');
+      }
       
       // Fallback to basic itinerary if AI generation fails
       const fallbackItinerary: ItineraryDay[] = [];

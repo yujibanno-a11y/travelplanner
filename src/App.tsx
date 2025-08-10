@@ -14,11 +14,10 @@ import ExpenseChat from './components/ExpenseChat';
 import RestaurantRecommendations from './components/RestaurantRecommendations';
 import ExpenseSpreadsheet from './components/ExpenseSpreadsheet';
 import NotificationCenter from './components/NotificationCenter';
-import Settings from './components/Settings';
 import FindJobPage from './components/FindJobPage';
 import DebugPanel from './components/DebugPanel';
 
-type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications' | 'settings';
+type TabType = 'plan' | 'budget' | 'expenses' | 'restaurants' | 'spreadsheet' | 'notifications';
 type PageType = 'find-job' | 'app';
 
 function App() {
@@ -47,7 +46,6 @@ function App() {
     },
     { id: 'restaurants', label: 'Restaurants', icon: UtensilsCrossed },
     { id: 'notifications', label: 'Alerts', icon: Bell },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon },
   ];
 
   const handleTabClick = (tabId: string, hasSubmenu?: boolean) => {
@@ -87,8 +85,6 @@ function App() {
         return <ExpenseSpreadsheet />;
       case 'notifications':
         return <NotificationCenter />;
-      case 'settings':
-        return <Settings />;
       default:
         return <TripPlanner />;
     }

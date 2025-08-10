@@ -107,6 +107,13 @@ function App() {
           <div className="flex items-center justify-between py-6">
             {/* Logo and Brand */}
             <motion.div 
+              className="flex items-center space-x-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+            >
+              <div className="flex flex-col">
+                <div className="flex items-center space-x-2">
                   <span className="text-sm text-white/80">Welcome to TravelPlanner!</span>
                 </div>
               </div>
@@ -119,12 +126,12 @@ function App() {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-4">
                 <span className="text-sm text-white/80">
-                  Welcome back{currentUser?.full_name ? `, ${currentUser.full_name}` : ''}!
+                  Welcome back!
                 </span>
                 <GlassButton
                   variant="ghost"
                   size="sm"
-                  onClick={handleLogout}
+                  onClick={() => {}}
                 >
                   Log Out
                 </GlassButton>

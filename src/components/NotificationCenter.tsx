@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, AlertTriangle, CheckCircle, Info, X, Settings } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GlassCard from './GlassCard';
 import GlassButton from './GlassButton';
@@ -15,10 +15,6 @@ interface Notification {
 
 const NotificationCenter = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [textNotifications, setTextNotifications] = useState(true);
-  const [dailySummary, setDailySummary] = useState(true);
-  const [budgetAlerts, setBudgetAlerts] = useState(true);
 
   useEffect(() => {
     // Load notifications from localStorage
@@ -29,16 +25,6 @@ const NotificationCenter = () => {
         timestamp: new Date(notif.timestamp)
       }));
       setNotifications(parsed);
-    }
-
-    // Load notification settings
-    const settings = localStorage.getItem('notificationSettings');
-    if (settings) {
-      const parsedSettings = JSON.parse(settings);
-      setEmailNotifications(parsedSettings.email ?? true);
-      setTextNotifications(parsedSettings.text ?? true);
-      setDailySummary(parsedSettings.dailySummary ?? true);
-      setBudgetAlerts(parsedSettings.budgetAlerts ?? true);
     }
 
     // Generate some sample notifications
@@ -102,30 +88,6 @@ const NotificationCenter = () => {
     localStorage.setItem('notifications', JSON.stringify(updatedNotifications));
   };
 
-  const saveNotificationSettings = () => {
-    const settings = {
-      email: emailNotifications,
-      text: textNotifications,
-      dailySummary,
-      budgetAlerts
-    };
-    localStorage.setItem('notificationSettings', JSON.stringify(settings));
-    
-    // Add a confirmation notification
-    const confirmationNotif: Notification = {
-      id: Date.now().toString(),
-      type: 'recommendation',
-      title: 'Settings Updated',
-      message: 'Your notification preferences have been saved successfully.',
-      timestamp: new Date(),
-      read: false
-    };
-    
-    const updated = [confirmationNotif, ...notifications];
-    setNotifications(updated);
-    localStorage.setItem('notifications', JSON.stringify(updated));
-  };
-
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'budget_exceeded':
@@ -166,89 +128,12 @@ const NotificationCenter = () => {
         </GlassCard>
       </motion.div>
 
-      {/* Notification Settings */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-      >
-        <GlassCard className="p-6" glow="secondary">
-          <div className="flex items-center space-x-3 mb-6">
-            <div className="bg-gradient-to-r from-secondary-500 to-primary-500 p-3 rounded-2xl shadow-glow-secondary">
-              <Settings className="h-6 w-6 text-white" />
-            </div>
-            <h3 className="text-xl font-display font-bold text-white text-glow">Notification Settings</h3>
-          </div>
-        
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Delivery Methods</h4>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={emailNotifications}
-                    onChange={(e) => setEmailNotifications(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500"
-                  />
-                  <span className="text-white/80">Email Notifications</span>
-                </label>
-              
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={textNotifications}
-                    onChange={(e) => setTextNotifications(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500"
-                  />
-                  <span className="text-white/80">SMS/Text Messages</span>
-                </label>
-              </div>
-            </div>
-          
-            <div className="space-y-4">
-              <h4 className="font-semibold text-white">Alert Types</h4>
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={budgetAlerts}
-                    onChange={(e) => setBudgetAlerts(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500"
-                  />
-                  <span className="text-white/80">Budget Exceeded Alerts</span>
-                </label>
-              
-                <label className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={dailySummary}
-                    onChange={(e) => setDailySummary(e.target.checked)}
-                    className="w-4 h-4 text-primary-500 rounded focus:ring-primary-500"
-                  />
-                  <span className="text-white/80">Daily Expense Summary</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        
-          <div className="mt-6">
-            <GlassButton
-              variant="primary"
-              onClick={saveNotificationSettings}
-              className="px-6 py-3 shadow-glow-primary"
-            >
-              Save Settings
-            </GlassButton>
-          </div>
-        </GlassCard>
-      </motion.div>
 
       {/* Notifications List */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
       >
         <GlassCard className="border border-white/20" glow="primary">
           <div className="p-6 border-b border-white/20">

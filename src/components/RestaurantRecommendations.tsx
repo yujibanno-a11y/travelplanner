@@ -121,7 +121,8 @@ const RestaurantRecommendations = () => {
         const parsed = JSON.parse(savedRestaurants);
         setRestaurants(parsed);
       } else {
-        // Generate restaurants for this destination
+        // Generate restaurants for this destination if not already generated
+        console.log('No cached restaurants found, generating for', trip.destination);
         generateRestaurants(trip.destination, trip.days);
       }
     } else {
@@ -154,14 +155,14 @@ const RestaurantRecommendations = () => {
       // Call the Supabase edge function to generate restaurants using OpenAI
       const { data, error } = await supabase.functions.invoke('generate-restaurants', {
         body: {
-          destination: destination.trim(),
+          destination: destination,
           days: days,
-          budget: maxBudget
+          budget: maxBudget || 50
         }
       });
 
       if (error) {
-        console.error('Error calling edge function:', error.message || error);
+        console.error('Error calling edge function:', error);
         throw new Error('Failed to generate restaurants');
       }
 
@@ -174,6 +175,7 @@ const RestaurantRecommendations = () => {
 
       // Save restaurants for this destination
       localStorage.setItem(`restaurants_${destination}`, JSON.stringify(generatedRestaurants));
+      console.log(`Successfully generated ${generatedRestaurants.length} restaurants for ${destination}`);
 
     } catch (error) {
       console.error('Error generating restaurants:', error);

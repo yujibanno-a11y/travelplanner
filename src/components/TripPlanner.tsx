@@ -159,6 +159,9 @@ const TripPlanner = () => {
       // Clear any existing restaurant data for this destination to force regeneration
       localStorage.removeItem(`restaurants_${destination.trim()}`);
 
+      // Automatically generate restaurants for this destination
+      await generateRestaurantsForDestination(destination.trim(), numDays);
+
     } catch (error) {
       console.error('Error generating itinerary:', error);
       
@@ -245,9 +248,51 @@ const TripPlanner = () => {
 
       // Clear any existing restaurant data for this destination to force regeneration
       localStorage.removeItem(`restaurants_${destination.trim()}`);
+
+      // Automatically generate restaurants for this destination (fallback case)
+      await generateRestaurantsForDestination(destination.trim(), numDays);
     }
     
     setIsGenerating(false);
+  };
+
+  const generateRestaurantsForDestination = async (destination: string, days: number) => {
+    try {
+      // Check if Supabase is properly configured
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      
+      if (!supabaseUrl || !supabaseKey || 
+          supabaseUrl.includes('your_supabase') || 
+          supabaseKey.includes('your_supabase')) {
+        console.warn('Supabase not configured, skipping restaurant generation');
+        return;
+      }
+
+      // Call the Supabase edge function to generate restaurants using OpenAI
+      const { data, error } = await supabase.functions.invoke('generate-restaurants', {
+        body: {
+          destination: destination,
+          days: days,
+          budget: userPreferences.budget || 50
+        }
+      });
+
+      if (error) {
+        console.error('Error generating restaurants:', error.message || error);
+        return;
+      }
+
+      if (data && data.restaurants) {
+        // Save restaurants for this destination
+        localStorage.setItem(`restaurants_${destination}`, JSON.stringify(data.restaurants));
+        console.log(`Generated ${data.restaurants.length} restaurants for ${destination}`);
+      }
+
+    } catch (error) {
+      console.error('Error in restaurant generation:', error);
+      // Don't throw error - this is a background operation
+    }
   };
 
   return (

@@ -122,21 +122,8 @@ function App() {
               </h1>
             </motion.div>
             
-            {/* Auth Container */}
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-white/80">
-                  Welcome back!
-                </span>
-                <GlassButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {}}
-                >
-                  Log Out
-                </GlassButton>
-              </div>
-            </div>
+            {/* Right side spacer for layout balance */}
+            <div className="w-32"></div>
           </div>
         </div>
       </motion.header>

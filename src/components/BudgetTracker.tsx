@@ -103,17 +103,22 @@ const BudgetTracker = () => {
           daily_limit: budgetSettings.dailyLimit,
           total_budget: budgetSettings.totalBudget,
           category_limits: budgetSettings.categories
+        }, {
+          onConflict: 'owner_id'
         });
 
       if (error) {
         console.error('Error saving budget to Supabase:', error);
+        throw error;
       } else {
         console.log('Budget saved to Supabase successfully!');
       }
     } catch (error) {
       console.error('Error saving budget to Supabase:', error);
+      throw error;
     }
   };
+
   const handleBudgetChange = (field: string, value: number) => {
     if (field === 'dailyLimit' || field === 'totalBudget') {
       setBudgetSettings(prev => ({
@@ -135,12 +140,27 @@ const BudgetTracker = () => {
     // Save to localStorage for all users
     localStorage.setItem('budgetSettings', JSON.stringify(budgetSettings));
     
+    let saveMessage = 'Budget settings saved successfully!';
+    let hasError = false;
+    
     // Save to Supabase if authenticated
     if (isAuthenticated) {
-      await saveBudgetToSupabase();
+      try {
+        await saveBudgetToSupabase();
+        saveMessage += ' (Synced to cloud)';
+      } catch (error) {
+        console.error('Failed to sync to cloud:', error);
+        saveMessage += ' (Local only - cloud sync failed)';
+        hasError = true;
+      }
     }
     
-    alert(`Budget settings saved successfully!${isAuthenticated ? ' (Synced to cloud)' : ''}`);
+    // Show success/error message
+    if (hasError) {
+      alert(saveMessage + '\n\nPlease check your internet connection and try again.');
+    } else {
+      alert(saveMessage);
+    }
   };
 
   const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);

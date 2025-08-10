@@ -113,7 +113,7 @@ function App() {
                 </div>
               </div>
               <h1 className="text-2xl font-display font-bold text-white text-glow">
-                TravelPlanner
+                TravelCents
               </h1>
             </motion.div>
             

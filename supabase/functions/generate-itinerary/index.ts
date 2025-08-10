@@ -72,8 +72,7 @@ Format the response as a JSON array where each day has this structure:
     "Attraction 4 name"
   ],
   "tips": "Practical tip for this day"
-}
-
+}`
 
     // Call OpenAI API
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -99,7 +98,7 @@ Format the response as a JSON array where each day has this structure:
       }),
     }).catch((fetchError) => {
       console.error('Fetch error when calling OpenAI:', fetchError)
-      throw new Error(`Failed to connect to OpenAI API: ${fetchError.message}`)
+      throw new Error(\`Failed to connect to OpenAI API: ${fetchError.message}`)
     })
 
     if (!openaiResponse.ok) {
@@ -140,17 +139,17 @@ Format the response as a JSON array where each day has this structure:
       itinerary = Array.from({ length: days }, (_, i) => ({
         day: i + 1,
         activities: [
-          \`Morning: Explore ${destination} city center`,
-          \`Afternoon: Visit local museums and cultural sites`,
-          \`Evening: Enjoy dinner at a traditional restaurant`
+          `Morning: Explore ${destination} city center`,
+          `Afternoon: Visit local museums and cultural sites`,
+          `Evening: Enjoy dinner at a traditional restaurant`
         ],
         attractions: [
-          \`${destination} Historic District`,
+          `${destination} Historic District`,
           'Local Art Museum',
           'Central Square',
           'Popular Viewpoint'
         ],
-        tips: \`Day ${i + 1}: Wear comfortable walking shoes and bring a camera!`
+        tips: `Day ${i + 1}: Wear comfortable walking shoes and bring a camera!`
       }))
     }
 
@@ -172,3 +171,4 @@ Format the response as a JSON array where each day has this structure:
       }
     )
   }
+})

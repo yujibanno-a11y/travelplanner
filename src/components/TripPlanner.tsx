@@ -8,7 +8,6 @@ import GlassButton from './GlassButton';
 import GlassInput from './GlassInput';
 import SkeletonLoader from './SkeletonLoader';
 import ChatPanel from './ChatPanel';
-import PreferencesModal from './PreferencesModal';
 import ErrorModal from './ErrorModal';
 import { UserPreferences, ItineraryAction } from '../types/chat';
 
@@ -28,7 +27,6 @@ const TripPlanner = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDaysLimitModal, setShowDaysLimitModal] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [onFindJobPage, setOnFindJobPage] = useState(false);
   const { reducedMotion } = useTheme();
@@ -412,21 +410,7 @@ const TripPlanner = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
-        <motion.div 
-          className="flex items-center space-x-4"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-        >
-          <GlassButton
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsPreferencesOpen(true)}
-          >
-            <Settings className="h-4 w-4 mr-2" />
-            Preferences
-          </GlassButton>
-        </motion.div>
+        <div className="w-32"></div>
         
         <motion.div
           initial={{ opacity: 0, x: 20 }}
@@ -670,13 +654,6 @@ const TripPlanner = () => {
         isMobile={isMobile}
       />
 
-      {/* Preferences Modal */}
-      <PreferencesModal
-        isOpen={isPreferencesOpen}
-        onClose={() => setIsPreferencesOpen(false)}
-        preferences={userPreferences}
-        onSave={handleUpdatePreferences}
-      />
 
       {/* Days Limit Error Modal */}
       <ErrorModal

@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -25,7 +23,7 @@ interface Restaurant {
   specialties: string[]
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -46,6 +44,7 @@ serve(async (req) => {
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openaiApiKey) {
+      console.error('OpenAI API key not found in environment variables')
       return new Response(
         JSON.stringify({ error: 'OpenAI API key not configured' }),
         { 
@@ -112,11 +111,15 @@ Use realistic Pexels image URLs for restaurant/food photos. Make sure all restau
         max_tokens: 2500,
         temperature: 0.8,
       }),
+    }).catch((fetchError) => {
+      console.error('Fetch error when calling OpenAI:', fetchError)
+      throw new Error(`Failed to connect to OpenAI API: ${fetchError.message}`)
     })
 
     if (!openaiResponse.ok) {
       const error = await openaiResponse.text()
       console.error('OpenAI API error:', error)
+      console.error('OpenAI Response status:', openaiResponse.status)
       return new Response(
         JSON.stringify({ error: 'Failed to generate restaurants' }),
         { 
@@ -197,6 +200,7 @@ Use realistic Pexels image URLs for restaurant/food photos. Make sure all restau
 
   } catch (error) {
     console.error('Edge function error:', error)
+    console.error('Error details:', error.message, error.stack)
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { 

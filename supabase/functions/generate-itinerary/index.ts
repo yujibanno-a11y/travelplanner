@@ -1,5 +1,3 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -18,7 +16,7 @@ interface ItineraryDay {
   tips: string
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -39,6 +37,7 @@ serve(async (req) => {
 
     const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openaiApiKey) {
+      console.error('OpenAI API key not found in environment variables')
       return new Response(
         JSON.stringify({ error: 'OpenAI API key not configured' }),
         { 
@@ -98,11 +97,15 @@ Format the response as a JSON array where each day has this structure:
         max_tokens: 2000,
         temperature: 0.7,
       }),
+    }).catch((fetchError) => {
+      console.error('Fetch error when calling OpenAI:', fetchError)
+      throw new Error(`Failed to connect to OpenAI API: ${fetchError.message}`)
     })
 
     if (!openaiResponse.ok) {
       const error = await openaiResponse.text()
       console.error('OpenAI API error:', error)
+      console.error('OpenAI Response status:', openaiResponse.status)
       return new Response(
         JSON.stringify({ error: 'Failed to generate itinerary' }),
         { 
@@ -160,6 +163,7 @@ Format the response as a JSON array where each day has this structure:
 
   } catch (error) {
     console.error('Edge function error:', error)
+    console.error('Error details:', error.message, error.stack)
     return new Response(
       JSON.stringify({ error: 'Internal server error' }),
       { 
@@ -168,7 +172,3 @@ Format the response as a JSON array where each day has this structure:
       }
     )
   }
-})
-  }
-}
-)

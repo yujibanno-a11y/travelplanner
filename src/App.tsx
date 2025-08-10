@@ -501,7 +501,7 @@ function App() {
 
       {/* Bottom Navigation */}
       <motion.nav 
-        className="fixed bottom-0 left-0 right-0 z-50 glass backdrop-blur-md border-t border-white/20"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-dark-800 border-t border-dark-700"
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
@@ -509,7 +509,7 @@ function App() {
         {/* Budget Submenu */}
         {budgetSubmenuOpen && (
           <motion.div 
-            className="border-t border-white/10 px-4 py-3 glass backdrop-blur-md"
+            className="border-t border-dark-700 px-4 py-3 bg-dark-800"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -524,8 +524,8 @@ function App() {
                     onClick={() => setActiveTab(submenuItem.id as TabType)}
                     className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-xl font-medium text-xs whitespace-nowrap transition-all duration-200 min-w-0 ${
                       activeTab === submenuItem.id
-                        ? 'bg-primary-500/20 text-primary-400 shadow-glow-primary' 
-                        : 'text-white/60 hover:text-white hover:bg-white/10'
+                        ? 'bg-primary-500/30 text-primary-400' 
+                        : 'text-white/60 hover:text-white hover:bg-dark-700'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -553,8 +553,8 @@ function App() {
                 onClick={() => handleTabClick(tab.id, tab.hasSubmenu)}
                 className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-xl font-medium text-xs transition-all duration-200 min-w-0 ${
                   isActive
-                    ? 'text-primary-400 bg-primary-500/20 shadow-glow-primary'
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'text-primary-400 bg-primary-500/30'
+                    : 'text-white/60 hover:text-white hover:bg-dark-700'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -565,8 +565,8 @@ function App() {
                     <motion.div 
                       className={`absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center transition-colors duration-300 ${
                       budgetSubmenuOpen 
-                        ? 'bg-primary-500 shadow-glow-primary' 
-                        : 'bg-white/30'
+                        ? 'bg-primary-500' 
+                        : 'bg-dark-600'
                     }`}
                       animate={{ rotate: budgetSubmenuOpen ? 180 : 0 }}
                       transition={{ duration: 0.3 }}

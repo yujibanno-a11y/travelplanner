@@ -229,7 +229,7 @@ const TripPlanner = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-96">
       {/* Action Bar */}
       <motion.div 
         className="flex items-center justify-between"

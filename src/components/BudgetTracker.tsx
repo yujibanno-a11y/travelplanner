@@ -72,7 +72,7 @@ const BudgetTracker = () => {
   const totalCategoryBudget = Object.values(budgetSettings.categories).reduce((sum, val) => sum + val, 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-96">
       {/* Budget Overview */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

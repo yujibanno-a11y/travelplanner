@@ -79,7 +79,7 @@ const ExpenseSpreadsheet = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-96">
       {/* Header with Stats */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

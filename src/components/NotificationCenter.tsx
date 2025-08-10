@@ -143,7 +143,7 @@ const NotificationCenter = () => {
   const unreadCount = notifications.filter(notif => !notif.read).length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-96">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

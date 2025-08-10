@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UtensilsCrossed, Star, MapPin, DollarSign, Filter, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 import GlassCard from './GlassCard';
 import GlassButton from './GlassButton';
 import GlassInput from './GlassInput';
@@ -23,6 +24,8 @@ const RestaurantRecommendations = () => {
   const [selectedCuisine, setSelectedCuisine] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentTrip, setCurrentTrip] = useState<any>(null);
 
   const cuisineTypes = [
     'all', 'italian', 'asian', 'mexican', 'american', 'mediterranean', 
@@ -106,11 +109,73 @@ const RestaurantRecommendations = () => {
   ];
 
   useEffect(() => {
-    filterRestaurants();
-  }, [maxBudget, selectedCuisine, searchTerm]);
+    // Load current trip data
+    const tripData = localStorage.getItem('currentTrip');
+    if (tripData) {
+      const trip = JSON.parse(tripData);
+      setCurrentTrip(trip);
+      
+      // Check if we have AI-generated restaurants for this trip
+      const savedRestaurants = localStorage.getItem(`restaurants_${trip.destination}`);
+      if (savedRestaurants) {
+        const parsed = JSON.parse(savedRestaurants);
+        setRestaurants(parsed);
+      } else {
+        // Generate restaurants for this destination
+        generateRestaurants(trip.destination, trip.days);
+      }
+    } else {
+      // Fallback to mock data if no trip
+      setRestaurants(mockRestaurants);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (restaurants.length > 0) {
+      filterRestaurants();
+    }
+  }, [maxBudget, selectedCuisine, searchTerm, restaurants]);
+
+  const generateRestaurants = async (destination: string, days: number) => {
+    setIsLoading(true);
+    
+    try {
+      // Call the Supabase edge function to generate restaurants using OpenAI
+      const { data, error } = await supabase.functions.invoke('generate-restaurants', {
+        body: {
+          destination: destination.trim(),
+          days: days,
+          budget: maxBudget
+        }
+      });
+
+      if (error) {
+        console.error('Error calling edge function:', error);
+        throw new Error('Failed to generate restaurants');
+      }
+
+      if (!data || !data.restaurants) {
+        throw new Error('No restaurant data received');
+      }
+
+      const generatedRestaurants = data.restaurants;
+      setRestaurants(generatedRestaurants);
+
+      // Save restaurants for this destination
+      localStorage.setItem(`restaurants_${destination}`, JSON.stringify(generatedRestaurants));
+
+    } catch (error) {
+      console.error('Error generating restaurants:', error);
+      
+      // Fallback to mock data if AI generation fails
+      setRestaurants(mockRestaurants);
+    }
+    
+    setIsLoading(false);
+  };
 
   const filterRestaurants = () => {
-    let filtered = mockRestaurants.filter(restaurant => restaurant.avgCost <= maxBudget);
+    let filtered = restaurants.filter(restaurant => restaurant.avgCost <= maxBudget);
     
     if (selectedCuisine !== 'all') {
       filtered = filtered.filter(restaurant => restaurant.cuisine === selectedCuisine);
@@ -162,7 +227,24 @@ const RestaurantRecommendations = () => {
             </div>
             <h2 className="text-3xl font-display font-bold text-white text-glow">Restaurant Recommendations</h2>
           </div>
-          <p className="text-white/80">Find the perfect dining spots based on your budget and preferences</p>
+          <p className="text-white/80">
+            {currentTrip 
+              ? `Find the perfect dining spots in ${currentTrip.destination} based on your budget and preferences`
+              : 'Find the perfect dining spots based on your budget and preferences'
+            }
+          </p>
+          {isLoading && (
+            <div className="mt-4 p-4 glass backdrop-blur-md rounded-xl border border-primary-400/30 bg-primary-500/10">
+              <div className="flex items-center space-x-3">
+                <motion.div 
+                  className="w-5 h-5 border-2 border-primary-400 border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+                <span className="text-primary-400 font-medium">AI is finding the best restaurants for your trip...</span>
+              </div>
+            </div>
+          )}
         </GlassCard>
       </motion.div>
 
@@ -191,7 +273,12 @@ const RestaurantRecommendations = () => {
                 min="10"
                 max="100"
                 value={maxBudget}
-                onChange={(e) => setMaxBudget(parseInt(e.target.value))}
+                onChange={(e) => {
+                  setMaxBudget(parseInt(e.target.value));
+                  if (currentTrip && !isLoading) {
+                    generateRestaurants(currentTrip.destination, currentTrip.days);
+                  }
+                }}
                 className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
               />
               <div className="flex justify-between text-xs text-white/60 mt-1">
@@ -244,14 +331,28 @@ const RestaurantRecommendations = () => {
         <GlassCard className="p-6" glow="primary">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-display font-bold text-white text-glow">
-              Top {restaurants.length} Restaurants
+              {isLoading ? 'Generating Restaurants...' : `Top ${restaurants.length} Restaurants`}
             </h3>
             <div className="text-sm text-white/60">
-              Sorted by rating (highest first)
+              {currentTrip ? `in ${currentTrip.destination} • ` : ''}Sorted by rating (highest first)
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="glass backdrop-blur-md rounded-xl p-4 border border-white/20 animate-pulse">
+                  <div className="w-full h-48 bg-white/10 rounded-lg mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-white/10 rounded w-3/4"></div>
+                    <div className="h-3 bg-white/10 rounded w-1/2"></div>
+                    <div className="h-3 bg-white/10 rounded w-2/3"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {restaurants.map((restaurant, index) => (
               <motion.div
                 key={restaurant.id}
@@ -313,12 +414,18 @@ const RestaurantRecommendations = () => {
               </motion.div>
             ))}
           </div>
+          )}
 
-          {restaurants.length === 0 && (
+          {restaurants.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <UtensilsCrossed className="h-16 w-16 text-white/40 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-white mb-2">No restaurants found</h3>
-              <p className="text-white/60">Try adjusting your filters to see more options.</p>
+              <p className="text-white/60">
+                {currentTrip 
+                  ? 'Try adjusting your filters to see more options.'
+                  : 'Create a trip first to get personalized restaurant recommendations.'
+                }
+              </p>
             </div>
           )}
         </GlassCard>

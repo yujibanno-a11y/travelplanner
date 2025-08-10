@@ -145,6 +145,9 @@ const TripPlanner = () => {
       };
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
 
+      // Clear any existing restaurant data for this destination to force regeneration
+      localStorage.removeItem(`restaurants_${destination.trim()}`);
+
     } catch (error) {
       console.error('Error generating itinerary:', error);
       
@@ -223,6 +226,9 @@ const TripPlanner = () => {
         itinerary: fallbackItinerary
       };
       localStorage.setItem('currentTrip', JSON.stringify(tripData));
+
+      // Clear any existing restaurant data for this destination to force regeneration
+      localStorage.removeItem(`restaurants_${destination.trim()}`);
     }
     
     setIsGenerating(false);
